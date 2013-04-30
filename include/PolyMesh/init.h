@@ -1,0 +1,44 @@
+#include <cstdlib>
+
+#include <PolyMesh/bitmap_image.h>
+
+#define FRAME_RATE 60
+
+#define FRAME_PERIOD (1000.0/FRAME_RATE)
+
+#define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\sphere.obj"
+
+#define AMBIENT 'a'
+#define SPECULAR 's'
+#define DIFFUSE 'd'
+#define EMISSION 'e'
+#define SHININESS 'h'
+#define SUBDIVIDE ' '
+#define UP '+'
+#define DOWN '-'
+#define SHADEMODE 'm'
+#define DRAWMODE 'p'
+#define RESET 'r'
+
+void Boost(float *array, int size, float delta)
+{
+	if (array != NULL)
+		for(int i = 0; i < size; i++)
+		{
+			if(array[i] != NULL)
+				array[i] += delta;
+		}
+}
+
+
+float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+float Diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+
+float Ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+
+float Shininess[] = { 0.5f };
+
+bitmap_image image;
+
+bitmap_image space_image;
