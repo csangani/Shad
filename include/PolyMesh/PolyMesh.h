@@ -67,7 +67,7 @@ public:
 	PolyMesh *GenerateNormals();
 
 	PolyMesh *LoopSubdivide();
-	PolyMesh *LoopSubdivideP();
+	PolyMesh *LoopSubdivideP(int);
 
 	PolyMesh *Draw();
 
@@ -77,11 +77,13 @@ public:
 
 	PolyMesh *DrawAnimation();
 
+	void Delete();
+
 private:
 	bool Animated;
 	bool Lighting;
 
-	typedef struct LoopVertex
+	typedef struct LoopVertex 
 	{
 		VertexHandle newVH;
 		Point point;

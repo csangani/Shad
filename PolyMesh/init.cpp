@@ -2,6 +2,8 @@
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
 
+#include <ctime>
+
 #include <GL/freeglut.h>
 
 namespace Window
@@ -21,7 +23,7 @@ namespace Window
 		gluLookAt(3,3,3,0,0,0,0,1,0);
 		*/
 		glOrtho(-1,1,-1,1,-1,1);
-		
+
 		glViewport(0,0,width,height);
 
 		glutPostRedisplay();
@@ -108,12 +110,20 @@ namespace Window
 			}
 			break;
 		case SUBDIVIDEP:
-			PolyMesh::Meshes[0]->LoopSubdivideP();
+			PolyMesh::Meshes[0]->LoopSubdivideP(NUM_THREADS);
 			glutPostRedisplay();
 			break;
 		case SUBDIVIDE:
-			PolyMesh::Meshes[0]->LoopSubdivide();
-			glutPostRedisplay();
+			for (int i = 3; i <= 26; i++)
+			{
+				PolyMesh::Meshes[0]->LoopSubdivideP(i/3)->LoopSubdivideP(i/3)->LoopSubdivideP(i/3)->LoopSubdivideP(i/3);
+				clock_t start, end;
+				start = clock();
+				PolyMesh::Meshes[0]->LoopSubdivideP(i/3);
+				end = clock();
+				std::cout << i/3 << " threads: " << end - start << " clicks\n";
+				Keyboard(RESET, 0, 0);
+			}
 			break;
 		case SHADEMODE:
 			PolyMesh::Meshes[0]->ShadeMode = PolyMesh::Meshes[0]->ShadeMode == GL_SMOOTH ? GL_FLAT : GL_SMOOTH;
@@ -123,6 +133,7 @@ namespace Window
 			break;
 		case RESET:
 			{
+				PolyMesh::Meshes[0]->Delete();
 				// Load Mesh
 				PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
 
@@ -139,7 +150,6 @@ namespace Window
 				Mesh->MaterialShininess = Shininess;
 
 				// Apply Texture to Mesh
-				image = bitmap_image("D:\\SkyDrive\\Documents\\Workspace\\earth.bmp");
 				Mesh->ApplyTexture(image.data(), image.width(), image.height());
 
 				Mesh->EnableLighting();
@@ -245,7 +255,7 @@ int main (int argc, char **argv)
 	glEnable(GL_LIGHT0);
 
 	Mesh->EnableLighting();
-	
+
 	// Enable Normalization
 	glEnable(GL_NORMALIZE);
 

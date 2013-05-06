@@ -6,7 +6,9 @@
 
 #define FRAME_PERIOD (1000.0/FRAME_RATE)
 
-#define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\obj\\plane.obj"
+#define NUM_THREADS 8
+
+#define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\obj\\bunny.obj"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'
