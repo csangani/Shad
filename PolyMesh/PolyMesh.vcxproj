@@ -58,7 +58,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Spline/Spline.lib;GL/freeglut_static.lib;OpenMesh/libOpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Spline/Spline.lib;GL/freeglut_static.lib;OpenMeshCore/OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Configuration)\;%(AdditionalLibraryDependencies)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
@@ -81,7 +81,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Configuration)\;%(AdditionalLibraryDependencies)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Spline\Spline.lib;GL\freeglut_static.lib;OpenMesh\libOpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Spline/Spline.lib;GL/freeglut_static.lib;OpenMeshCore/OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

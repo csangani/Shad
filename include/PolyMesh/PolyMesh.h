@@ -47,7 +47,7 @@ public:
 	PolyMesh(std::string);
 
 	PolyMesh::PolyMesh(std::string, GLenum);
-	
+
 	PolyMesh::PolyMesh(std::string, GLenum, GLenum);
 
 	PolyMesh *ApplyTexture(const unsigned char *, int, int);
@@ -67,6 +67,7 @@ public:
 	PolyMesh *GenerateNormals();
 
 	PolyMesh *LoopSubdivide();
+	PolyMesh *LoopSubdivideP();
 
 	PolyMesh *Draw();
 
@@ -75,8 +76,20 @@ public:
 	PolyMesh *Animate(AnimationRoutine *, uint64_t, bool);
 
 	PolyMesh *DrawAnimation();
-	
+
 private:
 	bool Animated;
 	bool Lighting;
+
+	typedef struct LoopVertex
+	{
+		VertexHandle newVH;
+		Point point;
+		TexCoord2D tex;
+	};
+
+	typedef struct LoopFace
+	{
+		int a, b, c, d, e, f;
+	};
 };

@@ -17,12 +17,11 @@ namespace Window
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		gluPerspective(45,((float)width)/height,0.1f,100.f);
+		/*gluPerspective(45,((float)width)/height,0.1f,100.f);
 		gluLookAt(3,3,3,0,0,0,0,1,0);
-		/*
-		gluLookAt(0,0,0,2,2,-1,0,1,0);
-		glOrtho(-2,2,-2,2,-2,2);
 		*/
+		glOrtho(-1,1,-1,1,-1,1);
+		
 		glViewport(0,0,width,height);
 
 		glutPostRedisplay();
@@ -108,6 +107,10 @@ namespace Window
 				break;
 			}
 			break;
+		case SUBDIVIDEP:
+			PolyMesh::Meshes[0]->LoopSubdivideP();
+			glutPostRedisplay();
+			break;
 		case SUBDIVIDE:
 			PolyMesh::Meshes[0]->LoopSubdivide();
 			glutPostRedisplay();
@@ -177,7 +180,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
@@ -202,8 +205,8 @@ int main (int argc, char **argv)
 	EnvSphere->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
 
 	// Apply Animation
-	AnimationRoutine *routine = new AnimationRoutine("D:\\SkyDrive\\Documents\\Workspace\\obj\\routine.ani");
-	Mesh->Animate(routine, 0, true);
+	//AnimationRoutine *routine = new AnimationRoutine("D:\\SkyDrive\\Documents\\Workspace\\obj\\routine.ani");
+	//Mesh->Animate(routine, 0, true);
 
 	// Set Mesh Size and Location
 	Mesh->Center()->Normalize();

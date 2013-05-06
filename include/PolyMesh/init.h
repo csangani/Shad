@@ -6,7 +6,7 @@
 
 #define FRAME_PERIOD (1000.0/FRAME_RATE)
 
-#define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\sphere.obj"
+#define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\obj\\plane.obj"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'
@@ -14,6 +14,7 @@
 #define EMISSION 'e'
 #define SHININESS 'h'
 #define SUBDIVIDE ' '
+#define SUBDIVIDEP 'x'
 #define UP '+'
 #define DOWN '-'
 #define SHADEMODE 'm'
