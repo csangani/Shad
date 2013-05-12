@@ -53,13 +53,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;_USE_MATH_DEFINES;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;_USE_MATH_DEFINES;FREEGLUT_STATIC;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Spline/Spline.lib;GL/freeglut_static.lib;OpenMeshCore/OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Spline\Spline.lib;FreeGLUT\FreeGLUT.lib;OpenMeshCore\OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Configuration)\;%(AdditionalLibraryDependencies)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
@@ -75,15 +76,15 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_USE_MATH_DEFINES;FREEGLUT_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Configuration)\;%(AdditionalLibraryDependencies)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Spline/Spline.lib;GL/freeglut_static.lib;OpenMeshCore/OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Configuration)\;$(SolutionDir)lib\$(Configuration)_Static\;%(AdditionalLibraryDependencies)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Spline\Spline.lib;FreeGLUT\FreeGLUT.lib;OpenMeshCore\OpenMeshCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

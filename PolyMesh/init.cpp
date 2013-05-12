@@ -231,7 +231,7 @@ int main (int argc, char **argv)
 	Mesh->MaterialShininess = Shininess;
 
 	// Apply Texture to Mesh
-	image = bitmap_image("D:\\SkyDrive\\Documents\\Workspace\\Earth.bmp");
+	image = bitmap_image(TEXTURE);
 	image.rgb_to_bgr();
 	Mesh->ApplyTexture(image.data(), image.width(), image.height());
 

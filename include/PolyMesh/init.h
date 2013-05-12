@@ -9,6 +9,7 @@
 #define NUM_THREADS 8
 
 #define OBJECT "D:\\SkyDrive\\Documents\\Workspace\\obj\\bunny.obj"
+#define TEXTURE "D:\\SkyDrive\\Documents\\Workspace\\obj\\shirt.bmp"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'

@@ -168,8 +168,8 @@ PolyMesh *PolyMesh::LoopSubdivideP(int numThreads)
 	int faces = n_faces();
 
 	// New mesh data
-	LoopVertex *newEvenVertices = (LoopVertex *)calloc(vertices, sizeof (LoopVertex));
-	LoopVertex *newOddVertices = (LoopVertex *)calloc(edges, sizeof (LoopVertex));
+	LoopVertex *newEvenVertices = (LoopVertex *)calloc(vertices, sizeof(LoopVertex));
+	LoopVertex *newOddVertices = (LoopVertex *)calloc(edges, sizeof(LoopVertex));
 	LoopFace *newFaces = (LoopFace *)calloc(faces*4, sizeof(LoopFace));
 
 #pragma omp parallel default(none) shared(edges, vertices, faces, newEvenVertices, newOddVertices, newFaces)
