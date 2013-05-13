@@ -6,12 +6,14 @@
 #include <PolyMesh/PolyMesh.h>
 #include <PolyMesh/util.h>
 
+#include <Shad/Shader.h>
+
 #include <GL/glut.h>
 
 std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
-PolyMesh::PolyMesh() : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false)
+PolyMesh::PolyMesh() : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -21,19 +23,7 @@ PolyMesh::PolyMesh() : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT
 	Meshes.push_back(this);
 }
 
-PolyMesh::PolyMesh(std::string FilePath) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false)
-{
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
-	LoadObj(FilePath);
-	GenerateNormals();
-	Meshes.push_back(this);
-}
-
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false)
+PolyMesh::PolyMesh(std::string FilePath) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -45,7 +35,19 @@ PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max_x(FLT_MIN), min_
 	Meshes.push_back(this);
 }
 
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode, GLenum ShadeMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(ShadeMode), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false)
+PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+{
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
+	glPopMatrix();
+	LoadObj(FilePath);
+	GenerateNormals();
+	Meshes.push_back(this);
+}
+
+PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode, GLenum ShadeMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(ShadeMode), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -62,6 +64,19 @@ PolyMesh *PolyMesh::ApplyTexture(const unsigned char *data, int width, int heigh
 	Texture = data;
 	TextureWidth = width;
 	TextureHeight = height;
+	return this;
+}
+
+PolyMesh *PolyMesh::AttachShader(std::string ShaderPath)
+{
+	Shader shader(ShaderPath);
+	if (shader.loaded())
+		ShaderID = shader.programID();
+	else
+	{
+		std::cerr << "Failed to load shader \"" << shader.path() << "\"" << std::endl;
+		std::cerr << shader.errors() << std::endl;
+	}
 	return this;
 }
 
@@ -710,26 +725,59 @@ PolyMesh *PolyMesh::Draw()
 		glEnable(GL_TEXTURE_2D);
 	}
 
-
-	for (PolyMesh::FaceIter f_it=this->faces_begin(); f_it!=this->faces_end(); ++f_it)
+	// Use shader program if one is attached
+	if (ShaderID != 0)
 	{
-		glBegin(DrawMode);
+		// set up indices array
+		std::vector<GLuint> indices;
+		indices.reserve(this->n_faces()*3);
 
-		if (ShadeMode == GL_FLAT && this->has_face_normals())
-			glNormal3f(this->normal(f_it.handle())[0], this->normal(f_it.handle())[1], this->normal(f_it.handle())[2]);
-
-		for (PolyMesh::FaceVertexIter fv_it = this->fv_begin(f_it.handle()); fv_it != this->fv_end(f_it.handle()); ++fv_it)
+		PolyMesh::ConstFaceIter f_it, f_begin = this->faces_begin(), f_end = this->faces_end();
+		for (f_it = f_begin; f_it != f_end; ++f_it)
 		{
-			if (ShadeMode == GL_SMOOTH && this->has_vertex_normals())
-				glNormal3f(this->normal(fv_it.handle())[0], this->normal(fv_it.handle())[1],this->normal(fv_it.handle())[2]);
-
-			if (this->has_vertex_texcoords2D())
-				glTexCoord2f(this->texcoord2D(fv_it.handle())[0],this->texcoord2D(fv_it.handle())[1]);
-
-			glVertex3f(this->point(fv_it.handle())[0], this->point(fv_it.handle())[1], this->point(fv_it.handle())[2]);
+			PolyMesh::ConstFaceVertexIter fv_it = this->cfv_iter(f_it.handle());
+			indices.push_back(fv_it.handle().idx());
+			indices.push_back((++fv_it).handle().idx());
+			indices.push_back((++fv_it).handle().idx());
 		}
 
-		glEnd();
+		// tell GL which shader to use
+		glUseProgram(ShaderID);
+
+		// bind data to shader attributes
+		GLuint position = glGetAttribLocation(ShaderID, "positionIn");
+		glEnableVertexAttribArray(position);
+		glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, this->points());
+
+		GLuint normal = glGetAttribLocation(ShaderID, "normalIn");
+		glEnableVertexAttribArray(normal);
+		glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, this->vertex_normals());
+
+		// draw
+		glDrawElements(DrawMode, indices.size(), GL_UNSIGNED_INT, &indices[0]);
+	}
+	else
+	{
+		for (PolyMesh::FaceIter f_it=this->faces_begin(); f_it!=this->faces_end(); ++f_it)
+		{
+			glBegin(DrawMode);
+
+			if (ShadeMode == GL_FLAT && this->has_face_normals())
+				glNormal3f(this->normal(f_it.handle())[0], this->normal(f_it.handle())[1], this->normal(f_it.handle())[2]);
+
+			for (PolyMesh::FaceVertexIter fv_it = this->fv_begin(f_it.handle()); fv_it != this->fv_end(f_it.handle()); ++fv_it)
+			{
+				if (ShadeMode == GL_SMOOTH && this->has_vertex_normals())
+					glNormal3f(this->normal(fv_it.handle())[0], this->normal(fv_it.handle())[1],this->normal(fv_it.handle())[2]);
+
+				if (this->has_vertex_texcoords2D())
+					glTexCoord2f(this->texcoord2D(fv_it.handle())[0],this->texcoord2D(fv_it.handle())[1]);
+
+				glVertex3f(this->point(fv_it.handle())[0], this->point(fv_it.handle())[1], this->point(fv_it.handle())[2]);
+			}
+
+			glEnd();
+		}
 	}
 
 	if(Lighting)

@@ -2,6 +2,7 @@
 
 #include <PolyMesh/AnimationRoutine.h>
 
+#include <GL/glew.h>
 #include <GL/glut.h>
 
 struct PolyTraits : public OpenMesh::DefaultTraits
@@ -52,6 +53,8 @@ public:
 
 	PolyMesh *ApplyTexture(const unsigned char *, int, int);
 
+	PolyMesh *AttachShader(std::string);
+
 	PolyMesh *PolyMesh::EnableLighting();
 
 	PolyMesh *Scale(float, float, float);
@@ -83,6 +86,7 @@ public:
 private:
 	bool Animated;
 	bool Lighting;
+	GLuint ShaderID;
 
 	float ModelView[16];
 

@@ -6,6 +6,7 @@
 
 #include <ctime>
 
+#include <GL/glew.h>
 #include <GL/freeglut.h>
 
 namespace Game
@@ -150,6 +151,7 @@ namespace Window
 				PolyMesh::Meshes[0]->Delete();
 				// Load Mesh
 				PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
+				//Mesh->AttachShader(PHONG_SHADER);
 
 				// Set Mesh Size and Location
 				Mesh->Center()->Normalize();
@@ -286,6 +288,21 @@ int main (int argc, char **argv)
 	// Go fullscreen
 	//glutFullScreen();
 
+	// Initialize GLEW (for shaders)
+	GLint error = glewInit();
+	if (GLEW_OK != error)
+	{
+		std::cerr << glewGetErrorString(error) << std::endl;
+		exit(-1);
+	}
+	if (!GLEW_VERSION_2_0)
+	{
+		std::cerr << "This program requires OpenGL 2.0 or higher." << std::endl;
+		const char *version = (const char *)glGetString(GL_VERSION);
+		std::cerr << "Your current version is: " << version << std::endl;
+		exit(-1);
+	}
+
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
 
@@ -315,6 +332,7 @@ int main (int argc, char **argv)
 
 	// Load Mesh
 	PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
+	//Mesh->AttachShader(PHONG_SHADER);
 
 	// Load and set up environment sphere
 	PolyMesh *EnvSphere = new PolyMesh("assets\\obj\\sphere.obj", GL_TRIANGLES, GL_SMOOTH);
