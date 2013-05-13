@@ -7,9 +7,6 @@
     <ClCompile Include="AnimationRoutine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -26,9 +23,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\PolyMesh\bitmap_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\PolyMesh\init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\PolyMesh\PolyMesh.h">

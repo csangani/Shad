@@ -28,9 +28,13 @@ public:
 	static uint64_t end(std::map<uint64_t, Quaternion>);
 
 	float w() const;
+	void w(float &);
 	float x() const;
+	void x(float &);
 	float y() const;
+	void y(float &);
 	float z() const;
+	void z(float &);
 	float mod() const;
 
 protected:

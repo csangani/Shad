@@ -9,7 +9,7 @@
 
 AnimationRoutine * AnimationRoutine::AddTranslationalKeyFrame(float x, float y, float z, uint64_t timestamp)
 {
-	_CRSpline.AddControlPoint(CatmullRom(x, y, z), timestamp);
+	_CRSpline.AddControlPoint(CatmullRom(OpenMesh::Vec3f(x, y, z)), timestamp);
 	return this;
 }
 
@@ -46,7 +46,7 @@ AnimationRoutine * AnimationRoutine::LoadAni(std::string FilePath)
 
 				buffer >> x >> y >> z >> timestamp;
 
-				_CRSpline.AddControlPoint(CatmullRom(x, y, z), timestamp);
+				_CRSpline.AddControlPoint(CatmullRom(OpenMesh::Vec3f(x, y, z)), timestamp);
 			}
 			else if (token.compare("r") == 0)
 			{
@@ -73,12 +73,28 @@ AnimationRoutine * AnimationRoutine::LoadAni(std::string FilePath)
 
 CatmullRom AnimationRoutine::T(uint64_t timestamp)
 {
-	return _CRSpline(timestamp);
+	_PrevT = _CRSpline(timestamp);
+	return _PrevT;
 }
 
 Quaternion AnimationRoutine::R(uint64_t timestamp)
 {
-	return _QTSpline(timestamp);
+	_PrevR = _QTSpline(timestamp);
+	return _PrevR;
+}
+
+CatmullRom AnimationRoutine::TD(uint64_t timestamp)
+{
+	CatmullRom Prev = _PrevT;
+	_PrevT = _CRSpline(timestamp);
+	return _PrevT - Prev;
+}
+
+Quaternion AnimationRoutine::RD(uint64_t timestamp)
+{
+	Quaternion Prev = _PrevR;
+	_PrevR = _QTSpline(timestamp);
+	return _PrevR - Prev;
 }
 
 uint64_t AnimationRoutine::TDuration()

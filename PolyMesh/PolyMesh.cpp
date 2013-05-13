@@ -80,6 +80,7 @@ PolyMesh *PolyMesh::Scale(float x, float y, float z)
 	glMultMatrixf(ModelView);
 	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
 	glPopMatrix();
+	cen_x += x; cen_y *= y; cen_z *= z;
 	return this;
 }
 
@@ -98,15 +99,12 @@ PolyMesh *PolyMesh::Translate(float x, float y, float z)
 	glMultMatrixf(ModelView);
 	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
 	glPopMatrix();
+	cen_x += x, cen_y += y, cen_z += z;
 	return this;
 }
 
 PolyMesh *PolyMesh::Center()
 {
-	float cen_x, cen_y, cen_z;
-	cen_x = (max_x + min_x)/2;
-	cen_y = (max_y + min_y)/2;
-	cen_z = (max_z + min_z)/2;
 	return Translate(-cen_x, -cen_y, -cen_z);
 }
 
@@ -119,6 +117,15 @@ PolyMesh *PolyMesh::Rotate(float angle, float x, float y, float z)
 	glMultMatrixf(ModelView);
 	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
 	glPopMatrix();
+	return this;
+}
+
+PolyMesh *PolyMesh::RotateAboutCenter(float angle, float x, float y, float z)
+{
+	float c_x = cen_x, c_y = cen_y, c_z = cen_z;
+	Center();
+	Rotate(angle, x, y, z);
+	Translate(c_x, c_y, c_z);
 	return this;
 }
 
@@ -620,22 +627,22 @@ PolyMesh *PolyMesh::Draw()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
-	float MV[16];
-	util::CopyMatrix16fv(ModelView, MV);
+	//float MV[16];
+	//util::CopyMatrix16fv(ModelView, MV);
 
 	if (Animated)
 	{
-		if (Animation->RDuration() > 0) {
-			Quaternion QT = Animation->R(
+		/*if (Animation->RDuration() > 0) {
+			Quaternion QT = Animation->RD(
 				(AnimationRepeat) ? (Time - AnimationOffset - AnimationDelay) % Animation->RDuration()
 				: Time - AnimationOffset - AnimationDelay);
 			Rotate(360.0f*QT.w()/(2*((float)M_PI)), QT.x(), QT.y(), QT.z());
-		}
+		}*/
 		if (Animation->TDuration() > 0) {
-			CatmullRom CR = Animation->T(
+			CatmullRom CR = Animation->TD(
 				(AnimationRepeat) ? (Time - AnimationOffset - AnimationDelay) % Animation->TDuration()
 				: Time - AnimationOffset - AnimationDelay);
-			Translate(CR.Vec3f()[0],CR.Vec3f()[1],CR.Vec3f()[2]);
+			Translate(CR[0], CR[1], CR[2]);
 		}
 	}
 
@@ -735,7 +742,7 @@ PolyMesh *PolyMesh::Draw()
 		glDisable(GL_TEXTURE_2D);
 	}
 
-	util::CopyMatrix16fv(MV, ModelView);
+	//util::CopyMatrix16fv(MV, ModelView);
 
 	glPopMatrix();
 
@@ -837,6 +844,10 @@ PolyMesh *PolyMesh::LoadObj(std::string FilePath)
 			buffer>>token;
 		}
 	}
+
+	cen_x = (max_x + min_x) / 2;
+	cen_y = (max_y + min_y) / 2;
+	cen_z = (max_z + min_z) / 2;
 
 	file.close();
 

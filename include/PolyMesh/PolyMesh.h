@@ -22,7 +22,7 @@ public:
 	float max_y, min_y;
 	float max_z, min_z;
 
-	float ModelView[16];
+	float cen_x, cen_y, cen_z;
 
 	GLenum DrawMode;
 
@@ -61,8 +61,9 @@ public:
 	PolyMesh *Translate(float, float, float);
 
 	PolyMesh *Center();
-
+	
 	PolyMesh *Rotate(float, float, float, float);
+	PolyMesh *RotateAboutCenter(float, float, float, float);
 
 	PolyMesh *GenerateNormals();
 
@@ -82,6 +83,8 @@ public:
 private:
 	bool Animated;
 	bool Lighting;
+
+	float ModelView[16];
 
 	typedef struct LoopVertex 
 	{

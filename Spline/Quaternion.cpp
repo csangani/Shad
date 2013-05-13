@@ -32,7 +32,7 @@ Quaternion Quaternion::Rotate(Quaternion q) const {
 
 // Scalar multiplication
 Quaternion Quaternion::operator*(const float& scalar) const {
-	return Quaternion(_w*scalar, _x*scalar, _y*scalar, _z*scalar);
+	return Quaternion(_w * scalar, _x * scalar, _y * scalar, _z * scalar);
 }
 
 // Vector addition
@@ -73,16 +73,32 @@ float Quaternion::w() const {
 	return _w;
 }
 
+void Quaternion::w(float &w) {
+	_w = w;
+}
+
 float Quaternion::x() const {
 	return _x;
+}
+
+void Quaternion::x(float &x) {
+	_x = x;
 }
 
 float Quaternion::y() const {
 	return _y;
 }
 
+void Quaternion::y(float &y) {
+	_y = _y;
+}
+
 float Quaternion::z() const {
 	return _z;
+}
+
+void Quaternion::z(float &z) {
+	_z = z;
 }
 
 // Magnitude

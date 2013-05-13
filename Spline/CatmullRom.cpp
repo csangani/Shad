@@ -4,11 +4,6 @@
 #include<OpenMesh/Core/Geometry/VectorT.hh>
 #include <Spline/CatmullRom.h>
 
-OpenMesh::Vec3f CatmullRom::Vec3f()
-{
-	return _point;
-}
-
 CatmullRom CatmullRom::Interpolate(std::map<uint64_t, CatmullRom> CPL, uint64_t ts)
 {
 	if (CPL.size() < 4)
@@ -30,10 +25,10 @@ CatmullRom CatmullRom::Interpolate(std::map<uint64_t, CatmullRom> CPL, uint64_t 
 	OpenMesh::Vec3f c0, c1, c2, c3;
 	OpenMesh::Vec3f p0, p1, p2, p3;
 
-	p0 = t0._point;
-	p1 = t1._point;
-	p2 = t2._point;
-	p3 = t3._point;
+	p0 = t0;
+	p1 = t1;
+	p2 = t2;
+	p3 = t3;
 
 	float u = ((float)ts - ts1)/(ts2 - ts1);
 
