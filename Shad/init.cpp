@@ -189,7 +189,7 @@ namespace Window
 				OpenMesh::Vec3f D = OpenMesh::Vec3f(Game::Direction[0], Game::Direction[1], Game::Direction[2]);
 				OpenMesh::Vec3f U = OpenMesh::Vec3f(Game::Up[0], Game::Up[1], Game::Up[2]);
 				float halfAngle = ((float)M_PI)*5.0f/360.f;
-				OpenMesh::Vec3f Axis = D % U;
+				OpenMesh::Vec3f Axis = U % D;
 				QD = QD.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
 				QU = QU.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
 				Game::Direction = OpenMesh::Vec3f(QD.x(), QD.y(), QD.z());
@@ -204,7 +204,7 @@ namespace Window
 				OpenMesh::Vec3f D = OpenMesh::Vec3f(Game::Direction[0], Game::Direction[1], Game::Direction[2]);
 				OpenMesh::Vec3f U = OpenMesh::Vec3f(Game::Up[0], Game::Up[1], Game::Up[2]);
 				float halfAngle = ((float)M_PI)*5.0f/360.f;
-				OpenMesh::Vec3f Axis = U % D;
+				OpenMesh::Vec3f Axis = D % U;
 				QD = QD.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
 				QU = QU.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
 				Game::Direction = OpenMesh::Vec3f(QD.x(), QD.y(), QD.z());
