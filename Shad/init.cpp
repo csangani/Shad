@@ -11,9 +11,7 @@
 
 namespace Game
 {
-	float Speed;
-	OpenMesh::Vec3f Direction;
-	OpenMesh::Vec3f Up;
+	btVector3 Direction;
 }
 
 namespace Window
@@ -49,9 +47,10 @@ namespace Window
 
 		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-		Camera->UpdatePosition(OpenMesh::Vec3f(PolyMesh::Meshes[0]->cen_x, PolyMesh::Meshes[0]->cen_y, PolyMesh::Meshes[0]->cen_z));
+		btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
+		Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
 
-		gluLookAt(Camera->Position()[0],Camera->Position()[1],Camera->Position()[2],PolyMesh::Meshes[0]->cen_x,PolyMesh::Meshes[0]->cen_y,PolyMesh::Meshes[0]->cen_z, 0, 1, 0);
+		gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
 		glViewport(0,0,Window::Width,Window::Height);
 
@@ -129,16 +128,7 @@ namespace Window
 			glutPostRedisplay();
 			break;
 		case SUBDIVIDE:
-			for (int i = 3; i <= 26; i++)
-			{
-				PolyMesh::Meshes[0]->LoopSubdivideP(i/3)->LoopSubdivideP(i/3)->LoopSubdivideP(i/3)->LoopSubdivideP(i/3);
-				clock_t start, end;
-				start = clock();
-				PolyMesh::Meshes[0]->LoopSubdivideP(i/3);
-				end = clock();
-				std::cout << i/3 << " threads: " << end - start << " clicks\n";
-				Keyboard(RESET, 0, 0);
-			}
+			PolyMesh::Meshes[0]->RigidBody->applyImpulse(btVector3(0,5,0),btVector3(0,0,0));
 			break;
 		case SHADEMODE:
 			PolyMesh::Meshes[0]->ShadeMode = PolyMesh::Meshes[0]->ShadeMode == GL_SMOOTH ? GL_FLAT : GL_SMOOTH;
@@ -152,9 +142,6 @@ namespace Window
 				// Load Mesh
 				PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
 				//Mesh->AttachShader(PHONG_SHADER);
-
-				// Set Mesh Size and Location
-				Mesh->Center()->Normalize();
 
 				// Set Mesh and Plane Material Parameters
 				Mesh->MaterialSpecular = Specular;
@@ -184,69 +171,26 @@ namespace Window
 		{
 		case GLUT_KEY_UP:
 			{
-				Quaternion QD = Quaternion(0.0f, Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				Quaternion QU = Quaternion(0.0f, Game::Up[0], Game::Up[1], Game::Up[2]);
-				OpenMesh::Vec3f D = OpenMesh::Vec3f(Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				OpenMesh::Vec3f U = OpenMesh::Vec3f(Game::Up[0], Game::Up[1], Game::Up[2]);
-				float halfAngle = ((float)M_PI)*5.0f/360.f;
-				OpenMesh::Vec3f Axis = U % D;
-				QD = QD.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
-				QU = QU.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
-				Game::Direction = OpenMesh::Vec3f(QD.x(), QD.y(), QD.z());
-				Game::Up = OpenMesh::Vec3f(QU.x(), QU.y(), QU.z());
-				PolyMesh::Meshes[0]->RotateAboutCenter(5.0f, Axis[0], Axis[1], Axis[2]);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction + btVector3(0,0.05f,0),btVector3(0,0,0));
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
-				Quaternion QD = Quaternion(0.0f, Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				Quaternion QU = Quaternion(0.0f, Game::Up[0], Game::Up[1], Game::Up[2]);
-				OpenMesh::Vec3f D = OpenMesh::Vec3f(Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				OpenMesh::Vec3f U = OpenMesh::Vec3f(Game::Up[0], Game::Up[1], Game::Up[2]);
-				float halfAngle = ((float)M_PI)*5.0f/360.f;
-				OpenMesh::Vec3f Axis = D % U;
-				QD = QD.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
-				QU = QU.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Axis[0], sinf(halfAngle)*Axis[1], sinf(halfAngle)*Axis[2]));
-				Game::Direction = OpenMesh::Vec3f(QD.x(), QD.y(), QD.z());
-				Game::Up = OpenMesh::Vec3f(QU.x(), QU.y(), QU.z());
-				PolyMesh::Meshes[0]->RotateAboutCenter(5.0f, Axis[0], Axis[1], Axis[2]);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction + btVector3(0,0.05f,0),btVector3(0,0,0));
 				break;
 			}
 		case GLUT_KEY_LEFT:
 			{
-				Quaternion Q = Quaternion(0.0f, Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				float halfAngle = ((float)M_PI)*5.0f/360.f;
-				Q = Q.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Game::Up[0], sinf(halfAngle)*Game::Up[1], sinf(halfAngle)*Game::Up[2]));
-				Game::Direction = OpenMesh::Vec3f(Q.x(), Q.y(), Q.z());
-				PolyMesh::Meshes[0]->RotateAboutCenter(5.0f, Game::Up[0], Game::Up[1], Game::Up[2]);
+				Game::Direction = Game::Direction.rotate(btVector3(0,1,0),RADIANS(90));
+				PolyMesh::Meshes[0]->Translate(OpenMesh::Vec3f(0,0.05f,0))->Rotate(90, 0,1,0);
 				break;
 			}
 		case GLUT_KEY_RIGHT:
 			{
-				Quaternion Q = Quaternion(0.0f, Game::Direction[0], Game::Direction[1], Game::Direction[2]);
-				float halfAngle = -((float)M_PI)*5.0f/360.f;
-				Q = Q.Rotate(Quaternion(cosf(halfAngle), sinf(halfAngle)*Game::Up[0], sinf(halfAngle)*Game::Up[1], sinf(halfAngle)*Game::Up[2]));
-				Game::Direction = OpenMesh::Vec3f(Q.x(), Q.y(), Q.z());
-				PolyMesh::Meshes[0]->RotateAboutCenter(-5.0f, Game::Up[0], Game::Up[1], Game::Up[2]);
+				Game::Direction = Game::Direction.rotate(btVector3(0,1,0),RADIANS(-90));
+				PolyMesh::Meshes[0]->Translate(OpenMesh::Vec3f(0,0.05f,0))->Rotate(-90, 0,1,0);
 				break;
 			}
-		default:
-			break;
-		}
-	}
-
-	void MouseWheel(int wheel, int direction, int x, int y)
-	{
-		switch (direction)
-		{
-		case 1:
-			if (Game::Speed < 5.0f)
-				Game::Speed++;
-			break;
-		case -1:
-			if (Game::Speed > -5.0f)
-				Game::Speed--;
-			break;
 		default:
 			break;
 		}
@@ -256,12 +200,9 @@ namespace Window
 	{
 		PolyMesh::Time += (uint64_t) FRAME_PERIOD;
 
-		/* Move Ship */
-		OpenMesh::Vec3f Delta = Game::Direction.normalized();
-		Delta = Delta * (Game::Speed / FRAME_RATE);
-		PolyMesh::Meshes[0]->Translate(Delta[0], Delta[1], Delta[2]);
-		//PolyMesh::Meshes[1]->Translate(Delta[0], Delta[1], Delta[2]);
-
+		/* Simulate Physics */
+		Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 10);
+		
 		glutTimerFunc((int) FRAME_PERIOD, Timer, (int) FRAME_PERIOD);
 
 		glutPostRedisplay();
@@ -315,9 +256,6 @@ int main (int argc, char **argv)
 	// Register Special Keyboard Handler
 	glutSpecialFunc(Window::SpecialKeyboard);
 
-	// Register Mousewheel Handler
-	glutMouseWheelFunc(Window::MouseWheel);
-
 	// Register Timer Handler
 	glutTimerFunc((int) FRAME_PERIOD, Window::Timer, (int) FRAME_PERIOD);
 
@@ -330,23 +268,27 @@ int main (int argc, char **argv)
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
+	// Initialize Physics
+	Physics::InitializePhysics();
+
 	// Load Mesh
 	PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
 	//Mesh->AttachShader(PHONG_SHADER);
 
-	// Load and set up environment sphere
-	PolyMesh *EnvSphere = new PolyMesh("assets\\obj\\sphere.obj", GL_TRIANGLES, GL_SMOOTH);
-	EnvSphere->Center()->Normalize()->Scale(50,50,50)->Rotate(90,0,1,0);
-	space_image = bitmap_image("assets\\bmp\\space.bmp");
+	// Set Mesh Size and Location
+	Mesh->SetMass(1.0f);
+	Mesh->Translate(OpenMesh::Vec3f(0,1,0));
+	PolyMesh *Plane = new PolyMesh("assets\\obj\\plane.obj", GL_TRIANGLES, GL_SMOOTH);
+	Plane->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
+	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
 	space_image.rgb_to_bgr();
-	EnvSphere->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+	// Load and set up environment sphere
 
 	// Apply Animation
 	//AnimationRoutine *routine = new AnimationRoutine("D:\\SkyDrive\\Documents\\Workspace\\obj\\routine.ani");
 	//Mesh->Animate(routine, 0, true);
 
-	// Set Mesh Size and Location
-	Mesh->Center()->Normalize();
 
 	// Set Mesh and Plane Material Parameters
 	Mesh->MaterialSpecular = Specular;
@@ -380,9 +322,7 @@ int main (int argc, char **argv)
 	Mesh->EnableLighting();
 
 	// Set ship speed and direction
-	Game::Speed = 0.0f;
-	Game::Direction = OpenMesh::Vec3f(0.0f, 0.0f, -1.0f);
-	Game::Up = OpenMesh::Vec3f(0.0f, 1.0f, 0.0f);
+	Game::Direction = btVector3(0,0,-1);
 
 	// Run Loop
 	glutMainLoop();

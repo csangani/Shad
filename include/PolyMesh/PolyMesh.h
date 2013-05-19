@@ -1,9 +1,12 @@
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
 #include <PolyMesh/AnimationRoutine.h>
+#include <PolyMesh/Physics.h>
 
 #include <GL/glew.h>
 #include <GL/glut.h>
+
+#define RADIANS(angle) (angle*2*((float)M_PI)/360.0f)
 
 struct PolyTraits : public OpenMesh::DefaultTraits
 {  
@@ -19,11 +22,8 @@ public:
 	static std::vector<PolyMesh *> Meshes;
 	static uint64_t Time;
 
-	float max_x, min_x;
-	float max_y, min_y;
-	float max_z, min_z;
-
-	float cen_x, cen_y, cen_z;
+	OpenMesh::Vec3f max;
+	OpenMesh::Vec3f min;
 
 	GLenum DrawMode;
 
@@ -43,6 +43,8 @@ public:
 	uint64_t AnimationDelay, AnimationOffset;
 	bool AnimationRepeat;
 
+	btRigidBody *RigidBody;
+
 	PolyMesh();
 
 	PolyMesh(std::string);
@@ -57,16 +59,15 @@ public:
 
 	PolyMesh *PolyMesh::EnableLighting();
 
-	PolyMesh *Scale(float, float, float);
+	PolyMesh *Scale(OpenMesh::Vec3f);
 
 	PolyMesh *Normalize();
 
-	PolyMesh *Translate(float, float, float);
+	PolyMesh *Translate(OpenMesh::Vec3f);
 
-	PolyMesh *Center();
+	PolyMesh *SetOrigin(OpenMesh::Vec3f origin);
 	
 	PolyMesh *Rotate(float, float, float, float);
-	PolyMesh *RotateAboutCenter(float, float, float, float);
 
 	PolyMesh *GenerateNormals();
 
@@ -81,14 +82,14 @@ public:
 
 	PolyMesh *DrawAnimation();
 
+	PolyMesh *SetMass(float);
+
 	void Delete();
 
 private:
 	bool Animated;
 	bool Lighting;
 	GLuint ShaderID;
-
-	float ModelView[16];
 
 	typedef struct LoopVertex 
 	{

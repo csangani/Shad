@@ -8,7 +8,7 @@
 
 #define NUM_THREADS 8
 
-#define OBJECT "assets\\obj\\alien-mothership.obj"
+#define OBJECT "assets\\obj\\sphere.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
 
 #define AMBIENT 'a'

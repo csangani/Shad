@@ -13,49 +13,26 @@
 std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
-PolyMesh::PolyMesh() : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
 	Meshes.push_back(this);
 }
 
-PolyMesh::PolyMesh(std::string FilePath) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+PolyMesh::PolyMesh(std::string FilePath) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
 	LoadObj(FilePath);
-	GenerateNormals();
 	Meshes.push_back(this);
 }
 
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(DrawMode), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
 	LoadObj(FilePath);
-	GenerateNormals();
 	Meshes.push_back(this);
 }
 
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode, GLenum ShadeMode) : max_x(FLT_MIN), min_x(FLT_MAX), max_y(FLT_MIN), min_y(FLT_MAX), max_z(FLT_MIN), min_z(FLT_MAX), DrawMode(DrawMode), ShadeMode(ShadeMode), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode, GLenum ShadeMode) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(DrawMode), ShadeMode(ShadeMode), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
 	LoadObj(FilePath);
-	GenerateNormals();
 	Meshes.push_back(this);
 }
 
@@ -86,61 +63,44 @@ PolyMesh *PolyMesh::EnableLighting()
 	return this;
 }
 
-PolyMesh *PolyMesh::Scale(float x, float y, float z)
+PolyMesh *PolyMesh::Scale(OpenMesh::Vec3f scale)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glScalef(x, y, z);
-	glMultMatrixf(ModelView);
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
-	cen_x += x; cen_y *= y; cen_z *= z;
+	btConvexHullShape *ConvexShape = new btConvexHullShape();
+	delete RigidBody->getCollisionShape();
+	for (VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it) {
+		set_point(v_it.handle(), point(v_it.handle()) * scale);
+		ConvexShape->addPoint(btVector3(point(v_it.handle())[0],point(v_it.handle())[1],point(v_it.handle())[2]));
+	}
+	RigidBody->setCollisionShape(ConvexShape);
+	max *= scale;
 	return this;
 }
 
 PolyMesh *PolyMesh::Normalize()
 {
-	float max_dim = std::max(max_x - min_x, std::max(max_y - min_y, max_z - min_z));
-	return Scale(1/max_dim, 1/max_dim, 1/max_dim);
+	float max_dim = std::max(max[0]-min[0], std::max(max[1]-min[1], max[2]-min[2]));
+	return Scale(OpenMesh::Vec3f(1/max_dim, 1/max_dim, 1/max_dim));
 }
 
-PolyMesh *PolyMesh::Translate(float x, float y, float z)
+PolyMesh *PolyMesh::Translate(OpenMesh::Vec3f translate)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(x, y, z);
-	glMultMatrixf(ModelView);
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
-	cen_x += x, cen_y += y, cen_z += z;
+	RigidBody->translate(btVector3(translate[0], translate[1], translate[2]));
 	return this;
 }
 
-PolyMesh *PolyMesh::Center()
+PolyMesh *PolyMesh::SetOrigin(OpenMesh::Vec3f origin)
 {
-	return Translate(-cen_x, -cen_y, -cen_z);
+	btTransform transform = RigidBody->getCenterOfMassTransform();
+	OpenMesh::Vec3f oldOrigin (transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ());
+	return Translate(origin - oldOrigin);
 }
 
 PolyMesh *PolyMesh::Rotate(float angle, float x, float y, float z)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glRotatef(angle, x, y, z);
-	glMultMatrixf(ModelView);
-	glGetFloatv(GL_MODELVIEW_MATRIX, ModelView);
-	glPopMatrix();
-	return this;
-}
-
-PolyMesh *PolyMesh::RotateAboutCenter(float angle, float x, float y, float z)
-{
-	float c_x = cen_x, c_y = cen_y, c_z = cen_z;
-	Center();
-	Rotate(angle, x, y, z);
-	Translate(c_x, c_y, c_z);
+	btTransform transform;
+	transform.setIdentity();
+	transform.setRotation(btQuaternion(btVector3(x, y, z), RADIANS(angle)));
+	RigidBody->setCenterOfMassTransform(RigidBody->getCenterOfMassTransform()*transform);
 	return this;
 }
 
@@ -641,27 +601,28 @@ PolyMesh *PolyMesh::Draw()
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-
-	//float MV[16];
-	//util::CopyMatrix16fv(ModelView, MV);
+	glLoadIdentity();
 
 	if (Animated)
 	{
 		/*if (Animation->RDuration() > 0) {
-			Quaternion QT = Animation->RD(
-				(AnimationRepeat) ? (Time - AnimationOffset - AnimationDelay) % Animation->RDuration()
-				: Time - AnimationOffset - AnimationDelay);
-			Rotate(360.0f*QT.w()/(2*((float)M_PI)), QT.x(), QT.y(), QT.z());
+		Quaternion QT = Animation->RD(
+		(AnimationRepeat) ? (Time - AnimationOffset - AnimationDelay) % Animation->RDuration()
+		: Time - AnimationOffset - AnimationDelay);
+		Rotate(360.0f*QT.w()/(2*((float)M_PI)), QT.x(), QT.y(), QT.z());
 		}*/
 		if (Animation->TDuration() > 0) {
 			CatmullRom CR = Animation->TD(
 				(AnimationRepeat) ? (Time - AnimationOffset - AnimationDelay) % Animation->TDuration()
 				: Time - AnimationOffset - AnimationDelay);
-			Translate(CR[0], CR[1], CR[2]);
+			Translate(CR);
 		}
 	}
 
-	glMultMatrixf(ModelView);
+	btTransform transform = RigidBody->getCenterOfMassTransform();
+	btScalar matrix[16];
+	transform.getOpenGLMatrix(matrix);
+	glLoadMatrixf(matrix);
 
 	glShadeModel (ShadeMode);
 
@@ -719,8 +680,8 @@ PolyMesh *PolyMesh::Draw()
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -790,8 +751,6 @@ PolyMesh *PolyMesh::Draw()
 		glDisable(GL_TEXTURE_2D);
 	}
 
-	//util::CopyMatrix16fv(MV, ModelView);
-
 	glPopMatrix();
 
 	return this;
@@ -829,14 +788,14 @@ PolyMesh *PolyMesh::LoadObj(std::string FilePath)
 
 				buffer >> x >> y >> z;
 
-				max_x = std::max(max_x, x);
-				min_x = std::min(min_x, x);
+				max[0] = std::max(max[0], x);
+				min[0] = std::min(min[0], x);
 
-				max_y = std::max(max_y, y);
-				min_y = std::min(min_y, y);
+				max[1] = std::max(max[1], y);
+				min[1] = std::min(min[1], y);
 
-				max_z = std::max(max_z, z);
-				min_z = std::min(min_z, z);
+				max[2] = std::max(max[2], z);
+				min[2] = std::min(min[2], z);
 
 				vHandle.push_back(this->add_vertex(Point(x, y, z)));
 			}
@@ -893,11 +852,41 @@ PolyMesh *PolyMesh::LoadObj(std::string FilePath)
 		}
 	}
 
-	cen_x = (max_x + min_x) / 2;
-	cen_y = (max_y + min_y) / 2;
-	cen_z = (max_z + min_z) / 2;
-
 	file.close();
+
+	/* Center and normalize object */
+	OpenMesh::Vec3f cen = (max + min) / 2;
+
+	float max_dim = std::max(max[0]-min[0], std::max(max[1]-min[1], max[2]-min[2]));
+	for (VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it)
+	{
+		set_point(v_it.handle(), (point(v_it.handle()) - cen)/max_dim);
+	}
+
+	max /= max_dim;
+	min /= max_dim;
+
+	GenerateNormals();
+
+	/* Enable physics */
+	btConvexHullShape *ConvexShape = new btConvexHullShape();
+	for(VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it)
+	{
+		ConvexShape->addPoint(btVector3(point(v_it.handle())[0],point(v_it.handle())[1],point(v_it.handle())[2]));
+	}
+	btCollisionShape *ConvexHull = ConvexShape;
+	btVector3 localInertia(0.0f,0.0f,0.0f);
+	btScalar m(0);
+	bool isDynamic = (m != 0.0f);
+	if (isDynamic)
+		ConvexHull->calculateLocalInertia(m,localInertia);
+	btTransform transform;
+	transform.setIdentity();
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
+	RigidBody = new btRigidBody(rbInfo);
+	RigidBody->setContactProcessingThreshold(0.05f);
+	Physics::DynamicsWorld->addRigidBody(RigidBody);
 
 	return this;
 }
@@ -909,6 +898,25 @@ PolyMesh *PolyMesh::Animate(AnimationRoutine *animation, uint64_t delay, bool re
 	AnimationRepeat = repeat;
 	AnimationOffset = Time;
 	Animated = true;
+	return this;
+}
+
+PolyMesh *PolyMesh::SetMass(float mass)
+{
+	Physics::DynamicsWorld->removeRigidBody(RigidBody);
+	btScalar m(mass);
+	btVector3 localInertia(0.0f, 0.0f, 0.0f);
+	bool isDynamic = (m != 0.0f);
+	if (isDynamic)
+		RigidBody->getCollisionShape()->calculateLocalInertia(m,localInertia);
+	btTransform transform;
+	RigidBody->getMotionState()->getWorldTransform(transform);
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,RigidBody->getCollisionShape(),localInertia);
+	delete RigidBody;
+	RigidBody = new btRigidBody(rbInfo);
+	RigidBody->setContactProcessingThreshold(0.05f);
+	Physics::DynamicsWorld->addRigidBody(RigidBody);
 	return this;
 }
 
