@@ -13,26 +13,8 @@
 std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
-PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
+PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0), Cloth(false)
 {
-	Meshes.push_back(this);
-}
-
-PolyMesh::PolyMesh(std::string FilePath) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
-{
-	LoadObj(FilePath);
-	Meshes.push_back(this);
-}
-
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(DrawMode), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
-{
-	LoadObj(FilePath);
-	Meshes.push_back(this);
-}
-
-PolyMesh::PolyMesh(std::string FilePath, GLenum DrawMode, GLenum ShadeMode) : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(DrawMode), ShadeMode(ShadeMode), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0)
-{
-	LoadObj(FilePath);
 	Meshes.push_back(this);
 }
 
@@ -619,10 +601,12 @@ PolyMesh *PolyMesh::Draw()
 		}
 	}
 
-	btTransform transform = RigidBody->getCenterOfMassTransform();
-	btScalar matrix[16];
-	transform.getOpenGLMatrix(matrix);
-	glLoadMatrixf(matrix);
+	if (!Cloth) {
+		btTransform transform = RigidBody->getCenterOfMassTransform();
+		btScalar matrix[16];
+		transform.getOpenGLMatrix(matrix);
+		glLoadMatrixf(matrix);
+	}
 
 	glShadeModel (ShadeMode);
 

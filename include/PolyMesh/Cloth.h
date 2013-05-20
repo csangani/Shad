@@ -1,0 +1,27 @@
+#include <OpenMesh\Core\Geometry\VectorT.hh>
+
+#include <PolyMesh\PolyMesh.h>
+
+class Cloth : public PolyMesh {
+public:
+	Cloth(float mass, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength);
+	int Rows() { return rows; }
+	int Cols() { return columns; }
+	float Stretch() { return stretch; }
+	float Bend() { return bend; }
+	float SegLen() { return segmentLength; }
+
+	void SimulationStep();
+
+private:
+	int rows;
+	int columns;
+	float stretch;
+	float bend;
+	float segmentLength;
+	OpenMesh::Vec3f RowVec;
+	OpenMesh::Vec3f ColVec;
+	OpenMesh::Vec3f Origin;
+	std::vector<std::vector<VertexHandle>> Points;
+	std::vector<std::vector<btRigidBody *>> RigidBody;
+};

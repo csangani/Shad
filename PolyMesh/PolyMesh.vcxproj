@@ -90,12 +90,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimationRoutine.cpp" />
+    <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PolyMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\PolyMesh\AnimationRoutine.h" />
     <ClInclude Include="..\include\PolyMesh\bitmap_image.h" />
+    <ClInclude Include="..\include\PolyMesh\Cloth.h" />
     <ClInclude Include="..\include\PolyMesh\PolyMesh.h" />
     <ClInclude Include="..\include\PolyMesh\util.h" />
     <ClInclude Include="..\include\PolyMesh\Physics.h" />

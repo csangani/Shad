@@ -1,3 +1,6 @@
+#ifndef POLYMESH_H
+#define POLYMESH_H
+
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
 #include <PolyMesh/AnimationRoutine.h>
@@ -15,7 +18,7 @@ struct PolyTraits : public OpenMesh::DefaultTraits
 	EdgeAttributes(OpenMesh::Attributes::Status);
 };
 
-class PolyMesh : OpenMesh::PolyMesh_ArrayKernelT<PolyTraits>
+class PolyMesh : public OpenMesh::PolyMesh_ArrayKernelT<PolyTraits>
 {
 public:
 
@@ -44,14 +47,9 @@ public:
 	bool AnimationRepeat;
 
 	btRigidBody *RigidBody;
+	bool Cloth;
 
 	PolyMesh();
-
-	PolyMesh(std::string);
-
-	PolyMesh::PolyMesh(std::string, GLenum);
-
-	PolyMesh::PolyMesh(std::string, GLenum, GLenum);
 
 	PolyMesh *ApplyTexture(const unsigned char *, int, int);
 
@@ -103,3 +101,5 @@ private:
 		int a, b, c, d, e, f;
 	};
 };
+
+#endif

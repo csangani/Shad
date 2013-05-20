@@ -3,6 +3,7 @@
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
+#include <PolyMesh/Cloth.h>
 
 #include <ctime>
 
@@ -50,7 +51,9 @@ namespace Window
 		btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
 		Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
 
-		gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+		//gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+
+		gluLookAt(2.f, 2.f, 2.f,0,-1,0, 0, 1, 0);
 
 		glViewport(0,0,Window::Width,Window::Height);
 
@@ -136,30 +139,6 @@ namespace Window
 		case DRAWMODE:
 			PolyMesh::Meshes[0]->DrawMode = PolyMesh::Meshes[0]->DrawMode == GL_LINE_LOOP ? GL_TRIANGLES : GL_LINE_LOOP;
 			break;
-		case RESET:
-			{
-				PolyMesh::Meshes[0]->Delete();
-				// Load Mesh
-				PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
-				//Mesh->AttachShader(PHONG_SHADER);
-
-				// Set Mesh and Plane Material Parameters
-				Mesh->MaterialSpecular = Specular;
-
-				Mesh->MaterialDiffuse = Diffuse;
-
-				Mesh->MaterialAmbient = Ambient;
-
-				Mesh->MaterialShininess = Shininess;
-
-				// Apply Texture to Mesh
-				Mesh->ApplyTexture(image.data(), image.width(), image.height());
-
-				Mesh->EnableLighting();
-				PolyMesh::Meshes[0] = Mesh;
-				PolyMesh::Meshes.pop_back();
-				break;
-			}
 		default:
 			break;
 		}
@@ -171,24 +150,22 @@ namespace Window
 		{
 		case GLUT_KEY_UP:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction + btVector3(0,0.05f,0),btVector3(0,0,0));
+				PolyMesh::Meshes[0]->RigidBody->applyTorqueImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90)));
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction + btVector3(0,0.05f,0),btVector3(0,0,0));
+				PolyMesh::Meshes[0]->RigidBody->applyTorqueImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90)));
 				break;
 			}
 		case GLUT_KEY_LEFT:
 			{
-				Game::Direction = Game::Direction.rotate(btVector3(0,1,0),RADIANS(90));
-				PolyMesh::Meshes[0]->Translate(OpenMesh::Vec3f(0,0.05f,0))->Rotate(90, 0,1,0);
+				PolyMesh::Meshes[0]->RigidBody->applyTorqueImpulse(-Game::Direction);
 				break;
 			}
 		case GLUT_KEY_RIGHT:
 			{
-				Game::Direction = Game::Direction.rotate(btVector3(0,1,0),RADIANS(-90));
-				PolyMesh::Meshes[0]->Translate(OpenMesh::Vec3f(0,0.05f,0))->Rotate(-90, 0,1,0);
+				PolyMesh::Meshes[0]->RigidBody->applyTorqueImpulse(Game::Direction);
 				break;
 			}
 		default:
@@ -201,11 +178,15 @@ namespace Window
 		PolyMesh::Time += (uint64_t) FRAME_PERIOD;
 
 		/* Simulate Physics */
-		Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 10);
+		Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
 		
 		glutTimerFunc((int) FRAME_PERIOD, Timer, (int) FRAME_PERIOD);
 
 		glutPostRedisplay();
+
+		for (int i = 0; i < PolyMesh::Meshes.size(); i++)
+			if (PolyMesh::Meshes[i]->Cloth)
+				((Cloth *)PolyMesh::Meshes[i])->SimulationStep();
 	};
 }
 
@@ -227,7 +208,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
@@ -272,32 +253,34 @@ int main (int argc, char **argv)
 	Physics::InitializePhysics();
 
 	// Load Mesh
-	PolyMesh *Mesh = new PolyMesh(OBJECT, GL_TRIANGLES, GL_SMOOTH);
-	//Mesh->AttachShader(PHONG_SHADER);
+	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->Scale(OpenMesh::Vec3f(0.5f,0.5f,0.5f))->Translate(OpenMesh::Vec3f(0,-1.0f,0));
+	Mesh->RigidBody->setRollingFriction(0.3f);
+	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
+	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
-	// Set Mesh Size and Location
-	Mesh->SetMass(1.0f);
-	Mesh->Translate(OpenMesh::Vec3f(0,1,0));
-	PolyMesh *Plane = new PolyMesh("assets\\obj\\plane.obj", GL_TRIANGLES, GL_SMOOTH);
-	Plane->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
+	Cloth *Cloak = new Cloth(1.0f, 0.00001f, OpenMesh::Vec3f(0,0,-1), OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0.5f,0,0.5f),20,20,6000.f,1000.0f,0.05f);
+	Cloak->EnableLighting();
+
+	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
+	Plane->RigidBody->setRollingFriction(0.3f);
+	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+
 	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
 	space_image.rgb_to_bgr();
 	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
-	// Load and set up environment sphere
-
-	// Apply Animation
-	//AnimationRoutine *routine = new AnimationRoutine("D:\\SkyDrive\\Documents\\Workspace\\obj\\routine.ani");
-	//Mesh->Animate(routine, 0, true);
-
-
+	
 	// Set Mesh and Plane Material Parameters
 	Mesh->MaterialSpecular = Specular;
+	Cloak->MaterialSpecular = Specular;
 
 	Mesh->MaterialDiffuse = Diffuse;
+	Cloak->MaterialDiffuse = Diffuse;
 
 	Mesh->MaterialAmbient = Ambient;
+	Cloak->MaterialAmbient = Ambient;
 
 	Mesh->MaterialShininess = Shininess;
+	Cloak->MaterialShininess = Shininess;
 
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);
@@ -321,7 +304,6 @@ int main (int argc, char **argv)
 
 	Mesh->EnableLighting();
 
-	// Set ship speed and direction
 	Game::Direction = btVector3(0,0,-1);
 
 	// Run Loop
