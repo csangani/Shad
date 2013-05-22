@@ -8,7 +8,7 @@
 
 #define NUM_THREADS 8
 
-#define OBJECT "assets\\obj\\sphere.obj"
+#define OBJECT "assets\\obj\\cube.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
 
 #define AMBIENT 'a'
@@ -46,3 +46,5 @@ float Shininess[] = { 0.5f };
 bitmap_image image;
 
 bitmap_image space_image;
+
+bitmap_image cloth_image;
