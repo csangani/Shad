@@ -28,6 +28,15 @@ Shader::Shader(const std::string& path) :
 	_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(_vertexShaderID, 1, source, &length);
     glCompileShader(_vertexShaderID);
+	GLint vertCompileStatus;
+	glGetShaderiv(_vertexShaderID, GL_COMPILE_STATUS, &vertCompileStatus);
+	if (!vertCompileStatus)
+	{
+		char log[2048]; int log_length;
+		glGetShaderInfoLog(_vertexShaderID, 2048, (GLsizei*)&log_length, log);
+		std::cout << "vertex shader log: " << log << std::endl;
+		glDeleteShader(_vertexShaderID);
+	}
 	
 	// Load the fragment shader and compile
 	std::vector<char> fragmentSource = readSource(path + ".frag");
@@ -36,6 +45,15 @@ Shader::Shader(const std::string& path) :
 	_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(_fragmentShaderID, 1, source, &length);
     glCompileShader(_fragmentShaderID);
+	GLint fragCompileStatus;
+	glGetShaderiv(_fragmentShaderID, GL_COMPILE_STATUS, &fragCompileStatus);
+	if (!fragCompileStatus)
+	{
+		char log[2048]; int log_length;
+		glGetShaderInfoLog(_fragmentShaderID, 2048, (GLsizei*)&log_length, log);
+		std::cout << "fragment shader log: " << log << std::endl;
+		glDeleteShader(_fragmentShaderID);
+	}
 	
 	// Create the vertex program
 	_programID = glCreateProgram();

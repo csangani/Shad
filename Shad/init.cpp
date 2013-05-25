@@ -208,7 +208,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
@@ -254,6 +254,7 @@ int main (int argc, char **argv)
 
 	// Load Mesh
 	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
+	Mesh->AttachShader(TOON_SHADER);
 	Mesh->RigidBody->setRollingFriction(0.3f);
 	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
 	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);

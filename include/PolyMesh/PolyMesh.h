@@ -3,6 +3,7 @@
 
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
+#include <Shad/Shader.h>
 #include <PolyMesh/AnimationRoutine.h>
 #include <PolyMesh/Physics.h>
 
@@ -87,7 +88,9 @@ public:
 private:
 	bool Animated;
 	bool Lighting;
-	GLuint ShaderID;
+	Shader *ShaderProgram;
+
+	std::vector<GLuint> indices;
 
 	typedef struct LoopVertex 
 	{
