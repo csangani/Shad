@@ -225,6 +225,23 @@ int main (int argc, char **argv)
 		exit(-1);
 	}
 
+	// Pre-load and Compile Shaders
+	Shader *defaultShader = new Shader(DEFAULT_SHADER);
+	if (!defaultShader->loaded()) {
+		std::cerr << "Failed to load shader: " << defaultShader->path() << std::endl;
+		std::cerr << defaultShader->errors() << std::endl;
+	}
+	Shader *phongShader = new Shader(PHONG_SHADER);
+	if (!phongShader->loaded()) {
+		std::cerr << "Failed to load shader: " << phongShader->path() << std::endl;
+		std::cerr << phongShader->errors() << std::endl;
+	}
+	Shader *toonShader = new Shader(TOON_SHADER);
+	if (!toonShader->loaded()) {
+		std::cerr << "Failed to load shader: " << toonShader->path() << std::endl;
+		std::cerr << toonShader->errors() << std::endl;
+	}
+
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
 

@@ -3,12 +3,15 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
 
 class Shader {
 public:
+	static std::map<std::string, GLuint> Shaders;
+
 	Shader();
 	
 	/**

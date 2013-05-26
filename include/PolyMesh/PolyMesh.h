@@ -88,7 +88,7 @@ public:
 private:
 	bool Animated;
 	bool Lighting;
-	Shader *ShaderProgram;
+	GLuint ShaderID;
 
 	std::vector<GLuint> indices;
 

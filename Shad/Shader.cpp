@@ -4,6 +4,8 @@
 
 #define ERROR_BUFSIZE 1024
 
+std::map<std::string, GLuint> Shader::Shaders = std::map<std::string, GLuint>();
+
 Shader::Shader() :
 	_path(""),
 	_vertexShaderID(0),
@@ -30,13 +32,6 @@ Shader::Shader(const std::string& path) :
     glCompileShader(_vertexShaderID);
 	GLint vertCompileStatus;
 	glGetShaderiv(_vertexShaderID, GL_COMPILE_STATUS, &vertCompileStatus);
-	if (!vertCompileStatus)
-	{
-		char log[2048]; int log_length;
-		glGetShaderInfoLog(_vertexShaderID, 2048, (GLsizei*)&log_length, log);
-		std::cout << "vertex shader log: " << log << std::endl;
-		glDeleteShader(_vertexShaderID);
-	}
 	
 	// Load the fragment shader and compile
 	std::vector<char> fragmentSource = readSource(path + ".frag");
@@ -47,13 +42,6 @@ Shader::Shader(const std::string& path) :
     glCompileShader(_fragmentShaderID);
 	GLint fragCompileStatus;
 	glGetShaderiv(_fragmentShaderID, GL_COMPILE_STATUS, &fragCompileStatus);
-	if (!fragCompileStatus)
-	{
-		char log[2048]; int log_length;
-		glGetShaderInfoLog(_fragmentShaderID, 2048, (GLsizei*)&log_length, log);
-		std::cout << "fragment shader log: " << log << std::endl;
-		glDeleteShader(_fragmentShaderID);
-	}
 	
 	// Create the vertex program
 	_programID = glCreateProgram();
@@ -62,9 +50,10 @@ Shader::Shader(const std::string& path) :
 	glLinkProgram(_programID);
 	
 	// Error checking
-	glGetProgramiv(_programID, GL_LINK_STATUS, (GLint*)&_loaded);
+	GLint linkStatus;
+	glGetProgramiv(_programID, GL_LINK_STATUS, &linkStatus);
     //glGetShaderiv(vertexShaderID_, GL_COMPILE_STATUS, (GLint*)&loaded_);
-	if (!_loaded) {
+	if (!linkStatus || !vertCompileStatus || !fragCompileStatus) {
         GLchar tempErrorLog[ERROR_BUFSIZE];
 		GLsizei length;
 		glGetShaderInfoLog(_fragmentShaderID, ERROR_BUFSIZE, &length, tempErrorLog);
@@ -76,7 +65,11 @@ Shader::Shader(const std::string& path) :
 		glGetProgramInfoLog(_programID, ERROR_BUFSIZE, &length, tempErrorLog);
         _errors += "Linker errors:\n";
 		_errors += std::string(tempErrorLog, length) + "\n";
-    }
+		_loaded = false;
+    } else {
+		Shaders.insert(std::pair<std::string, GLuint>(path, _programID));
+		_loaded = true;
+	}
 }
 
 Shader::~Shader() {

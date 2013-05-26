@@ -13,7 +13,7 @@
 std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
-PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderProgram(NULL), Cloth(false)
+PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0), Cloth(false)
 {
 	Meshes.push_back(this);
 }
@@ -28,11 +28,13 @@ PolyMesh *PolyMesh::ApplyTexture(const unsigned char *data, int width, int heigh
 
 PolyMesh *PolyMesh::AttachShader(std::string ShaderPath)
 {
-	ShaderProgram = new Shader(ShaderPath);
-	if (!ShaderProgram->loaded())
+	std::map<std::string, GLuint>::iterator shader = Shader::Shaders.find(ShaderPath);
+	if (shader == Shader::Shaders.end())
 	{
-		std::cerr << "Failed to load shader \"" << ShaderProgram->path() << "\"" << std::endl;
-		std::cerr << ShaderProgram->errors() << std::endl;
+		std::cerr << "Failed to attach shader \"" << ShaderPath << "\"" << std::endl;
+		ShaderID = 0;
+	} else {
+		ShaderID = shader->second;
 	}
 	return this;
 }
@@ -669,10 +671,7 @@ PolyMesh *PolyMesh::Draw()
 	}
 
 	// tell GL which shader program to use
-	if (ShaderProgram)
-		glUseProgram(ShaderProgram->programID());
-	else
-		glUseProgram(0);
+	glUseProgram(ShaderID);
 
 	for (PolyMesh::FaceIter f_it=this->faces_begin(); f_it!=this->faces_end(); ++f_it)
 	{
@@ -876,7 +875,5 @@ PolyMesh *PolyMesh::SetMass(float mass)
 
 void PolyMesh::Delete()
 {
-	if (ShaderProgram)
-		delete ShaderProgram;
 	clear();
 }
