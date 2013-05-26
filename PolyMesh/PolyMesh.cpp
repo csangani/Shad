@@ -668,6 +668,12 @@ PolyMesh *PolyMesh::Draw()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		glEnable(GL_TEXTURE_2D);
+
+		// bind texture to shader sampler
+		if (ShaderID != 0) {
+			GLint texture = glGetUniformLocation(ShaderID, "texture");
+			glUniform1i(texture, 0);
+		}
 	}
 
 	// tell GL which shader program to use

@@ -2,6 +2,9 @@ varying vec3 modelPos;
 varying vec3 lightSource;
 varying vec3 normal;
 
+uniform sampler2D texture;
+varying vec2 texCoord;
+
 void main()
 {
     vec3 C = vec3(0.0, 0.0, 0.0); // camera position
@@ -30,6 +33,7 @@ void main()
 	vec3 specular = (pow(dot2, shininess)) * materialSpec * specularColor;
 
 	vec3 result = ambient + diffuse + specular;
+	result = result * texture2D(texture, texCoord);
 
 	// test color blue
 	vec4 color = vec4(0.2, 0.6, 1.0, 1.0);

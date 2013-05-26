@@ -2,6 +2,8 @@ varying vec3 modelPos;
 varying vec3 lightSource;
 varying vec3 normal;
 
+varying vec2 texCoord;
+
 void main()
 {
     vec4 posTemp = gl_ModelViewMatrix * gl_Vertex;
@@ -14,4 +16,7 @@ void main()
 
     // send the light position to the fragment shader.
     lightSource = gl_LightSource[0].position.xyz;
+
+	// send texcoord to fragment shader
+	texCoord = gl_MultiTexCoord0.xy;
 }
