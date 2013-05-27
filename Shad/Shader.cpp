@@ -53,6 +53,7 @@ Shader::Shader(const std::string& path) :
 
 	// Check for tesselation and geometry shaders and compile
 	bool hasTessC = false, hasTessE = false, hasGeom = false;
+	GLint tesscCompileStatus = 1, tesseCompileStatus = 1, geomCompileStatus = 1;
 	std::ifstream inTessC(path + ".tessc");
 	if (!inTessC.fail())
 	{
@@ -63,7 +64,6 @@ Shader::Shader(const std::string& path) :
 		_tessControlShaderID = glCreateShader(GL_TESS_CONTROL_SHADER);
 		glShaderSource(_tessControlShaderID, 1, source, &length);
 		glCompileShader(_tessControlShaderID);
-		GLint tesscCompileStatus;
 		glGetShaderiv(_tessControlShaderID, GL_COMPILE_STATUS, &tesscCompileStatus);
 	}
 	std::ifstream inTessE(path + ".tesse");
@@ -76,7 +76,6 @@ Shader::Shader(const std::string& path) :
 		_tessEvalShaderID = glCreateShader(GL_TESS_EVALUATION_SHADER);
 		glShaderSource(_tessEvalShaderID, 1, source, &length);
 		glCompileShader(_tessEvalShaderID);
-		GLint tesseCompileStatus;
 		glGetShaderiv(_tessEvalShaderID, GL_COMPILE_STATUS, &tesseCompileStatus);
 	}
 	std::ifstream inGeom(path + ".geom");
@@ -89,7 +88,6 @@ Shader::Shader(const std::string& path) :
 		_geometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
 		glShaderSource(_geometryShaderID, 1, source, &length);
 		glCompileShader(_geometryShaderID);
-		GLint geomCompileStatus;
 		glGetShaderiv(_geometryShaderID, GL_COMPILE_STATUS, &geomCompileStatus);
 	}
 
@@ -109,7 +107,7 @@ Shader::Shader(const std::string& path) :
 	GLint linkStatus;
 	glGetProgramiv(_programID, GL_LINK_STATUS, &linkStatus);
 	//glGetShaderiv(vertexShaderID_, GL_COMPILE_STATUS, (GLint*)&loaded_);
-	if (!linkStatus || !vertCompileStatus || !fragCompileStatus) {
+	if (!linkStatus || !vertCompileStatus || !fragCompileStatus || !tesscCompileStatus || !tesseCompileStatus || !geomCompileStatus) {
 		GLchar tempErrorLog[ERROR_BUFSIZE];
 		GLsizei length;
 		glGetShaderInfoLog(_fragmentShaderID, ERROR_BUFSIZE, &length, tempErrorLog);
