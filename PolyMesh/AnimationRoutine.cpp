@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 #include <Spline/Spline.hpp>
 #include <Spline/Quaternion.h>
@@ -21,7 +22,7 @@ AnimationRoutine * AnimationRoutine::AddRotationalKeyFrame(float w, float x, flo
 
 AnimationRoutine * AnimationRoutine::LoadAni(std::string FilePath)
 {
-	std::ifstream file(FilePath);
+	std::ifstream file(FilePath.c_str());
 
 	if (file.good())
 	{

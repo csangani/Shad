@@ -48,6 +48,7 @@ public:
 	bool AnimationRepeat;
 
 	btRigidBody *RigidBody;
+	int CollisionGroup;
 	bool Cloth;
 
 	PolyMesh();
