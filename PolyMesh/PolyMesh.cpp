@@ -13,7 +13,12 @@
 std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
-PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES), ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false), Animated(false), ShaderID(0), Cloth(false)
+PolyMesh::PolyMesh() : 	max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), 
+	min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES),
+	ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false),
+	Animated(false), ShaderID(0), Cloth(false), MaterialAmbient(NULL),
+	MaterialDiffuse(NULL), MaterialShininess(NULL), MaterialEmission(NULL),
+	MaterialSpecular(NULL), Color(NULL)
 {
 	Meshes.push_back(this);
 }
@@ -684,8 +689,8 @@ PolyMesh *PolyMesh::Draw()
 	{
 		// tell shader there is no texture
 		GLint hasTexture = glGetUniformLocation(ShaderID, "hasTexture");
-			if (hasTexture != -1)
-				glUniform1f(hasTexture, -1.f);
+		if (hasTexture != -1)
+			glUniform1f(hasTexture, -1.f);
 	}
 
 	// tell GL which shader program to use

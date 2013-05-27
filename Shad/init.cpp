@@ -281,7 +281,7 @@ int main (int argc, char **argv)
 	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
 	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 	
-	Cloth *Cloak = new Cloth(0.001f, 0.001f, OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0,0,1), OpenMesh::Vec3f(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0,0,1), OpenMesh::Vec3f(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
 	Cloak->Pin(9,0,Mesh, Mesh->vertex_handle(3));

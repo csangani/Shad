@@ -12,4 +12,13 @@ public:
 	static btAlignedObjectArray<btCollisionShape*> CollisionShapes;
 
 	static void InitializePhysics();
+
+#define BIT(X) (1<<X)
+	static enum collisionFilters {
+		Ghost = BIT(0),
+		Static = BIT(1),
+		Dynamic = BIT(2),
+		Cloth = BIT(3),
+		Camera = BIT(4)
+	};
 };
