@@ -1,4 +1,4 @@
-#include <cstdint>
+#include <stdint.h>
 #include <map>
 
 #include <OpenMesh/Core/Geometry/VectorT.hh>

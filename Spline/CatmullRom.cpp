@@ -1,7 +1,7 @@
-#include<cstdint>
-#include<map>
+#include <stdint.h>
+#include <map>
 
-#include<OpenMesh/Core/Geometry/VectorT.hh>
+#include <OpenMesh/Core/Geometry/VectorT.hh>
 #include <Spline/CatmullRom.h>
 
 CatmullRom CatmullRom::Interpolate(std::map<uint64_t, CatmullRom> CPL, uint64_t ts)
