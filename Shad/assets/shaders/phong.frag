@@ -2,6 +2,7 @@ varying vec3 modelPos;
 varying vec3 lightSource;
 varying vec3 normal;
 
+uniform float hasTexture;
 uniform sampler2D texture;
 varying vec2 texCoord;
 
@@ -33,7 +34,8 @@ void main()
 	vec3 specular = (pow(dot2, shininess)) * materialSpec * specularColor;
 
 	vec3 result = ambient + diffuse + specular;
-	result = result * texture2D(texture, texCoord);
+	if (hasTexture > 0.0)
+		result = result * texture2D(texture, texCoord);
 
 	// clamp result values
 	//result.x = min(1.0, result.x);

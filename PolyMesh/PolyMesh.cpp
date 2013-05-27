@@ -672,8 +672,20 @@ PolyMesh *PolyMesh::Draw()
 		// bind texture to shader sampler
 		if (ShaderID != 0) {
 			GLint texture = glGetUniformLocation(ShaderID, "texture");
-			glUniform1i(texture, 0);
+			if (texture != -1)
+				glUniform1i(texture, 0);
+
+			GLint hasTexture = glGetUniformLocation(ShaderID, "hasTexture");
+			if (hasTexture != -1)
+				glUniform1f(hasTexture, 1.f);
 		}
+	}
+	else
+	{
+		// tell shader there is no texture
+		GLint hasTexture = glGetUniformLocation(ShaderID, "hasTexture");
+			if (hasTexture != -1)
+				glUniform1f(hasTexture, -1.f);
 	}
 
 	// tell GL which shader program to use

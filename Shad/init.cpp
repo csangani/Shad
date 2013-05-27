@@ -208,7 +208,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
@@ -240,6 +240,11 @@ int main (int argc, char **argv)
 	if (!toonShader->loaded()) {
 		std::cerr << "Failed to load shader: " << toonShader->path() << std::endl;
 		std::cerr << toonShader->errors() << std::endl;
+	}
+	Shader *normalShader = new Shader(NORMAL_SHADER);
+	if (!normalShader->loaded()) {
+		std::cerr << "Failed to load shader: " << normalShader->path() << std::endl;
+		std::cerr << normalShader->errors() << std::endl;
 	}
 
 	// Register Reshape Handler

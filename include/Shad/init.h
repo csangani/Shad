@@ -10,9 +10,10 @@
 
 #define OBJECT "assets\\obj\\cube.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
-#define TOON_SHADER "assets\\shaders\\toon"
-#define PHONG_SHADER "assets\\shaders\\phong"
 #define DEFAULT_SHADER "assets\\shaders\\default"
+#define NORMAL_SHADER "assets\\shaders\\normal"
+#define PHONG_SHADER "assets\\shaders\\phong"
+#define TOON_SHADER "assets\\shaders\\toon"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'
