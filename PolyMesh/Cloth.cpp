@@ -26,7 +26,7 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
 			btRigidBody *body = new btRigidBody(rbInfo);
 			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body);
+			Physics::DynamicsWorld->addRigidBody(body,Physics::Cloth, Physics::ClothMask);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
 			body->setDamping(0.2f,0.2f);
