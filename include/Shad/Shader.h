@@ -66,6 +66,9 @@ private:
 	std::string _errors;
 	GLuint _vertexShaderID;
 	GLuint _fragmentShaderID;
+	GLuint _tessControlShaderID;
+	GLuint _tessEvalShaderID;
+	GLuint _geometryShaderID;
 	GLuint _programID;
 	bool _loaded;
 };
