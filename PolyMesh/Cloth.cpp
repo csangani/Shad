@@ -1,7 +1,7 @@
 #include <PolyMesh\Cloth.h>
 #include <omp.h>
 
-Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength) : rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength) {
+Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength) : rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag) {
 	__super::Cloth = true;
 	btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
 	btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
@@ -14,7 +14,7 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 		for (int j = 0; j < columns; j++) {
 			Points[i].push_back(add_vertex(Origin + RowVec.normalized() * (float)i * segmentLength + ColVec.normalized() * (float)j * segmentLength));
 			set_texcoord2D(Points[i][j],OpenMesh::Vec2f(1.0f/(rows-1)*i,(1.0f/(columns-1)*j)));
-			btCollisionShape *Sphere = new btSphereShape(0.0001f);
+			btCollisionShape *Sphere = new btSphereShape(0.00001f);
 			btVector3 localInertia(0.0f, 0.0f, 0.0f);
 			btScalar m(mass);
 			if (m != 0.0f)
@@ -29,7 +29,7 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 			Physics::DynamicsWorld->addRigidBody(body);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
-
+			body->setDamping(0.2f,0.2f);
 			body->setFriction(0.9f);
 			body->setHitFraction(0.9f);
 			body->setRollingFriction(0.9f);
@@ -157,7 +157,8 @@ void Cloth::SimulationStep() {
 			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend, btVector3(0,0,0));
 		}
 	}
-
+	
+#pragma omp parallel for
 	for (int k = 0; k < (rows-1) * (columns-1); k++) {
 		int i = k / (columns-1);
 		int j = k % (columns-1);
