@@ -88,6 +88,7 @@
     <ClInclude Include="..\include\Spline\CatmullRom.h" />
     <ClInclude Include="..\include\Spline\Quaternion.h" />
     <ClInclude Include="..\include\Spline\Spline.hpp" />
+    <ClInclude Include="..\include\Spline\stdint.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

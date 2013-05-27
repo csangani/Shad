@@ -32,5 +32,8 @@
     <ClInclude Include="..\include\Spline\Spline.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Spline\stdint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

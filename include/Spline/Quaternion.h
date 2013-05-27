@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <Spline/stdint.h>
 #include <map>
 
 #include <OpenMesh/Core/Geometry/VectorT.hh>

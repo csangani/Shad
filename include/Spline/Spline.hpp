@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <Spline/stdint.h>
 #include <map>
 
 #ifndef SPLINE_HH
