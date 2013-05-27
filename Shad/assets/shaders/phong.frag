@@ -35,7 +35,7 @@ void main()
 
 	vec3 result = ambient + diffuse + specular;
 	if (hasTexture > 0.0)
-		result = result * texture2D(texture, texCoord);
+		result = result * texture2D(texture, texCoord).xyz;
 
 	// clamp result values
 	//result.x = min(1.0, result.x);

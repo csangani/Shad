@@ -35,7 +35,7 @@ void main()
 
 	vec3 result = ambient + diffuse + specular;
 	if (hasTexture > 0.0)
-		result = result * texture2D(texture, texCoord);
+		result = result * texture2D(texture, texCoord).xyz;
 
 	// test color blue
 	vec4 color = vec4(0.2, 0.6, 1.0, 1.0);

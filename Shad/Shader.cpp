@@ -8,6 +8,7 @@ std::map<std::string, GLuint> Shader::Shaders = std::map<std::string, GLuint>();
 
 Shader::Shader() :
 	_path(""),
+	_errors(""),
 	_vertexShaderID(0),
 	_fragmentShaderID(0),
 	_tessControlShaderID(0),
@@ -18,6 +19,7 @@ Shader::Shader() :
 
 Shader::Shader(const std::string& path) :
 	_path(path),
+	_errors(""),
 	_vertexShaderID(0),
 	_fragmentShaderID(0),
 	_tessControlShaderID(0),
