@@ -83,6 +83,8 @@ public:
 
 	PolyMesh *SetMass(float);
 
+	PolyMesh *GenerateRigidBody();
+
 	void Delete();
 
 private:

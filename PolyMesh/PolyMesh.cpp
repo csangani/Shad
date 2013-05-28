@@ -845,26 +845,6 @@ PolyMesh *PolyMesh::LoadObj(std::string FilePath)
 
 	GenerateNormals();
 
-	/* Enable physics */
-	btConvexHullShape *ConvexShape = new btConvexHullShape();
-	for(VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it)
-	{
-		ConvexShape->addPoint(btVector3(point(v_it.handle())[0],point(v_it.handle())[1],point(v_it.handle())[2]));
-	}
-	btCollisionShape *ConvexHull = ConvexShape;
-	btVector3 localInertia(0.0f,0.0f,0.0f);
-	btScalar m(0);
-	bool isDynamic = (m != 0.0f);
-	if (isDynamic)
-		ConvexHull->calculateLocalInertia(m,localInertia);
-	btTransform transform;
-	transform.setIdentity();
-	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
-	RigidBody = new btRigidBody(rbInfo);
-	RigidBody->setContactProcessingThreshold(0.0f);
-	Physics::DynamicsWorld->addRigidBody(RigidBody);
-
 	return this;
 }
 
@@ -893,6 +873,30 @@ PolyMesh *PolyMesh::SetMass(float mass)
 	delete RigidBody;
 	RigidBody = new btRigidBody(rbInfo);
 	RigidBody->setContactProcessingThreshold(0.05f);
+	Physics::DynamicsWorld->addRigidBody(RigidBody);
+	return this;
+}
+
+PolyMesh *PolyMesh::GenerateRigidBody()
+{
+	/* Enable physics */
+	btConvexHullShape *ConvexShape = new btConvexHullShape();
+	for(VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it)
+	{
+		ConvexShape->addPoint(btVector3(point(v_it.handle())[0],point(v_it.handle())[1],point(v_it.handle())[2]));
+	}
+	btCollisionShape *ConvexHull = ConvexShape;
+	btVector3 localInertia(0.0f,0.0f,0.0f);
+	btScalar m(0);
+	bool isDynamic = (m != 0.0f);
+	if (isDynamic)
+		ConvexHull->calculateLocalInertia(m,localInertia);
+	btTransform transform;
+	transform.setIdentity();
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
+	RigidBody = new btRigidBody(rbInfo);
+	RigidBody->setContactProcessingThreshold(0.0f);
 	Physics::DynamicsWorld->addRigidBody(RigidBody);
 	return this;
 }
