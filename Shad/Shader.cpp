@@ -4,7 +4,7 @@
 
 #define ERROR_BUFSIZE 1024
 
-std::map<std::string, GLuint> Shader::Shaders = std::map<std::string, GLuint>();
+std::map<std::string, Shader*> Shader::Shaders = std::map<std::string, Shader*>();
 
 Shader::Shader() :
 	_path(""),
@@ -70,7 +70,7 @@ Shader::Shader(const std::string& path) :
 	if (!inTessE.fail())
 	{
 		hasTessE = true;
-		std::vector<char> tessEvalSource = readSource(path + ".tessc");
+		std::vector<char> tessEvalSource = readSource(path + ".tesse");
 		source[0] = &tessEvalSource.front();
 		length = tessEvalSource.size()-1;
 		_tessEvalShaderID = glCreateShader(GL_TESS_EVALUATION_SHADER);
@@ -136,9 +136,9 @@ Shader::Shader(const std::string& path) :
 		_errors += std::string(tempErrorLog, length) + "\n";
 		_loaded = false;
 	} else {
-		Shaders.insert(std::pair<std::string, GLuint>(path, _programID));
 		_loaded = true;
 	}
+	Shaders.insert(std::pair<std::string, Shader*>(path, this));
 }
 
 Shader::~Shader() {

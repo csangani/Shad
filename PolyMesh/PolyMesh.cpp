@@ -34,13 +34,19 @@ PolyMesh *PolyMesh::ApplyTexture(const unsigned char *data, int width, int heigh
 
 PolyMesh *PolyMesh::AttachShader(std::string ShaderPath)
 {
-	std::map<std::string, GLuint>::iterator shader = Shader::Shaders.find(ShaderPath);
+	std::map<std::string, Shader*>::iterator shader = Shader::Shaders.find(ShaderPath);
 	if (shader == Shader::Shaders.end())
 	{
-		std::cerr << "Failed to attach shader \"" << ShaderPath << "\"" << std::endl;
+		std::cerr << "Failed to attach shader \"" << ShaderPath << "\". Shader was not initialized in init.cpp." << std::endl;
 		ShaderID = 0;
 	} else {
-		ShaderID = shader->second;
+		if (shader->second->loaded())
+			ShaderID = shader->second->programID();
+		else
+		{
+			std::cerr << "Failed to attach shader \"" << ShaderPath << "\" due to compilation/linker errors." << std::endl;
+			ShaderID = 0;
+		}
 	}
 	return this;
 }

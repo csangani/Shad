@@ -10,7 +10,7 @@
 
 class Shader {
 public:
-	static std::map<std::string, GLuint> Shaders;
+	static std::map<std::string, Shader*> Shaders;
 
 	Shader();
 	
