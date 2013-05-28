@@ -40,6 +40,9 @@ local.properties
 *.suo
 *.user
 *.sln.docstates
+*.sln
+*.vcxproj*
+*.vcproj*
 
 # Build results
 
