@@ -19,8 +19,7 @@ PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)),
 	ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false),
 	Animated(false), ShaderID(0), Cloth(false), MaterialAmbient(NULL),
 	MaterialDiffuse(NULL), MaterialShininess(NULL), MaterialEmission(NULL),
-	MaterialSpecular(NULL), Color(NULL), CollisionGroup(Physics::Ghost),
-	CollisionMask(Physics::GhostMask)
+	MaterialSpecular(NULL), Color(NULL)
 {
 	Meshes.push_back(this);
 }
@@ -863,8 +862,8 @@ PolyMesh *PolyMesh::LoadObj(std::string FilePath)
 	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
 	RigidBody = new btRigidBody(rbInfo);
-	RigidBody->setContactProcessingThreshold(0.05f);
-	Physics::DynamicsWorld->addRigidBody(RigidBody, CollisionGroup, CollisionMask);
+	RigidBody->setContactProcessingThreshold(0.0f);
+	Physics::DynamicsWorld->addRigidBody(RigidBody);
 
 	return this;
 }
@@ -895,33 +894,6 @@ PolyMesh *PolyMesh::SetMass(float mass)
 	RigidBody = new btRigidBody(rbInfo);
 	RigidBody->setContactProcessingThreshold(0.05f);
 	Physics::DynamicsWorld->addRigidBody(RigidBody);
-	return this;
-}
-
-PolyMesh *PolyMesh::SetCollisionGroup(int collisionGroup)
-{
-	CollisionGroup = collisionGroup;
-	switch (CollisionGroup)
-	{
-	case Physics::Ghost:
-		CollisionMask = Physics::GhostMask;
-		break;
-	case Physics::Static:
-		CollisionMask = Physics::StaticMask;
-		break;
-	case Physics::Dynamic:
-		CollisionMask = Physics::DynamicMask;
-		break;
-	case Physics::Cloth:
-		CollisionMask = Physics::ClothMask;
-		break;
-	case Physics::Camera:
-		CollisionMask = Physics::CameraMask;
-		break;
-	default:
-		CollisionMask = Physics::Ghost;
-		break;
-	}
 	return this;
 }
 

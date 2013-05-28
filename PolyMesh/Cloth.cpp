@@ -26,7 +26,7 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
 			btRigidBody *body = new btRigidBody(rbInfo);
 			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body,Physics::Cloth, Physics::ClothMask);
+			Physics::DynamicsWorld->addRigidBody(body);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
 			body->setDamping(0.2f,0.2f);
@@ -48,27 +48,21 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 	}
 }
 
-int Cloth::Pin(int row, int col, PolyMesh *M, VertexHandle H) {
-	PinList.insert(std::pair<int,PinnedPoint>(columns*row + col, PinnedPoint(H, M)));
-	RigidBody[row][col]->setMassProps(0.0f, btVector3(0,0,0));
-	return columns*row + col;
+btPoint2PointConstraint *Cloth::Pin(int row, int col, PolyMesh *M, VertexHandle H) {
+	btVector3 Pivot(M->point(H)[0], M->point(H)[1], M->point(H)[2]);
+	btPoint2PointConstraint *constraint = new btPoint2PointConstraint(*(M->RigidBody),*RigidBody[row][col],Pivot, btVector3(0,0,0));
+	constraint->setParam(BT_CONSTRAINT_STOP_CFM, 0);
+	constraint->setParam(BT_CONSTRAINT_STOP_ERP, 0.8f);
+	Physics::DynamicsWorld->addConstraint(constraint, true);
+	return constraint;
 }
 
-void Cloth::Unpin(int handle){
-	PinList.erase(handle);
+void Cloth::Unpin(btPoint2PointConstraint * handle){
+	Physics::DynamicsWorld->removeConstraint(handle);
 }
 
 void Cloth::SimulationStep() {
 	float diagonal = segmentLength * sqrtf(2);
-
-	for (std::map<int, PinnedPoint>::iterator iter = PinList.begin(); iter != PinList.end(); iter++)
-	{
-		btTransform transform;
-		transform.setIdentity();
-		OpenMesh::Vec3f origin = iter->second.m->point(iter->second.h);
-		transform.setOrigin(btVector3(origin[0], origin[1], origin[2]) + iter->second.m->RigidBody->getCenterOfMassPosition());
-		RigidBody[iter->first/columns][iter->first%columns]->setCenterOfMassTransform(transform);
-	}
 
 	// Synchronize mesh points and collision objects
 	for(int i = 0; i < rows; i++) {

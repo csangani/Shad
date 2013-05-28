@@ -150,22 +150,22 @@ namespace Window
 		{
 		case GLUT_KEY_UP:
 			{
-				PolyMesh::Meshes[0]->RigidBody->translate(Game::Direction*0.1f);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
-				PolyMesh::Meshes[0]->RigidBody->translate(-Game::Direction*0.1f);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
 				break;
 			}
 		case GLUT_KEY_LEFT:
 			{
-				PolyMesh::Meshes[0]->RigidBody->translate(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*0.1f);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
 				break;
 			}
 		case GLUT_KEY_RIGHT:
 			{
-				PolyMesh::Meshes[0]->RigidBody->translate(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*0.1f);
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
 				break;
 			}
 		default:
@@ -275,7 +275,7 @@ int main (int argc, char **argv)
 	Physics::InitializePhysics();
 
 	// Load Mesh
-	PolyMesh *Mesh = (new PolyMesh())->SetCollisionGroup(Physics::Dynamic)->LoadObj(OBJECT)->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,0,0));
+	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
 	Mesh->AttachShader(PHONG_SHADER);
 	Mesh->RigidBody->setRollingFriction(0.3f);
 	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -290,7 +290,7 @@ int main (int argc, char **argv)
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
-	PolyMesh *Plane = (new PolyMesh())->SetCollisionGroup(Physics::Static)->LoadObj("assets\\obj\\plane.obj")->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
+	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
 	Plane->AttachShader(PHONG_SHADER);
 	Plane->RigidBody->setRollingFriction(0.3f);
 	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);

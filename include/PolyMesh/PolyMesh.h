@@ -83,16 +83,12 @@ public:
 
 	PolyMesh *SetMass(float);
 
-	PolyMesh *SetCollisionGroup(int);
-
 	void Delete();
 
 private:
 	bool Animated;
 	bool Lighting;
 	GLuint ShaderID;
-	int CollisionGroup;
-	int CollisionMask;
 
 	std::vector<GLuint> indices;
 
