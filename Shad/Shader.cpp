@@ -54,7 +54,7 @@ Shader::Shader(const std::string& path) :
 	// Check for tesselation and geometry shaders and compile
 	bool hasTessC = false, hasTessE = false, hasGeom = false;
 	GLint tesscCompileStatus = 1, tesseCompileStatus = 1, geomCompileStatus = 1;
-	std::ifstream inTessC(path + ".tessc");
+	std::ifstream inTessC((path + ".tessc").c_str());
 	if (!inTessC.fail())
 	{
 		hasTessC = true;
@@ -66,7 +66,7 @@ Shader::Shader(const std::string& path) :
 		glCompileShader(_tessControlShaderID);
 		glGetShaderiv(_tessControlShaderID, GL_COMPILE_STATUS, &tesscCompileStatus);
 	}
-	std::ifstream inTessE(path + ".tesse");
+	std::ifstream inTessE((path + ".tesse").c_str());
 	if (!inTessE.fail())
 	{
 		hasTessE = true;
@@ -78,7 +78,7 @@ Shader::Shader(const std::string& path) :
 		glCompileShader(_tessEvalShaderID);
 		glGetShaderiv(_tessEvalShaderID, GL_COMPILE_STATUS, &tesseCompileStatus);
 	}
-	std::ifstream inGeom(path + ".geom");
+	std::ifstream inGeom((path + ".geom").c_str());
 	if (!inGeom.fail())
 	{
 		hasGeom = true;
