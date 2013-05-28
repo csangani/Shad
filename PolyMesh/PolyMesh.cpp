@@ -39,14 +39,35 @@ PolyMesh *PolyMesh::AttachShader(std::string ShaderPath)
 	{
 		std::cerr << "Failed to attach shader \"" << ShaderPath << "\". Shader was not initialized in init.cpp." << std::endl;
 		ShaderID = 0;
-	} else {
+		ShaderStack.push_back(ShaderID);
+	}
+	else
+	{
 		if (shader->second->loaded())
+		{
 			ShaderID = shader->second->programID();
+			ShaderStack.push_back(ShaderID);
+		}
 		else
 		{
 			std::cerr << "Failed to attach shader \"" << ShaderPath << "\" due to compilation/linker errors." << std::endl;
 			ShaderID = 0;
+			ShaderStack.push_back(ShaderID);
 		}
+	}
+	return this;
+}
+
+PolyMesh *PolyMesh::DetachShader()
+{
+	if (ShaderStack.size() > 0)
+	{
+		ShaderStack.pop_back();
+		ShaderID = (ShaderStack.size() == 0) ? 0 : ShaderStack.back();
+	}
+	else
+	{
+		ShaderID = 0;
 	}
 	return this;
 }
@@ -593,6 +614,9 @@ PolyMesh *PolyMesh::LoopSubdivide()
 
 PolyMesh *PolyMesh::Draw()
 {
+	// tell GL which shader program to use (or fixed-function, ShaderID=0)
+	glUseProgram(ShaderID);
+
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -699,9 +723,6 @@ PolyMesh *PolyMesh::Draw()
 		if (hasTexture != -1)
 			glUniform1f(hasTexture, -1.f);
 	}
-
-	// tell GL which shader program to use
-	glUseProgram(ShaderID);
 
 	for (PolyMesh::FaceIter f_it=this->faces_begin(); f_it!=this->faces_end(); ++f_it)
 	{

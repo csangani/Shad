@@ -56,6 +56,8 @@ public:
 
 	PolyMesh *AttachShader(std::string);
 
+	PolyMesh *DetachShader();
+
 	PolyMesh *PolyMesh::EnableLighting();
 
 	PolyMesh *Scale(OpenMesh::Vec3f);
@@ -91,8 +93,7 @@ private:
 	bool Animated;
 	bool Lighting;
 	GLuint ShaderID;
-
-	std::vector<GLuint> indices;
+	std::vector<GLuint> ShaderStack;
 
 	typedef struct LoopVertex 
 	{

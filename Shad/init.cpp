@@ -276,7 +276,7 @@ int main (int argc, char **argv)
 
 	// Load Mesh
 	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
-	Mesh->AttachShader(PHONG_SHADER);
+	Mesh->AttachShader(TOON_SHADER);
 	Mesh->RigidBody->setRollingFriction(0.3f);
 	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
 	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
@@ -291,7 +291,7 @@ int main (int argc, char **argv)
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
-	Plane->AttachShader(PHONG_SHADER);
+	Plane->AttachShader(TOON_SHADER);
 	Plane->RigidBody->setRollingFriction(0.3f);
 	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
