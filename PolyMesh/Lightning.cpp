@@ -6,7 +6,7 @@
 #define LENGTH_SCALE (0.7)
 #include <time.h>
 
-Lightning::Lightning(Vec3f startPoint, Vec3f endPoint)
+Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 {
     srand((unsigned int)time(NULL));
     float offsetAmount = INITIAL_OFFSET_AMOUNT;
@@ -16,12 +16,12 @@ Lightning::Lightning(Vec3f startPoint, Vec3f endPoint)
     segments.push_back(firstSegment);
     
     for (int i = 0; i < NUM_GENERATIONS; i++) {
-        vector<Segment> newSegments;
+		std::vector<Segment> newSegments;
         
         int counter = 0;
-        for (vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
-            Vec3f midPoint = (it->startPoint + it->endPoint)/2.0;
-            Vec3f normal = Vec3f(startPoint[1] - endPoint[1], endPoint[0] - startPoint[0], 0).normalize();
+		for (std::vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
+			OpenMesh::Vec3f midPoint = (it->startPoint + it->endPoint)/2.0;
+			OpenMesh::Vec3f normal = OpenMesh::Vec3f(startPoint[1] - endPoint[1], endPoint[0] - startPoint[0], 0).normalize();
             
             //offset midpoint
             float randomOffset = -offsetAmount + (float)rand()/((float)RAND_MAX/(2 * offsetAmount));
@@ -47,14 +47,14 @@ Lightning::Lightning(Vec3f startPoint, Vec3f endPoint)
             if (doBranching > 0.01/iterationRank) {
                 
                 //third segment to branch off
-                Vec3f direction = midPoint - it->startPoint;
+				OpenMesh::Vec3f direction = midPoint - it->startPoint;
                 
                 //rotate a little bit
                 float angle = (float)rand()/((float)RAND_MAX/(MAX_ANGLE));        
                 float angleRadians = (float)(angle * M_PI) / (float)180.0;
                 float newX = (direction[0] - midPoint[0] * cos(angleRadians)) - ((midPoint[1] - direction[1]) * sin(angleRadians)) + midPoint[0];
                 float newY = (direction[1] - midPoint[1] * cos(angleRadians)) - ((midPoint[0] - direction[0]) * sin(angleRadians)) + midPoint[1];
-                Vec3f splitEnd = Vec3f(newX, newY, 0) * LENGTH_SCALE + midPoint;
+				OpenMesh::Vec3f splitEnd = OpenMesh::Vec3f(newX, newY, 0) * LENGTH_SCALE + midPoint;
                 Segment newSegment3;
                 newSegment3.startPoint = midPoint;
                 newSegment3.endPoint = splitEnd;
@@ -72,17 +72,17 @@ Lightning::Lightning(Vec3f startPoint, Vec3f endPoint)
         segments = newSegments;
     }
 
-	 for (vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
-		Vec3f startPoint = it->startPoint;
-        Vec3f endPoint = it->endPoint;
+	for (std::vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
+		OpenMesh::Vec3f startPoint = it->startPoint;
+		OpenMesh::Vec3f endPoint = it->endPoint;
         float rayRankMultiplier = (float)1.0/(it->dimFactor+1);        
         float smallRayFactor = 0.005;
 	 
 		//middle quad as two triangles
-		Vec3f point1 = startPoint - it->normal() * smallRayFactor * rayRankMultiplier;
-        Vec3f point2 = startPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-        Vec3f point3 = endPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-        Vec3f point4 = endPoint - it->normal() * smallRayFactor * rayRankMultiplier;
+		OpenMesh::Vec3f point1 = startPoint - it->normal() * smallRayFactor * rayRankMultiplier;
+		OpenMesh::Vec3f point2 = startPoint + it->normal() * smallRayFactor * rayRankMultiplier;
+		OpenMesh::Vec3f point3 = endPoint + it->normal() * smallRayFactor * rayRankMultiplier;
+		OpenMesh::Vec3f point4 = endPoint - it->normal() * smallRayFactor * rayRankMultiplier;
 
 		VertexHandle v1 = add_vertex(point1);
 		VertexHandle v2 = add_vertex(point2);
