@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <string>
 
 class TextureRender {
 public:
@@ -25,6 +26,8 @@ public:
      * Restores the original OpenGL framebuffer for normal rendering.
      */
     void unbind();
+
+	void writeToFile(std::string filename);
 
     /**
      * Returns the texture that was used for render-to-texture.

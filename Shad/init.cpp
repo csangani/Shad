@@ -1,5 +1,6 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
+#include <Shad/TextureRender.h>
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -21,6 +22,7 @@ namespace Window
 	int Width = 600, Height = 480;
 
 	Game::Camera* Camera;
+	TextureRender *texRenderTarget;
 
 	void Reshape(int width, int height)
 	{
@@ -37,6 +39,8 @@ namespace Window
 
 	void Display(void)
 	{
+		texRenderTarget->bind();
+
 		/* Draw objects */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -57,6 +61,8 @@ namespace Window
 
 		glViewport(0,0,Window::Width,Window::Height);
 
+		texRenderTarget->unbind();
+
 		glutSwapBuffers();
 	}
 
@@ -67,6 +73,8 @@ namespace Window
 		case 27: 
 			glutLeaveMainLoop();
 			break;
+		case 'w':
+			texRenderTarget->writeToFile("scene_texture.tga");
 		case AMBIENT:
 			MatMode = AMBIENT;
 			break;
@@ -210,6 +218,9 @@ int main (int argc, char **argv)
 	// Go fullscreen
 	glutFullScreen();
 
+	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
+	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
+
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
 	if (GLEW_OK != error)
@@ -270,6 +281,9 @@ int main (int argc, char **argv)
 
 	// Create Camera
 	Window::Camera = new Game::Camera();
+
+	// Crete render-to-texture target
+	Window::texRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
 
 	// Initialize Physics
 	Physics::InitializePhysics();

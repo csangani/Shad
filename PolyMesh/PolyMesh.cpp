@@ -757,6 +757,9 @@ PolyMesh *PolyMesh::Draw()
 
 	glPopMatrix();
 
+	// return to fixed-function
+	glUseProgram(0);
+
 	return this;
 }
 
