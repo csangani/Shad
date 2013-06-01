@@ -39,29 +39,59 @@ namespace Window
 
 	void Display(void)
 	{
+		/* Render the scene to a texture */
 		texRenderTarget->bind();
 
-		/* Draw objects */
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			/* Set camera position and direction */
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
 
-		/* Set camera position and direction */
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+			gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+			btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
+			Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
 
-		btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
-		Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
+			gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
-		gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+			/* Draw objects (AFTER setting camera) */
+			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 
-		//gluLookAt(2.f, 2.f, 2.f,0,-1,0, 0, 1, 0);
-
-		glViewport(0,0,Window::Width,Window::Height);
+			glViewport(0,0,Window::Width,Window::Height);
 
 		texRenderTarget->unbind();
+
+		/* Render texture to full-screen quad */
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			/* set orthographic projectionation */
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-1,1,-1,1);
+
+			/* draw textured quad */
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, texRenderTarget->textureID());
+
+			glBegin(GL_QUADS);
+				glNormal3f(0, 0, 1);
+				glTexCoord2f(0.f, 0.f);
+				glVertex3f(-1.f, -1.f, 0.f);
+				glTexCoord2f(1.f, 0.f);
+				glVertex3f(1.f, -1.f, 0.f);
+				glTexCoord2f(1.f, 1.f);
+				glVertex3f(1.f, 1.f, 0.f);
+				glTexCoord2f(0.f, 1.f);
+				glVertex3f(-1.f, 1.f, 0.f);
+			glEnd();
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_TEXTURE_2D);
+
+			glViewport(0, 0, Window::Width, Window::Height);
 
 		glutSwapBuffers();
 	}

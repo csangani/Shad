@@ -53,7 +53,7 @@ GLuint TextureRender::textureID() const {
 }
 
 void TextureRender::bind() {
-	//glPushAttrib(GL_VIEWPORT_BIT);
+	glPushAttrib(GL_VIEWPORT_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID_);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID_);
     //glDrawBuffer(GL_NONE);
@@ -65,7 +65,7 @@ void TextureRender::unbind() {
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
     //glDrawBuffer(GL_BACK);
 	glViewport(0, 0, width_, height_);
-    //glPopAttrib();
+    glPopAttrib();
 }
 
 void TextureRender::writeToFile(std::string filename) {
