@@ -13,6 +13,14 @@
 
 namespace Game
 {
+	enum GameState {
+		MenuState,
+		PlayState,
+		PauseState
+	};
+
+	GameState gameState = MenuState;
+
 	btVector3 Direction;
 
 	bool moveForward = false;
@@ -44,72 +52,94 @@ namespace Window
 
 	void Display(void)
 	{
-		/* Render the scene to a texture */
-		texRenderTarget->bind();
+		if (Game::gameState == Game::MenuState)
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			/* TODO: add initial game menu */
+			glutSwapBuffers();
+		}
+		else if (Game::gameState == Game::PlayState)
+		{
+			/* Render the scene to a texture */
+			texRenderTarget->bind();
 
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				/* Set camera position and direction */
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+
+				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+
+				btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
+				Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
+
+				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+
+				/* Draw objects (AFTER setting camera) */
+				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+
+				glViewport(0,0,Window::Width,Window::Height);
+
+			texRenderTarget->unbind();
+
+			/* Render texture to full-screen quad */
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			/* Set camera position and direction */
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+				/* set orthographic projectionation */
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				gluOrtho2D(-1,1,-1,1);
 
-			gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+				/* draw textured quad */
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, texRenderTarget->textureID());
 
-			btTransform transform = PolyMesh::Meshes[0]->RigidBody->getCenterOfMassTransform();
-			Camera->UpdatePosition(OpenMesh::Vec3f(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()));
+				glBegin(GL_QUADS);
+					glNormal3f(0, 0, 1);
+					glTexCoord2f(0.f, 0.f);
+					glVertex3f(-1.f, -1.f, 0.f);
+					glTexCoord2f(1.f, 0.f);
+					glVertex3f(1.f, -1.f, 0.f);
+					glTexCoord2f(1.f, 1.f);
+					glVertex3f(1.f, 1.f, 0.f);
+					glTexCoord2f(0.f, 1.f);
+					glVertex3f(-1.f, 1.f, 0.f);
+				glEnd();
 
-			gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glDisable(GL_TEXTURE_2D);
 
-			/* Draw objects (AFTER setting camera) */
-			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+				glViewport(0, 0, Window::Width, Window::Height);
 
-			glViewport(0,0,Window::Width,Window::Height);
-
-		texRenderTarget->unbind();
-
-		/* Render texture to full-screen quad */
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			/* set orthographic projectionation */
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluOrtho2D(-1,1,-1,1);
-
-			/* draw textured quad */
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, texRenderTarget->textureID());
-
-			glBegin(GL_QUADS);
-				glNormal3f(0, 0, 1);
-				glTexCoord2f(0.f, 0.f);
-				glVertex3f(-1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 0.f);
-				glVertex3f(1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex3f(1.f, 1.f, 0.f);
-				glTexCoord2f(0.f, 1.f);
-				glVertex3f(-1.f, 1.f, 0.f);
-			glEnd();
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
-
-			glViewport(0, 0, Window::Width, Window::Height);
-
-		glutSwapBuffers();
+			glutSwapBuffers();
+		}
+		else if (Game::gameState == Game::PauseState)
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			/* TODO: add pause menu */
+			glutSwapBuffers();
+		}
 	}
 
 	void Keyboard(unsigned char key, int x, int y) {
 		static int MatMode = 0;
 		switch (key)
 		{
-		case 27: 
+		case 27: // esc 
 			glutLeaveMainLoop();
+			break;
+		case 13: // enter
+			if (Game::gameState == Game::PlayState)
+				Game::gameState = Game::PauseState;
+			else
+				Game::gameState = Game::PlayState;
 			break;
 		case 'w':
 			texRenderTarget->writeToFile("scene_texture.tga");
+			break;
 		case AMBIENT:
 			MatMode = AMBIENT;
 			break;
@@ -260,31 +290,42 @@ namespace Window
 
 	void Timer(int time)
 	{
-		PolyMesh::Time += (uint64_t) FRAME_PERIOD;
+		if (Game::gameState == Game::MenuState)
+		{
+			/* menu animation? */
+		}
+		else if (Game::gameState == Game::PlayState)
+		{
+			PolyMesh::Time += (uint64_t) FRAME_PERIOD;
 
-		/* Simulate Physics */
-		Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
-		
+			/* Simulate Physics */
+			Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
+
+			for (unsigned int i = 0; i < PolyMesh::Meshes.size(); i++)
+				if (PolyMesh::Meshes[i]->Cloth)
+					((Cloth *)PolyMesh::Meshes[i])->SimulationStep();
+
+			/* keep character from falling */
+			PolyMesh::Meshes[0]->RigidBody->setAngularFactor(0.f);
+			PolyMesh::Meshes[0]->RigidBody->setAngularVelocity(btVector3(0.f, 0.f, 0.f));
+
+			/* Character Controls */
+			if (Game::moveForward)
+					PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
+			if (Game::moveBackward)
+					PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
+			if (Game::moveLeft)
+					PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+			if (Game::moveRight)
+					PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+		}
+		else if (Game::gameState == Game::PauseState)
+		{
+			/* animate pause menu? */
+		}
+
 		glutTimerFunc((int) FRAME_PERIOD, Timer, (int) FRAME_PERIOD);
 
-		for (unsigned int i = 0; i < PolyMesh::Meshes.size(); i++)
-			if (PolyMesh::Meshes[i]->Cloth)
-				((Cloth *)PolyMesh::Meshes[i])->SimulationStep();
-
-		/* keep character from falling */
-		PolyMesh::Meshes[0]->RigidBody->setAngularFactor(0.f);
-		PolyMesh::Meshes[0]->RigidBody->setAngularVelocity(btVector3(0.f, 0.f, 0.f));
-
-		/* Character Controls */
-		if (Game::moveForward)
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
-		if (Game::moveBackward)
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
-		if (Game::moveLeft)
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
-		if (Game::moveRight)
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
-		
 		glutPostRedisplay();
 	}
 }
