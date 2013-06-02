@@ -16,3 +16,8 @@ Level::Level(int level) {
 }
 
 	
+void Level::generateBlocks() {
+
+
+}
+

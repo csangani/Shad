@@ -15,6 +15,8 @@ class Level {
 	
 	Level(int level);
 
+	void generateBlocks();
+
 	private:
 		int _level;
 		string LEVEL;
