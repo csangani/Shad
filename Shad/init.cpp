@@ -6,6 +6,8 @@
 #include <PolyMesh/PolyMesh.h>
 #include <PolyMesh/Cloth.h>
 
+#include "Level.h"
+
 #include <ctime>
 
 #include <GL/glew.h>
@@ -437,28 +439,12 @@ int main (int argc, char **argv)
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
-	//PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
-	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(0,-1,0));
-	//Plane->AttachShader(TOON_SHADER);
-	Plane->RigidBody->setRollingFriction(0.8f);
-	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-
-	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-	space_image.rgb_to_bgr();
-	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
 	
-	//PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(1000,1000,1000))->Translate(OpenMesh::Vec3f(0,-1,0));
-	PolyMesh *Plane2 = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(10,-1,10));
-	//Plane->AttachShader(TOON_SHADER);
-	Plane2->RigidBody->setRollingFriction(0.8f);
-	Plane2->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-
-	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-	space_image.rgb_to_bgr();
-	Plane2->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
-
-
+	
+	
+	Level * one = new Level(1);
+	one->generateBlocks(TOON_SHADER, space_image);
+	
 	// Set Mesh and Plane Material Parameters
 	Mesh->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
