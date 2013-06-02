@@ -1,20 +1,18 @@
 #include <string>
 
+#include "Level.h"
+
+#include <GL\glew.h>
+#include <GL\glut.h>
+
 using namespace std;
 
-class Level {
-	public:
-	
-	Level(int level) {
-		_level = level;
-		LEVEL = "level";
-		EXT = ".ext";
-		filename = LEVEL +  to_string(level) + EXT;
-	}
 
-	private:
-		int _level;
-		string LEVEL;
-		string EXT;
-		string filename;
-};
+Level::Level(int level) {
+	_level = level;
+	LEVEL = "level";
+	EXT = ".ext";
+	filename = LEVEL +  to_string(level) + EXT;
+}
+
+	
