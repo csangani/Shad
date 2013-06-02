@@ -8,7 +8,7 @@ varying vec2 texCoord;
 
 void main()
 {
-    vec3 C = vec3(0.0, 0.0, 0.0); // camera position
+    vec3 C = vec3(0.0, 0.0, 0.0); // positions are in camera coords
 
     vec3 ambientColor  = gl_LightSource[0].ambient.xyz;
     vec3 diffuseColor  = gl_LightSource[0].diffuse.xyz;
@@ -37,21 +37,20 @@ void main()
 	if (hasTexture > 0.0)
 		result = result * texture2D(texture, texCoord).xyz;
 
-	// test color blue
-	vec4 color = vec4(0.2, 0.6, 1.0, 1.0);
-
 	float threshold = dot1;
 	if (threshold > 0.8)
 		gl_FragColor = vec4(result, 1.0);
-	else if (threshold > 0.6)
+	else if (threshold > 0.5)
 		gl_FragColor = 0.8*vec4(result, 1.0);
-	else if (threshold > 0.4)
-		gl_FragColor = 0.6*vec4(result, 1.0);
-	else if (threshold > 0.2)
-		gl_FragColor = 0.4*vec4(result, 1.0);
+	//else if (threshold > 0.4)
+	//	gl_FragColor = 0.6*vec4(result, 1.0);
+	//else if (threshold > 0.2)
+	//	gl_FragColor = 0.4*vec4(result, 1.0);
 	else
-		gl_FragColor = 0.2*vec4(result, 1.0);
+		gl_FragColor = 0.5*vec4(result, 1.0);
 
 	// TODO: add contours
-
+	/*float dot3 = dot(N, Vm);
+	if (dot3 < 0.01 && dot3 > -0.01)
+		gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);*/
 }

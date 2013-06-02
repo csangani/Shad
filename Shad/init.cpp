@@ -14,6 +14,11 @@
 namespace Game
 {
 	btVector3 Direction;
+
+	bool moveForward = false;
+	bool moveLeft = false;
+	bool moveBackward = false;
+	bool moveRight = false;
 }
 
 namespace Window
@@ -168,8 +173,8 @@ namespace Window
 			PolyMesh::Meshes[0]->LoopSubdivideP(NUM_THREADS);
 			glutPostRedisplay();
 			break;
-		case SUBDIVIDE:
-			PolyMesh::Meshes[0]->RigidBody->applyImpulse(btVector3(0,5,0),btVector3(0,0,0));
+		case JUMP:
+			PolyMesh::Meshes[0]->RigidBody->applyImpulse(btVector3(0,500,0),btVector3(0,0,0));
 			break;
 		case SHADEMODE:
 			PolyMesh::Meshes[0]->ShadeMode = PolyMesh::Meshes[0]->ShadeMode == GL_SMOOTH ? GL_FLAT : GL_SMOOTH;
@@ -182,28 +187,70 @@ namespace Window
 		}
 	}
 
+	void KeyboardUp(unsigned char key, int x, int y)
+	{
+		// handle other keyboard controls (teleport n such)
+	}
+
 	void SpecialKeyboard(int key, int x, int y)
 	{
 		switch (key)
 		{
 		case GLUT_KEY_UP:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
+				Game::moveForward = true;
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
+				Game::moveBackward = true;
 				break;
 			}
 		case GLUT_KEY_LEFT:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				Game::moveLeft = true;
 				break;
 			}
 		case GLUT_KEY_RIGHT:
 			{
-				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				Game::moveRight = true;
+				break;
+			}
+		default:
+			break;
+		}
+	}
+
+	void SpecialKeyboardUp(int key, int x, int y)
+	{
+		switch (key)
+		{
+		case GLUT_KEY_UP:
+			{
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
+				Game::moveForward = false;
+				break;
+			}
+		case GLUT_KEY_DOWN:
+			{
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
+				Game::moveBackward = false;
+				break;
+			}
+		case GLUT_KEY_LEFT:
+			{
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				Game::moveLeft = false;
+				break;
+			}
+		case GLUT_KEY_RIGHT:
+			{
+				//PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+				Game::moveRight = false;
 				break;
 			}
 		default:
@@ -220,12 +267,26 @@ namespace Window
 		
 		glutTimerFunc((int) FRAME_PERIOD, Timer, (int) FRAME_PERIOD);
 
-		glutPostRedisplay();
-
 		for (unsigned int i = 0; i < PolyMesh::Meshes.size(); i++)
 			if (PolyMesh::Meshes[i]->Cloth)
 				((Cloth *)PolyMesh::Meshes[i])->SimulationStep();
-	};
+
+		/* keep character from falling */
+		PolyMesh::Meshes[0]->RigidBody->setAngularFactor(0.f);
+		PolyMesh::Meshes[0]->RigidBody->setAngularVelocity(btVector3(0.f, 0.f, 0.f));
+
+		/* Character Controls */
+		if (Game::moveForward)
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction*10.f,btVector3(0,0,0));
+		if (Game::moveBackward)
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction*10.f,btVector3(0,0,0));
+		if (Game::moveLeft)
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+		if (Game::moveRight)
+				PolyMesh::Meshes[0]->RigidBody->applyImpulse(-Game::Direction.rotate(btVector3(0,1,0),RADIANS(90))*10.f,btVector3(0,0,0));
+		
+		glutPostRedisplay();
+	}
 }
 
 int main (int argc, char **argv)
@@ -296,9 +357,11 @@ int main (int argc, char **argv)
 
 	// Register Keyboard Handler
 	glutKeyboardFunc(Window::Keyboard);
+	glutKeyboardUpFunc(Window::KeyboardUp);
 
 	// Register Special Keyboard Handler
 	glutSpecialFunc(Window::SpecialKeyboard);
+	glutSpecialUpFunc(Window::SpecialKeyboardUp);
 
 	// Register Timer Handler
 	glutTimerFunc((int) FRAME_PERIOD, Window::Timer, (int) FRAME_PERIOD);
@@ -328,8 +391,8 @@ int main (int argc, char **argv)
 	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0,0,1), OpenMesh::Vec3f(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
-	Cloak->Pin(9,0,Mesh, Mesh->vertex_handle(3));
-	Cloak->Pin(0,0,Mesh, Mesh->vertex_handle(2));
+	//Cloak->Pin(9,0,Mesh, Mesh->vertex_handle(3));
+	//Cloak->Pin(0,0,Mesh, Mesh->vertex_handle(2));
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());

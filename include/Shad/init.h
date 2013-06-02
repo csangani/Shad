@@ -8,7 +8,7 @@
 
 #define NUM_THREADS 8
 
-#define OBJECT "assets\\obj\\cube.obj"
+#define OBJECT "assets\\obj\\Platformer-tri.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
 #define DEFAULT_SHADER "assets\\shaders\\default"
 #define NORMAL_SHADER "assets\\shaders\\normal"
@@ -20,13 +20,14 @@
 #define DIFFUSE 'd'
 #define EMISSION 'e'
 #define SHININESS 'h'
-#define SUBDIVIDE ' '
 #define SUBDIVIDEP 'x'
 #define UP '+'
 #define DOWN '-'
 #define SHADEMODE 'm'
 #define DRAWMODE 'p'
 #define RESET 'r'
+
+#define JUMP ' '
 
 void Boost(float *array, int size, float delta)
 {

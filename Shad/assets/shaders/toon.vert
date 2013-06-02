@@ -6,10 +6,9 @@ varying vec2 texCoord;
 
 void main()
 {
-    vec4 posTemp = gl_ModelViewMatrix * gl_Vertex;
-	gl_Position = gl_ProjectionMatrix * posTemp;
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	// send the model's position to the fragment shader
-    modelPos = posTemp.xyz;
+    modelPos = (gl_ModelViewMatrix * gl_Vertex).xyz;
 
 	// send the normal to the fragment shader
 	normal = normalize(gl_NormalMatrix * gl_Normal);
