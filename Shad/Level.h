@@ -15,7 +15,7 @@ class Level {
 	
 	Level(int level);
 
-	void generateBlocks();
+	void generateBlocks(string shader);
 
 	private:
 		int _level;
