@@ -7,11 +7,11 @@
 
 #include <GL\glew.h>
 #include <GL\glut.h>
-
-using namespace std;
-
 #include <PolyMesh/bitmap_image.h>
 
+
+
+using namespace std;
 
 class Level {
 	public:

@@ -29,16 +29,16 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 
 			space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
 			space_image.rgb_to_bgr();
-	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+			Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
 	
-	PolyMesh *Plane2 = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(10,-1,10));
-//	Plane2->AttachShader(shader);
-	Plane2->RigidBody->setRollingFriction(0.8f);
-	Plane2->RigidBody->setAnisotropicFriction(Plane2->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+			PolyMesh *Plane2 = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(10,-1,10));
+			//	Plane2->AttachShader(shader);
+			Plane2->RigidBody->setRollingFriction(0.8f);
+			Plane2->RigidBody->setAnisotropicFriction(Plane2->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
-	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-	space_image.rgb_to_bgr();
-	Plane2->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+			space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
+			space_image.rgb_to_bgr();
+			Plane2->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
 			break;
 	};
 
