@@ -6,6 +6,7 @@
 
 #include <PolyMesh/PolyMesh.h>
 #include <PolyMesh/util.h>
+#include <PolyMesh/Character.h>
 
 #include <Shad/Shader.h>
 
@@ -17,9 +18,9 @@ uint64_t PolyMesh::Time = 0;
 PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), 
 	min(OpenMesh::Vec3f(FLT_MAX, FLT_MAX, FLT_MAX)), DrawMode(GL_TRIANGLES),
 	ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false),
-	Animated(false), ShaderID(0), Cloth(false), MaterialAmbient(NULL),
+	Animated(false), ShaderID(0), cloth(false), MaterialAmbient(NULL),
 	MaterialDiffuse(NULL), MaterialShininess(NULL), MaterialEmission(NULL),
-	MaterialSpecular(NULL), Color(NULL)
+	MaterialSpecular(NULL), Color(NULL), lightning(false), character(false)
 {
 	Meshes.push_back(this);
 }
@@ -112,10 +113,18 @@ PolyMesh *PolyMesh::SetOrigin(OpenMesh::Vec3f origin)
 
 PolyMesh *PolyMesh::Rotate(float angle, float x, float y, float z)
 {
-	btTransform transform;
-	transform.setIdentity();
-	transform.setRotation(btQuaternion(btVector3(x, y, z), RADIANS(angle)));
-	RigidBody->setCenterOfMassTransform(RigidBody->getCenterOfMassTransform()*transform);
+	if (!character) {
+		btTransform transform;
+		transform.setIdentity();
+		transform.setRotation(btQuaternion(btVector3(x, y, z), RADIANS(angle)));
+		RigidBody->setCenterOfMassTransform(RigidBody->getCenterOfMassTransform()*transform);
+	} else {
+		btTransform transform;
+		transform.setIdentity();
+		transform.setRotation(btQuaternion(btVector3(x, y, z), RADIANS(angle)));
+		btTransform oldT = ((Character *)this)->RigidBody->getGhostObject()->getWorldTransform();
+		((Character *)this)->RigidBody->getGhostObject()->setWorldTransform(oldT*transform);
+	}
 	return this;
 }
 
@@ -637,8 +646,16 @@ PolyMesh *PolyMesh::Draw()
 		}
 	}
 
-	if (!Cloth) {
+	if (!cloth && !lightning && !character) {
 		btTransform transform = RigidBody->getCenterOfMassTransform();
+		btScalar matrix[16];
+		transform.getOpenGLMatrix(matrix);
+		glLoadMatrixf(matrix);
+	}
+
+	if (character) {
+		Character *character = (Character *)this;
+		btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
 		btScalar matrix[16];
 		transform.getOpenGLMatrix(matrix);
 		glLoadMatrixf(matrix);

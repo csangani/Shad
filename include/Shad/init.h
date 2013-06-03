@@ -53,3 +53,8 @@ bitmap_image image;
 bitmap_image space_image;
 
 bitmap_image cloth_image;
+
+#define BVECO(X) btVector3(X[0], X[1], X[2])
+#define OVECB(X) OpenMesh::Vec3f(X.x(), X.y(), X.z())
+#define BVEC3F btVector3
+#define OVEC3F OpenMesh::Vec3f

@@ -2,11 +2,9 @@
 
 namespace Game
 {
-	void Camera::UpdatePosition(OpenMesh::Vec3f Object)
+	void Camera::UpdatePosition(OpenMesh::Vec3f Object, OpenMesh::Vec3f Direction)
 	{
-		OpenMesh::Vec3f Direction = Object - Pos;
-		Dir = Direction / Direction.length();
-		Pos = Pos + (Direction * ((Direction.length() - Dist) / Direction.length()));
+		Pos = Object - Direction.normalized() * Dist;
 	}
 
 	OpenMesh::Vec3f Camera::Position() const

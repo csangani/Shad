@@ -18,4 +18,5 @@ void Physics::InitializePhysics()
 	DynamicsWorld->getSolverInfo().m_solverMode |=SOLVER_USE_2_FRICTION_DIRECTIONS|SOLVER_RANDMIZE_ORDER;
 	DynamicsWorld->getDispatchInfo().m_useContinuous=true;
 	DynamicsWorld->setGravity(Gravity);
+	OverlappingPairCache->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 }

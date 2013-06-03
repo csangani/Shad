@@ -8,6 +8,7 @@
 
 Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 {
+	__super::lightning = true;
     srand((unsigned int)time(NULL));
     float offsetAmount = INITIAL_OFFSET_AMOUNT;
     Segment firstSegment;

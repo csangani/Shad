@@ -2,7 +2,7 @@
 #include <omp.h>
 
 Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength) : rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag) {
-	__super::Cloth = true;
+	__super::cloth = true;
 	btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
 	btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
 	btVector3 bColVec(ColVec[0], ColVec[1], ColVec[2]);
