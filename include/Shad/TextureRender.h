@@ -34,6 +34,10 @@ public:
      */
     GLuint textureID() const;
 
+	GLuint width() const;
+
+	GLuint height() const;
+
 private:
     GLuint textureID_;
     GLuint frameBufferID_;

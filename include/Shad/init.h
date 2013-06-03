@@ -14,6 +14,10 @@
 #define NORMAL_SHADER "assets\\shaders\\normal"
 #define PHONG_SHADER "assets\\shaders\\phong"
 #define TOON_SHADER "assets\\shaders\\toon"
+#define ANTIALIAS_SHADER "assets\\shaders\\antialias"
+
+#define MENU_START_TEXTURE "assets\\bmp\\menu_start_game.bmp"
+#define MENU_QUIT_TEXTURE "assets\\bmp\\menu_quit.bmp"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'
@@ -53,6 +57,9 @@ bitmap_image image;
 bitmap_image space_image;
 
 bitmap_image cloth_image;
+
+bitmap_image menu_start_image;
+bitmap_image menu_quit_image;
 
 #define BVECO(X) btVector3(X[0], X[1], X[2])
 #define OVECB(X) OpenMesh::Vec3f(X.x(), X.y(), X.z())

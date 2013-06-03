@@ -52,6 +52,14 @@ GLuint TextureRender::textureID() const {
     return textureID_;
 }
 
+GLuint TextureRender::width() const {
+	return width_;
+}
+
+GLuint TextureRender::height() const {
+	return height_;
+}
+
 void TextureRender::bind() {
 	glPushAttrib(GL_VIEWPORT_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID_);
