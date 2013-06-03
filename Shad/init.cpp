@@ -286,6 +286,17 @@ namespace Window
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			
 			((Character *)PolyMesh::Meshes[0])->RigidBody->setWalkDirection(WalkDirection);
+			btTransform transform = ((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->getWorldTransform();
+			cout << transform.getOrigin().getY() << endl;
+			if (transform.getOrigin().getY() < -30.0) {
+				cout << "Below the treshold" << endl;
+				btTransform id;
+				id.setIdentity();
+				((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->setWorldTransform(id);
+
+			}
+						//Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
@@ -316,7 +327,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);

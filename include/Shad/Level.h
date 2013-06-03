@@ -27,6 +27,7 @@ class Level {
 		string LEVEL;
 		string EXT;
 		string filename;
+		btTransform origin;
 };
 
 #endif
