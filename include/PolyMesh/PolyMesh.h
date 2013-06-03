@@ -10,7 +10,8 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
-#define RADIANS(angle) (angle*2*((float)M_PI)/360.0f)
+#define RADIANS(angle) (angle*((float)M_PI)/180.0f)
+#define DEGREES(angle) (angle*180.0f/(float)M_PI)
 
 struct PolyTraits : public OpenMesh::DefaultTraits
 {  
@@ -48,7 +49,7 @@ public:
 	bool AnimationRepeat;
 
 	btRigidBody *RigidBody;
-	bool Cloth;
+	bool cloth, lightning, character;
 
 	PolyMesh();
 

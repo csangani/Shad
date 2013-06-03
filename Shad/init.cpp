@@ -422,7 +422,7 @@ int main (int argc, char **argv)
 	Window::texRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
 
 	// Initialize Physics
-	Physics::InitializePhysics();
+	//Physics::InitializePhysics();
 
 	// Load Mesh
 	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));

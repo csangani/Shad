@@ -1,5 +1,10 @@
 #include <btBulletDynamicsCommon.h>
 
+#include <BulletDynamics\Character\btCharacterControllerInterface.h>
+#include <BulletDynamics\Character\btKinematicCharacterController.h>
+#include <BulletCollision\CollisionDispatch\btGhostObject.h>
+
+
 class Physics
 {
 public:
