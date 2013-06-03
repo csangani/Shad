@@ -424,18 +424,13 @@ int main (int argc, char **argv)
 	// Initialize Physics
 	Physics::InitializePhysics();
 
-	/*
 	// Load Mesh
 	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
 	Mesh->AttachShader(TOON_SHADER);
 	Mesh->RigidBody->setRollingFriction(0.3f);
 	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
 	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-	*/
-
-	Level * one = new Level(1);
-	one->generateMesh(TOON_SHADER, OBJECT, Diffuse, Ambient, Specular, Shininess, image, TEXTURE);
-
+	
 	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0,0,1), OpenMesh::Vec3f(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
@@ -444,19 +439,30 @@ int main (int argc, char **argv)
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
+	
+	
+	
+	Level * one = new Level(1);
 	one->generateBlocks(TOON_SHADER, space_image);
 	
 	// Set Mesh and Plane Material Parameters
+	Mesh->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
 
+	Mesh->MaterialDiffuse = Diffuse;
 	Cloak->MaterialDiffuse = Diffuse;
 
+	Mesh->MaterialAmbient = Ambient;
 	Cloak->MaterialAmbient = Ambient;
 
+	Mesh->MaterialShininess = Shininess;
 	Cloak->MaterialShininess = Shininess;
 
-	
+	// Apply Texture to Mesh
+	image = bitmap_image(TEXTURE);
+	image.rgb_to_bgr();
+	Mesh->ApplyTexture(image.data(), image.width(), image.height());
+
 	// Setup Lights
 	GLfloat LightPosition[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
@@ -471,6 +477,8 @@ int main (int argc, char **argv)
 	glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);
 
 	glEnable(GL_LIGHT0);
+
+	Mesh->EnableLighting();
 
 	Game::Direction = btVector3(0,0,-1);
 
