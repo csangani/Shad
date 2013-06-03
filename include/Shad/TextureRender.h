@@ -7,6 +7,8 @@
 
 class TextureRender {
 public:
+	static void renderToScreen(GLuint texID, GLuint width, GLuint height, bool flipHorizontal, bool flipVertical);
+
     /**
      * Creates a new render buffer for render-to-texture.  When this
      * buffer is bound using the bind() method, all OpenGL rendering is

@@ -1,12 +1,14 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
-#include "Level.h"
+#include <Shad/Blur.h>
+#include <Shad/Level.h>
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
 #include <PolyMesh/Cloth.h>
 #include <PolyMesh/Character.h>
+#include <PolyMesh/Lightning.h>
 
 #include <ctime>
 
@@ -51,6 +53,9 @@ namespace Window
 
 	Game::Camera* Camera;
 	TextureRender *aaTexRenderTarget;
+	TextureRender *glowMapRenderTarget;
+	
+	Blur *blur;
 
 	// Post-processing Shader IDs
 	GLuint antialiasShaderID = 0;
@@ -60,6 +65,8 @@ namespace Window
 	GLuint menuQuitTex;
 
 	float MouseSensitivity;
+
+	Lightning *lightning;
 
 	void Reshape(int width, int height)
 	{
@@ -81,124 +88,52 @@ namespace Window
 	{
 		if (Game::gameState == Game::MenuState)
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glUseProgram(0);
 			
-			/* set orthographic projectionation */
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluOrtho2D(-1,1,-1,1);
-
-			/* draw textured quad */
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glEnable(GL_TEXTURE_2D);
 			if (Game::gameMenuState == Game::StartGameState)
-				glBindTexture(GL_TEXTURE_2D, menuStartTex);
-			else
-				glBindTexture(GL_TEXTURE_2D, menuQuitTex);
-
-			glBegin(GL_QUADS);
-				glColor3f(1.f, 1.f, 1.f);
-				glNormal3f(0, 0, 1);
-				glTexCoord2f(0.f, 1.f);
-				glVertex3f(-1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex3f(1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 0.f);
-				glVertex3f(1.f, 1.f, 0.f);
-				glTexCoord2f(0.f, 0.f);
-				glVertex3f(-1.f, 1.f, 0.f);
-			glEnd();
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
-
-			glViewport(0, 0, Window::Width, Window::Height);
+				TextureRender::renderToScreen(menuStartTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::QuitGameState)
+				TextureRender::renderToScreen(menuQuitTex, Window::Width, Window::Height, false, true);
 
 			glutSwapBuffers();
 		}
 		else if (Game::gameState == Game::PlayState)
 		{
-			/* Render the scene to a texture */
-			aaTexRenderTarget->bind();
+			glUseProgram(0);
+			glowMapRenderTarget->bind();
 
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				/* Set camera position and direction */
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-
-				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
-
-				Character *character = (Character *)PolyMesh::Meshes[0];
-				btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
-				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
-
-				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
-
-				/* Draw objects (AFTER setting camera) */
-				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-
-				glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
-
-				aaTexRenderTarget->unbind();
-
-			/* Render texture to full-screen quad */
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				/* use anti-aliasing shader */
-				//glUseProgram(Window::antialiasShaderID);
+			/* Set camera position and direction */
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
 
-				/* set orthographic projectionation */
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-				gluOrtho2D(-1,1,-1,1);
+			gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-				/* draw textured quad */
-				glMatrixMode(GL_MODELVIEW);
-				glLoadIdentity();
-				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D, aaTexRenderTarget->textureID());
+			Character *character = (Character *)PolyMesh::Meshes[0];
+			btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
+			Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
-				//// bind texture to shader sampler
-				//if (Window::antialiasShaderID != 0) {
-				//	GLint texture = glGetUniformLocation(Window::antialiasShaderID, "texture");
-				//	if (texture != -1)
-				//		glUniform1i(texture, 0);
+			gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
-				//	GLint hasTexture = glGetUniformLocation(Window::antialiasShaderID, "hasTexture");
-				//	if (hasTexture != -1)
-				//		glUniform1f(hasTexture, 1.f);
+			// Draw objects
+			//std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			lightning->Draw();
 
-				//	GLint textureSize = glGetUniformLocation(Window::antialiasShaderID, "textureSize");
-				//	if (textureSize != -1)
-				//		glUniform2f(textureSize, aaTexRenderTarget->width(), aaTexRenderTarget->height());
-				//}
+			//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
+			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
-				glBegin(GL_QUADS);
-				glNormal3f(0, 0, 1);
-				glTexCoord2f(0.f, 0.f);
-				glVertex3f(-1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 0.f);
-				glVertex3f(1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex3f(1.f, 1.f, 0.f);
-				glTexCoord2f(0.f, 1.f);
-				glVertex3f(-1.f, 1.f, 0.f);
-				glEnd();
+			glowMapRenderTarget->unbind();
 
-				glBindTexture(GL_TEXTURE_2D, 0);
-				glDisable(GL_TEXTURE_2D);
+			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
 
-				glViewport(0, 0, Window::Width, Window::Height);
-
-			/* return to fixed-func */
-			glUseProgram(0);
+			TextureRender::renderToScreen(blurredTexID, Window::Width, Window::Height, false, false);
 
 			glutSwapBuffers();
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
+			glUseProgram(0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			/* TODO: add pause menu */
 			glutSwapBuffers();
@@ -381,7 +316,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -465,8 +400,10 @@ int main (int argc, char **argv)
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
-	// Crete render-to-texture target (4x)
+	// Crete render-to-texture targets
 	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
+	Window::glowMapRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
 
 	// Initialize Physics
 	Physics::InitializePhysics();
@@ -512,7 +449,9 @@ int main (int argc, char **argv)
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
-	Level * one = new Level(1);
+	Window::lightning = new Lightning(OVEC3F(-1.f, -1.f, -1.f), OVEC3F(1.f, 1.f, 1.f));
+
+	Level *one = new Level(1);
 	one->generateBlocks(TOON_SHADER, space_image);
 
 	// Set Mesh and Plane Material Parameters
