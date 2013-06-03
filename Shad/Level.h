@@ -11,6 +11,7 @@
 
 #include <PolyMesh/PolyMesh.h>
 
+#include "Platform.h"
 
 using namespace std;
 

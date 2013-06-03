@@ -17,26 +17,35 @@ Level::Level(int level) {
 
 	
 void Level::generateBlocks(string shader, bitmap_image& space_image) {
-	PolyMesh *Plane;
+	Platform *Box;
+	Platform *Box2;
+	Platform *Box3;
 	switch(_level) {
 		case 1:
-			Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(0,-1,0));
-			//Plane->AttachShader(shader);
-			Plane->RigidBody->setRollingFriction(0.8f);
-			Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+			string cube = "assets\\obj\\cube.obj";
+			string texture = "assets\\bmp\\checkerboard.bmp";
+			Box = new Platform(cube);
+			Box->Scale(1, 1, 10);
+			Box->Translate(0,-10,0);
+			Box->Texture(space_image, texture);
 
-			space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-			space_image.rgb_to_bgr();
-			Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+			Box2 = new Platform(cube);
+			Box2->Scale(1, 10, 2);
+			Box2->Translate(0,-10,-2);
+			Box2->Texture(space_image, texture);
+	/*		
 	
-			PolyMesh *Plane2 = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(10,10,10))->Translate(OpenMesh::Vec3f(10,-1,10));
-			//	Plane2->AttachShader(shader);
-			Plane2->RigidBody->setRollingFriction(0.8f);
-			Plane2->RigidBody->setAnisotropicFriction(Plane2->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+
+
+			Box3 = (new PolyMesh())->LoadObj("assets\\obj\\cube.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(2,2,2))->Translate(OpenMesh::Vec3f(0,-11,-7));
+			//Plane->AttachShader(shader);
+			Box3->RigidBody->setRollingFriction(0.8f);
+			Box3->RigidBody->setAnisotropicFriction(Box2->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
 			space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
 			space_image.rgb_to_bgr();
-			Plane2->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+			Box3->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+			*/
 			break;
 
 	};
