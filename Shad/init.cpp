@@ -1,6 +1,7 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
+#include "Level.h"
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -511,14 +512,8 @@ int main (int argc, char **argv)
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
-	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OVEC3F(1000,1000,1000))->Translate(OVEC3F(0,-1,0));
-	Plane->AttachShader(TOON_SHADER);
-	Plane->RigidBody->setRollingFriction(0.3f);
-	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-
-	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-	space_image.rgb_to_bgr();
-	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
+	Level * one = new Level(1);
+	one->generateBlocks(TOON_SHADER, space_image);
 
 	// Set Mesh and Plane Material Parameters
 	Mesh->MaterialSpecular = Specular;
