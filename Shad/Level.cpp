@@ -1,6 +1,6 @@
 #include <string>
 
-#include "Level.h"
+#include <Shad/Level.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>

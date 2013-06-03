@@ -76,6 +76,39 @@ void TextureRender::unbind() {
     glPopAttrib();
 }
 
+void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	/* set orthographic projectionation */
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(-1,1,-1,1);
+
+	/* draw textured quad */
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	glBegin(GL_QUADS);
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0.f, 0.f);
+	glVertex3f(-1.f, -1.f, 0.f);
+	glTexCoord2f(1.f, 0.f);
+	glVertex3f(1.f, -1.f, 0.f);
+	glTexCoord2f(1.f, 1.f);
+	glVertex3f(1.f, 1.f, 0.f);
+	glTexCoord2f(0.f, 1.f);
+	glVertex3f(-1.f, 1.f, 0.f);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+	glViewport(0, 0, width, height);
+}
+
 void TextureRender::writeToFile(std::string filename) {
 	long imageSize = width_ * height_ * 3;
 	unsigned char *img_data = new unsigned char[imageSize];
