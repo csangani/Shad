@@ -89,39 +89,11 @@ namespace Window
 		if (Game::gameState == Game::MenuState)
 		{
 			glUseProgram(0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			/* set orthographic projectionation */
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluOrtho2D(-1,1,-1,1);
-
-			/* draw textured quad */
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glEnable(GL_TEXTURE_2D);
 			if (Game::gameMenuState == Game::StartGameState)
-				glBindTexture(GL_TEXTURE_2D, menuStartTex);
-			else
-				glBindTexture(GL_TEXTURE_2D, menuQuitTex);
-
-			glBegin(GL_QUADS);
-				glColor3f(1.f, 1.f, 1.f);
-				glNormal3f(0, 0, 1);
-				glTexCoord2f(0.f, 1.f);
-				glVertex3f(-1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex3f(1.f, -1.f, 0.f);
-				glTexCoord2f(1.f, 0.f);
-				glVertex3f(1.f, 1.f, 0.f);
-				glTexCoord2f(0.f, 0.f);
-				glVertex3f(-1.f, 1.f, 0.f);
-			glEnd();
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
-
-			glViewport(0, 0, Window::Width, Window::Height);
+				TextureRender::renderToScreen(menuStartTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::QuitGameState)
+				TextureRender::renderToScreen(menuQuitTex, Window::Width, Window::Height, false, true);
 
 			glutSwapBuffers();
 		}
@@ -155,7 +127,7 @@ namespace Window
 
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
 
-			TextureRender::renderToScreen(blurredTexID, Window::Width, Window::Height);
+			TextureRender::renderToScreen(blurredTexID, Window::Width, Window::Height, false, false);
 
 			glutSwapBuffers();
 		}

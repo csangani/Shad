@@ -76,7 +76,7 @@ void TextureRender::unbind() {
     glPopAttrib();
 }
 
-void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height)
+void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height, bool flipHorizontal, bool flipVertical)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -91,17 +91,62 @@ void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texID);
 
-	glBegin(GL_QUADS);
-	glNormal3f(0, 0, 1);
-	glTexCoord2f(0.f, 0.f);
-	glVertex3f(-1.f, -1.f, 0.f);
-	glTexCoord2f(1.f, 0.f);
-	glVertex3f(1.f, -1.f, 0.f);
-	glTexCoord2f(1.f, 1.f);
-	glVertex3f(1.f, 1.f, 0.f);
-	glTexCoord2f(0.f, 1.f);
-	glVertex3f(-1.f, 1.f, 0.f);
-	glEnd();
+	if (flipHorizontal && flipVertical)
+	{
+		glBegin(GL_QUADS);
+		glNormal3f(0, 0, 1);
+		glTexCoord2f(1.f, 1.f);
+		glVertex3f(-1.f, -1.f, 0.f);
+		glTexCoord2f(0.f, 1.f);
+		glVertex3f(1.f, -1.f, 0.f);
+		glTexCoord2f(0.f, 0.f);
+		glVertex3f(1.f, 1.f, 0.f);
+		glTexCoord2f(1.f, 0.f);
+		glVertex3f(-1.f, 1.f, 0.f);
+		glEnd();
+	}
+	else if (flipHorizontal)
+	{
+		glBegin(GL_QUADS);
+		glNormal3f(0, 0, 1);
+		glTexCoord2f(1.f, 0.f);
+		glVertex3f(-1.f, -1.f, 0.f);
+		glTexCoord2f(0.f, 0.f);
+		glVertex3f(1.f, -1.f, 0.f);
+		glTexCoord2f(0.f, 1.f);
+		glVertex3f(1.f, 1.f, 0.f);
+		glTexCoord2f(1.f, 1.f);
+		glVertex3f(-1.f, 1.f, 0.f);
+		glEnd();
+	}
+	else if (flipVertical)
+	{
+		glBegin(GL_QUADS);
+		glNormal3f(0, 0, 1);
+		glTexCoord2f(0.f, 1.f);
+		glVertex3f(-1.f, -1.f, 0.f);
+		glTexCoord2f(1.f, 1.f);
+		glVertex3f(1.f, -1.f, 0.f);
+		glTexCoord2f(1.f, 0.f);
+		glVertex3f(1.f, 1.f, 0.f);
+		glTexCoord2f(0.f, 0.f);
+		glVertex3f(-1.f, 1.f, 0.f);
+		glEnd();
+	}
+	else
+	{
+		glBegin(GL_QUADS);
+		glNormal3f(0, 0, 1);
+		glTexCoord2f(0.f, 0.f);
+		glVertex3f(-1.f, -1.f, 0.f);
+		glTexCoord2f(1.f, 0.f);
+		glVertex3f(1.f, -1.f, 0.f);
+		glTexCoord2f(1.f, 1.f);
+		glVertex3f(1.f, 1.f, 0.f);
+		glTexCoord2f(0.f, 1.f);
+		glVertex3f(-1.f, 1.f, 0.f);
+		glEnd();
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
