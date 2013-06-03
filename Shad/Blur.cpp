@@ -1,15 +1,20 @@
 #include <Shad\Blur.h>
+#include <iostream>
 
 #define BLUR_SHADER "assets\\shaders\\blur"
 #define BLUR_AMOUNT 10
-#define BLUR_SCALE 2.f
-#define BLUR_STRENGTH 0.8f
+#define BLUR_SCALE 1.f
+#define BLUR_STRENGTH 0.5f
 
 Blur::Blur(GLuint width, GLuint height)
 {
 	horizontalTextureTarget = new TextureRender(width, height, GL_RGB);
 	verticalTextureTarget = new TextureRender(width, height, GL_RGB);
 	blurShader = new Shader(BLUR_SHADER);
+	if (!blurShader->loaded()) {
+		std::cerr << "Failed to load shader: " << blurShader->path() << std::endl;
+		std::cerr << blurShader->errors() << std::endl;
+	}
 }
 
 GLuint Blur::blurTexture(GLuint textureID)
@@ -26,7 +31,7 @@ void Blur::directionalBlur(GLuint textureID, int orientation)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/* use anti-aliasing shader */
+	/* use blur shader */
 	glUseProgram(blurShader->programID());
 
 	/* set orthographic projectionation */

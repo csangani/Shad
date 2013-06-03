@@ -2,6 +2,7 @@
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
 #include <Shad/Blur.h>
+#include <Shad/Blender.h>
 #include <Shad/Level.h>
 
 #include <PolyMesh/bitmap_image.h>
@@ -54,8 +55,10 @@ namespace Window
 	Game::Camera* Camera;
 	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
+	TextureRender *sceneRenderTarget;
 	
 	Blur *blur;
+	Blender *blender;
 
 	// Post-processing Shader IDs
 	GLuint antialiasShaderID = 0;
@@ -102,33 +105,61 @@ namespace Window
 			glUseProgram(0);
 			glowMapRenderTarget->bind();
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			/* Set camera position and direction */
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+				/* Set camera position and direction */
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
 
-			gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-			Character *character = (Character *)PolyMesh::Meshes[0];
-			btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
-			Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+				Character *character = (Character *)PolyMesh::Meshes[0];
+				btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
+				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
-			gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			//lightning->Draw();
 
-			//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
-			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
+				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
+				glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
 			glowMapRenderTarget->unbind();
 
+
+			/* ****** BLENDING EXPERIMENT ****** */
+			sceneRenderTarget->bind();
+
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				/* Set camera position and direction */
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+
+				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+
+				character = (Character *)PolyMesh::Meshes[0];
+				transform = character->RigidBody->getGhostObject()->getWorldTransform();
+				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+
+				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+
+				// Draw objects
+				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+				//lightning->Draw();
+
+				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
+				glViewport(0, 0, sceneRenderTarget->width(), sceneRenderTarget->height());
+			
+			sceneRenderTarget->unbind();
+
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
+			GLuint blendedTexID = blender->blendTextures(sceneRenderTarget->textureID(), blurredTexID);
 
-			TextureRender::renderToScreen(blurredTexID, Window::Width, Window::Height, false, false);
-
+			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+			
 			glutSwapBuffers();
 		}
 		else if (Game::gameState == Game::PauseState)
@@ -402,9 +433,11 @@ int main (int argc, char **argv)
 
 	// Crete render-to-texture targets
 	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
-	Window::glowMapRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
+	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-
+	Window::blender = new Blender(ADDITIVE, Window::sceneRenderTarget->width(), Window::sceneRenderTarget->height());
+	
 	// Initialize Physics
 	Physics::InitializePhysics();
 

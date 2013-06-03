@@ -18,15 +18,15 @@
 /// <summary>
 /// Uniform variables.
 /// <summary>
-uniform sampler2D Sample0;
-uniform sampler2D Sample1;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 uniform int BlendMode;
 
 
 /// <summary>
 /// Varying variables.
 /// <summary>
-varying vec2 vUv;
+varying vec2 texCoord;
 
 
 /// <summary>
@@ -34,8 +34,8 @@ varying vec2 vUv;
 /// <summary>
 void main ()
 {
-	vec4 dst = texture2D(Sample0, vUv); // rendered scene
-	vec4 src = texture2D(Sample1, vUv); // glowmap
+	vec4 dst = texture2D(texture1, texCoord); // rendered scene
+	vec4 src = texture2D(texture2, texCoord); // glowmap
 
 	if ( BlendMode == 0 )
 	{
