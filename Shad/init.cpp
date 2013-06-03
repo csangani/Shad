@@ -77,7 +77,11 @@ namespace Window
 		Height = height;
 
 		delete aaTexRenderTarget;
-		aaTexRenderTarget = new TextureRender(Width, Height, GL_RGB);
+		delete glowMapRenderTarget;
+		delete sceneRenderTarget;
+		aaTexRenderTarget = new TextureRender(Width, Height, GL_RGBA);
+		glowMapRenderTarget = new TextureRender(Width, Height, GL_RGBA);
+		sceneRenderTarget = new TextureRender(Width, Height, GL_RGBA);
 
 		glutPostRedisplay();
 	}
@@ -358,7 +362,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -370,7 +374,7 @@ int main (int argc, char **argv)
 		std::cerr << glewGetErrorString(error) << std::endl;
 		exit(-1);
 	}
-	if (!GLEW_VERSION_2_0)
+	if (!GLEW_VERSION_4_0)
 	{
 		std::cerr << "This program requires OpenGL 2.0 or higher." << std::endl;
 		const char *version = (const char *)glGetString(GL_VERSION);
@@ -443,9 +447,9 @@ int main (int argc, char **argv)
 	Window::Camera = new Game::Camera();
 
 	// Crete render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
-	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
-	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
+	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
+	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGBA);
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
 	Window::blender = new Blender(ADDITIVE, Window::sceneRenderTarget->width(), Window::sceneRenderTarget->height());
 	
@@ -484,11 +488,11 @@ int main (int argc, char **argv)
 	Mesh->RigidBody->setJumpSpeed(10.0f);
 	Mesh->RigidBody->setGravity(100.0f);
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
-	//Cloak->Pin(9,0,Mesh, Mesh->vertex_handle(3));
-	//Cloak->Pin(0,0,Mesh, Mesh->vertex_handle(2));
+	//Cloak->Pin(9,0,Mesh->RigidBody->getGhostObject(), new BVEC3F(-0.5f,0.2f,-0.3f));
+	//Cloak->Pin(0,0,Mesh->RigidBody->, new BVEC3F(0.5f,0.2f,-0.3f));
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());

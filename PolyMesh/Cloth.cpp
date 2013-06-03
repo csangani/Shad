@@ -1,7 +1,8 @@
 #include <PolyMesh\Cloth.h>
 #include <omp.h>
 
-Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength) : rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag) {
+Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength)
+	: rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag), damping(damping) {
 	__super::cloth = true;
 	btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
 	btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
@@ -29,7 +30,6 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 			Physics::DynamicsWorld->addRigidBody(body);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
-			body->setDamping(0.2f,0.2f);
 			body->setFriction(0.9f);
 			body->setHitFraction(0.9f);
 			body->setRollingFriction(0.9f);
@@ -48,9 +48,8 @@ Cloth::Cloth(float mass, float drag, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColV
 	}
 }
 
-btPoint2PointConstraint *Cloth::Pin(int row, int col, PolyMesh *M, VertexHandle H) {
-	btVector3 Pivot(M->point(H)[0], M->point(H)[1], M->point(H)[2]);
-	btPoint2PointConstraint *constraint = new btPoint2PointConstraint(*(M->RigidBody),*RigidBody[row][col],Pivot, btVector3(0,0,0));
+btPoint2PointConstraint *Cloth::Pin(int row, int col, btRigidBody *object, btVector3 *Pivot) {
+	btPoint2PointConstraint *constraint = new btPoint2PointConstraint(*(object),*RigidBody[row][col],*Pivot, btVector3(0,0,0));
 	constraint->setParam(BT_CONSTRAINT_STOP_CFM, 0);
 	constraint->setParam(BT_CONSTRAINT_STOP_ERP, 0.8f);
 	Physics::DynamicsWorld->addConstraint(constraint, true);
@@ -82,73 +81,97 @@ void Cloth::SimulationStep() {
 		if (i > 0) {
 			float dist = (RigidBody[i-1][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i-1][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i-1][j]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Bottom
 		if (i < rows-1) {
 			float dist = (RigidBody[i+1][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i+1][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i+1][j]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Left
 		if (j > 0) {
 			float dist = (RigidBody[i][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i][j-1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Right
 		if (j < columns-1) {
 			float dist = (RigidBody[i][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i][j+1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - segmentLength) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Top Right
 		if (i > 0 && j < columns-1) {
 			float dist = (RigidBody[i-1][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i-1][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i-1][j+1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Bottom Right
 		if (i < rows-1 && j < columns-1) {
 			float dist = (RigidBody[i+1][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i+1][j+1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i+1][j+1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Top Left
 		if (i > 0 && j > 0) {
 			float dist = (RigidBody[i-1][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i-1][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i-1][j-1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Stretch Bottom Left
 		if (i < rows-1 && j > 0) {
 			float dist = (RigidBody[i+1][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i+1][j-1]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i+1][j-1]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - diagonal) * stretch + dampForce, btVector3(0,0,0));
 		}
 		// Bend Top
 		if (i > 1) {
 			float dist = (RigidBody[i-2][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i-2][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i-2][j]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend + dampForce, btVector3(0,0,0));
 		}
 		// Bend Bottom
 		if (i < rows-2) {
 			float dist = (RigidBody[i+2][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i+2][j]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i+2][j]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend + dampForce, btVector3(0,0,0));
 		}
 		// Bend Left
 		if (j > 1) {
 			float dist = (RigidBody[i][j-2]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i][j-2]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i][j-2]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend + dampForce, btVector3(0,0,0));
 		}
 		// Bend Right
 		if (j < columns-2) {
 			float dist = (RigidBody[i][j+2]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).length();
 			btVector3 dir = (RigidBody[i][j+2]->getCenterOfMassPosition()-RigidBody[i][j]->getCenterOfMassPosition()).normalized();
-			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend, btVector3(0,0,0));
+			btVector3 relVel = (-RigidBody[i][j+2]->getLinearVelocity() + RigidBody[i][j]->getLinearVelocity())/2;
+			btVector3 dampForce = -dir * relVel.dot(dir) * damping;
+			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend + dampForce, btVector3(0,0,0));
 		}
 	}
 	
