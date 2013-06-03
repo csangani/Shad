@@ -1,4 +1,4 @@
-#include "Platform.h"
+#include <Shad/Platform.h>
 
 Platform::Platform(string model) {
 	platform = (new PolyMesh())->LoadObj(model)->GenerateRigidBody();
@@ -13,6 +13,10 @@ void Platform::Scale(float scalex, float scaley, float scalez) {
 
 void Platform::Translate(float tx, float ty, float tz) {
 	platform->Translate(OpenMesh::Vec3f(tx, ty, tz));
+}
+
+void Platform::Rotate(float angle, float x, float y, float z) {
+	platform->Rotate(angle, x, y, z);
 }
 
 void Platform::Texture(bitmap_image & image, string texture) {

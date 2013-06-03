@@ -117,8 +117,8 @@ namespace Window
 			gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
 			// Draw objects
-			//std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-			lightning->Draw();
+			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			//lightning->Draw();
 
 			//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
 			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
