@@ -1,9 +1,11 @@
 #include <string>
 
 #include <Shad/Level.h>
+#include <Shad/Platform.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
+
 
 
 using namespace std;
@@ -12,7 +14,7 @@ Level::Level(int level) {
 	_level = level;
 	LEVEL = "level";
 	EXT = ".ext";
-	filename = LEVEL +  to_string(level) + EXT;
+	//filename = LEVEL +  to_string(level) + EXT;
 }
 
 	
@@ -20,6 +22,14 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 	Platform *Box;
 	Platform *Box2;
 	Platform *Box3;
+	Platform *Box4;
+	Platform *Box5;
+	Platform *Box6;
+	Platform *Box7;
+	Platform *Box8;
+	Platform *Box9;
+	Platform *Box10;
+	Platform *Box11;
 	switch(_level) {
 		case 1:
 			string cube = "assets\\obj\\cube.obj";
@@ -30,22 +40,61 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 			Box->Texture(space_image, texture);
 
 			Box2 = new Platform(cube);
-			Box2->Scale(1, 10, 2);
-			Box2->Translate(0,-10,-2);
+			Box2->Scale(1, 5, 1);
+			Box2->Translate(0,-13,-6);
 			Box2->Texture(space_image, texture);
-	/*		
+
+			Box3 = new Platform(cube);
+			Box3->Scale(1, 1, 5);
+			Box3->Translate(2,-10,0);
+			Box3->Texture(space_image, texture);
+
+			Box4 = new Platform(cube);
+			Box4->Scale(1, 1, 5);
+			Box4->Translate(-2,-10,0);
+			Box4->Texture(space_image, texture);
+
+			Box5 = new Platform(cube);
+			Box5->Scale(1, 5, 1);
+			Box5->Translate(0,-15,-8);
+			Box5->Texture(space_image, texture);
+
+			Box6 = new Platform(cube);
+			Box6->Scale(2, 2, 2);
+			Box6->Translate(0,-15,-11);
+			Box6->Rotate(45, 0, 1, 1);
+			Box6->Texture(space_image, texture);
 	
+			Box7 = new Platform(cube);
+			Box7->Scale(10, 2, 2);
+			Box7->Translate(0,-15,-14);
+			Box7->Rotate(35, 1, 0, 0);
+			Box7->Texture(space_image, texture);
 
+			Box8 = new Platform(cube);
+			Box8->Scale(8, 2, 2);
+			Box8->Translate(0,-15,-16);
+			Box8->Rotate(35, 1, 0, 0);
+			Box8->Texture(space_image, texture);
 
-			Box3 = (new PolyMesh())->LoadObj("assets\\obj\\cube.obj")->GenerateRigidBody()->Scale(OpenMesh::Vec3f(2,2,2))->Translate(OpenMesh::Vec3f(0,-11,-7));
-			//Plane->AttachShader(shader);
-			Box3->RigidBody->setRollingFriction(0.8f);
-			Box3->RigidBody->setAnisotropicFriction(Box2->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+			Box9 = new Platform(cube);
+			Box9->Scale(6, 2, 2);
+			Box9->Translate(0,-15,-18);
+			Box9->Rotate(35, 1, 0, 0);
+			Box9->Texture(space_image, texture);
 
-			space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-			space_image.rgb_to_bgr();
-			Box3->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
-			*/
+			Box10 = new Platform(cube);
+			Box10->Scale(4, 2, 2);
+			Box10->Translate(0,-15,-20);
+			Box10->Rotate(35, 1, 0, 0);
+			Box10->Texture(space_image, texture);
+			
+			Box11 = new Platform(cube);
+			Box11->Scale(2, 2, 2);
+			Box11->Translate(0,-15,-22);
+			Box11->Texture(space_image, texture);
+			
+
 			break;
 
 	};
