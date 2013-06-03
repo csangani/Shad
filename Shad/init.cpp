@@ -7,6 +7,8 @@
 #include <PolyMesh/Cloth.h>
 #include <PolyMesh/Character.h>
 
+#include "Level.h"
+
 #include <ctime>
 
 #include <GL/glew.h>
@@ -365,16 +367,19 @@ int main (int argc, char **argv)
 	// Initialize Physics
 	Physics::InitializePhysics();
 
+	/*
 	// Load Mesh
-	Character *Mesh = new Character();
-	Mesh->LoadObj(OBJECT);
-	Mesh->GenerateCharacter();
-	//Mesh->Translate(OVEC3F(0,-0.5f,0));
+	PolyMesh *Mesh = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
 	Mesh->AttachShader(TOON_SHADER);
-	Mesh->RigidBody->setJumpSpeed(10.0f);
-	Mesh->RigidBody->setGravity(100.0f);
+	Mesh->RigidBody->setRollingFriction(0.3f);
+	Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
+	Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
+	*/
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
+	Level * one = new Level(1);
+	one->generateMesh(TOON_SHADER, OBJECT, Diffuse, Ambient, Specular, Shininess, image, TEXTURE);
+
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, OpenMesh::Vec3f(-1,0,0), OpenMesh::Vec3f(0,0,1), OpenMesh::Vec3f(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
 	//Cloak->Pin(9,0,Mesh, Mesh->vertex_handle(3));
@@ -383,33 +388,18 @@ int main (int argc, char **argv)
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
-	PolyMesh *Plane = (new PolyMesh())->LoadObj("assets\\obj\\plane.obj")->GenerateRigidBody()->Scale(OVEC3F(1000,1000,1000))->Translate(OVEC3F(0,-1,0));
-	Plane->AttachShader(TOON_SHADER);
-	Plane->RigidBody->setRollingFriction(0.3f);
-	Plane->RigidBody->setAnisotropicFriction(Plane->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-
-	space_image = bitmap_image("assets\\bmp\\checkerboard.bmp");
-	space_image.rgb_to_bgr();
-	Plane->ApplyTexture(space_image.data(), space_image.width(), space_image.height());
-
+	one->generateBlocks(TOON_SHADER, space_image);
+	
 	// Set Mesh and Plane Material Parameters
-	Mesh->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
 
-	Mesh->MaterialDiffuse = Diffuse;
 	Cloak->MaterialDiffuse = Diffuse;
 
-	Mesh->MaterialAmbient = Ambient;
 	Cloak->MaterialAmbient = Ambient;
 
-	Mesh->MaterialShininess = Shininess;
 	Cloak->MaterialShininess = Shininess;
 
-	// Apply Texture to Mesh
-	image = bitmap_image(TEXTURE);
-	image.rgb_to_bgr();
-	Mesh->ApplyTexture(image.data(), image.width(), image.height());
-
+	
 	// Setup Lights
 	GLfloat LightPosition[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
@@ -424,8 +414,6 @@ int main (int argc, char **argv)
 	glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);
 
 	glEnable(GL_LIGHT0);
-
-	Mesh->EnableLighting();
 
 	Game::Direction = BVEC3F(0,0,-1);
 
