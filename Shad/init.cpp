@@ -87,9 +87,15 @@ namespace Window
 		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
 		delete sceneRenderTarget;
-		aaTexRenderTarget = new TextureRender(Width, Height, GL_RGBA);
-		glowMapRenderTarget = new TextureRender(Width, Height, GL_RGBA);
+		delete motionRenderTarget1;
+		delete motionRenderTarget2;
+		delete motionRenderTarget3;
+		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
+		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
 		sceneRenderTarget = new TextureRender(Width, Height, GL_RGBA);
+		motionRenderTarget1 = new TextureRender(Width, Height, GL_RGBA);
+		motionRenderTarget2 = new TextureRender(Width, Height, GL_RGBA);
+		motionRenderTarget3 = new TextureRender(Width, Height, GL_RGBA);
 
 		glutPostRedisplay();
 	}
@@ -403,9 +409,9 @@ int main (int argc, char **argv)
 		std::cerr << glewGetErrorString(error) << std::endl;
 		exit(-1);
 	}
-	if (!GLEW_VERSION_4_0)
+	if (!GLEW_VERSION_3_0)
 	{
-		std::cerr << "This program requires OpenGL 2.0 or higher." << std::endl;
+		std::cerr << "This program requires OpenGL 3.0 or higher." << std::endl;
 		const char *version = (const char *)glGetString(GL_VERSION);
 		std::cerr << "Your current version is: " << version << std::endl;
 		exit(-1);
