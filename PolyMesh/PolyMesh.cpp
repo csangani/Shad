@@ -20,7 +20,7 @@ PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)),
 	ShadeMode(GL_SMOOTH), MaterialFaceMode(GL_FRONT_AND_BACK), Lighting(false),
 	Animated(false), ShaderID(0), cloth(false), MaterialAmbient(NULL),
 	MaterialDiffuse(NULL), MaterialShininess(NULL), MaterialEmission(NULL),
-	MaterialSpecular(NULL), Color(NULL), lightning(false), character(false)
+	MaterialSpecular(NULL), Color(NULL), lightning(false), character(false), platform(false)
 {
 	Meshes.push_back(this);
 }

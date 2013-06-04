@@ -3,6 +3,7 @@
 #include <Shad/TextureRender.h>
 #include <Shad/Blur.h>
 #include <Shad/Blender.h>
+#include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
 
 #include <PolyMesh/bitmap_image.h>
@@ -35,6 +36,9 @@ namespace Game
 		TeleportingState
 	};
 
+	uint64_t teleportStartTime = 0;
+	uint64_t teleportDuration = 1000;
+
 	GameState gameState = MenuState;
 	GameMenuState gameMenuState = StartGameState;
 	CharacterState characterState = DefaultState;
@@ -56,9 +60,13 @@ namespace Window
 	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTarget;
+	TextureRender *motionRenderTarget1;
+	TextureRender *motionRenderTarget2;
+	TextureRender *motionRenderTarget3;
 	
 	Blur *blur;
 	Blender *blender;
+	MotionBlur *motionBlur;
 
 	// Post-processing Shader IDs
 	GLuint antialiasShaderID = 0;
@@ -123,9 +131,9 @@ namespace Window
 
 				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
-			// Draw objects
-			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-			//lightning->Draw();
+				// Draw objects
+				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+				//lightning->Draw();
 
 				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
 				glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
@@ -162,6 +170,14 @@ namespace Window
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
 			GLuint blendedTexID = blender->blendTextures(sceneRenderTarget->textureID(), blurredTexID);
 
+			/* TODO: store current frame on motionBlur object
+				perform actual blur on frames only if teleporting */
+			//GLuint texIDs[3] = {motionRenderTarget1->textureID(), motionRenderTarget2->textureID(), motionRenderTarget3->textureID()};
+			//GLuint motionBlurredTexID = motionBlur->blurFrames(3, &texIDs[0]);
+
+			/* TODO: perform antialiasing */
+
+			/* render final texture to the screen */
 			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
 			
 			glutSwapBuffers();
@@ -217,7 +233,12 @@ namespace Window
 			Game::moveRight = true;
 			break;
 		case '\t':
-			((Character *)PolyMesh::Meshes[0])->RigidBody->setVelocityForTimeInterval(Game::Direction*20.0f, 10000000);
+			if (!((Character *)PolyMesh::Meshes[0])->RigidBody->canJump()) {
+				Game::characterState = Game::TeleportingState;
+				((Character *)PolyMesh::Meshes[0])->RigidBody->setVelocityForTimeInterval(Game::Direction*50.0f, (float)Game::teleportDuration/8000.f);
+				((Character *)PolyMesh::Meshes[0])->RigidBody->setFallSpeed(0.0);
+				Game::teleportStartTime = PolyMesh::Time;
+			}
 			break;
 		case JUMP:
 			((Character *)PolyMesh::Meshes[0])->RigidBody->jump();
@@ -302,6 +323,14 @@ namespace Window
 		{
 			PolyMesh::Time += (uint64_t) FRAME_PERIOD;
 
+			/* update teleporting state if done */
+			if (PolyMesh::Time - Game::teleportStartTime > Game::teleportDuration/4 - 100) {
+				Game::characterState = Game::DefaultState;
+				// need to reset fallspeed
+				btScalar gravity = ((Character *)PolyMesh::Meshes[0])->RigidBody->getGravity();
+				((Character *)PolyMesh::Meshes[0])->RigidBody->setFallSpeed(gravity);
+			}
+
 			/* Simulate Physics */
 			Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
 
@@ -320,17 +349,17 @@ namespace Window
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			
-			((Character *)PolyMesh::Meshes[0])->RigidBody->setWalkDirection(WalkDirection);
+			if (Game::characterState != Game::TeleportingState)
+				((Character *)PolyMesh::Meshes[0])->RigidBody->setWalkDirection(WalkDirection);
+			
+			/* reset position on death */
 			btTransform transform = ((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->getWorldTransform();
-			cout << transform.getOrigin().getY() << endl;
 			if (transform.getOrigin().getY() < -30.0) {
-				cout << "Below the treshold" << endl;
 				btTransform id;
 				id.setIdentity();
 				((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->setWorldTransform(id);
-
+				Game::Direction = BVEC3F(0,0,-1);
 			}
-						//Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
 		}
 		else if (Game::gameState == Game::PauseState)
@@ -446,12 +475,18 @@ int main (int argc, char **argv)
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
-	// Crete render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
-	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
-	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGBA);
+	// Create render-to-texture targets
+	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
+	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
+	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::motionRenderTarget1 = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::motionRenderTarget2 = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	Window::motionRenderTarget3 = new TextureRender(Window::Width, Window::Height, GL_RGB);
+
+	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
 	Window::blender = new Blender(ADDITIVE, Window::sceneRenderTarget->width(), Window::sceneRenderTarget->height());
+	Window::motionBlur = new MotionBlur(Window::Width, Window::Height);
 	
 	// Initialize Physics
 	Physics::InitializePhysics();
@@ -485,7 +520,7 @@ int main (int argc, char **argv)
 	Mesh->GenerateCharacter();
 	//Mesh->Translate(OVEC3F(0,-0.5f,0));
 	Mesh->AttachShader(TOON_SHADER);
-	Mesh->RigidBody->setJumpSpeed(10.0f);
+	Mesh->RigidBody->setJumpSpeed(20.0f);
 	Mesh->RigidBody->setGravity(100.0f);
 
 	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);

@@ -23,6 +23,8 @@ class Level {
 	void generateMesh(string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture); 
 
 	private:
+		void createPlatform(float scaleX, float scaleY, float scaleZ, float translateX, float translateY, float translateZ, float rotationAngle = 0, float rotateX = 0, float rotateY = 0, float rotateZ = 0);
+
 		int _level;
 		string LEVEL;
 		string EXT;
