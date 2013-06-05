@@ -137,7 +137,7 @@ namespace Window
 				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 
 				// Draw objects
-				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+				//std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 				//lightning->Draw();
 
 				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
@@ -523,6 +523,9 @@ int main (int argc, char **argv)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_quit_image.width(), menu_quit_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_quit_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Load Mesh
 	Game::Shad = new Character();
 	Game::Shad->LoadObj(OBJECT);
@@ -542,7 +545,7 @@ int main (int argc, char **argv)
 
 	Window::lightning = new Lightning(OVEC3F(-1.f, -1.f, -1.f), OVEC3F(1.f, 1.f, 1.f));
 
-	Level *one = new Level(1);
+	Level *one = new Level(2);
 	one->generateBlocks(TOON_SHADER, space_image);
 
 	// Set Mesh and Plane Material Parameters
