@@ -23,5 +23,21 @@ Character *Character::GenerateCharacter() {
 	RigidBody = new btKinematicCharacterController(GO, ConvexShape, 0.35);
 	Physics::DynamicsWorld->addCollisionObject(GO, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
 	Physics::DynamicsWorld->addAction(RigidBody);
+	
+	btVector3 localInertia(0.0f,0.0f,0.0f);
+	btScalar m(0.0f);
+	transform = RigidBody->getGhostObject()->getWorldTransform();
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
+	Dummy = new btRigidBody(rbInfo);
+	Dummy->setContactProcessingThreshold(0.05f);
+	Physics::DynamicsWorld->addRigidBody(Dummy, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::DebrisFilter);
+	Dummy->setUserPointer(this);
+	return this;
+}
+
+Character *Character::SyncDummy() {
+	Dummy->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
+
 	return this;
 }

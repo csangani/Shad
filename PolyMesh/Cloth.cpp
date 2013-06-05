@@ -27,7 +27,7 @@ Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenM
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
 			btRigidBody *body = new btRigidBody(rbInfo);
 			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body);
+			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter | btBroadphaseProxy::DebrisFilter);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
 			body->setFriction(0.9f);
@@ -36,6 +36,7 @@ Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenM
 			body->setRestitution(0.0f);
 			body->setGravity(btVector3(0,-1.0f,0));
 			body->setSleepingThresholds(0.2f,0.2f);
+			body->setUserPointer(this);
 		}
 	}
 
@@ -51,7 +52,7 @@ Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenM
 btPoint2PointConstraint *Cloth::Pin(int row, int col, btRigidBody *object, btVector3 *Pivot) {
 	btPoint2PointConstraint *constraint = new btPoint2PointConstraint(*(object),*RigidBody[row][col],*Pivot, btVector3(0,0,0));
 	constraint->setParam(BT_CONSTRAINT_STOP_CFM, 0);
-	constraint->setParam(BT_CONSTRAINT_STOP_ERP, 0.8f);
+	constraint->setParam(BT_CONSTRAINT_STOP_ERP, 0.7f);
 	Physics::DynamicsWorld->addConstraint(constraint, true);
 	return constraint;
 }

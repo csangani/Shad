@@ -49,6 +49,8 @@ namespace Game
 	bool moveLeft = false;
 	bool moveBackward = false;
 	bool moveRight = false;
+
+	Character *Shad;
 }
 
 namespace Window
@@ -129,8 +131,7 @@ namespace Window
 
 				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-				Character *character = (Character *)PolyMesh::Meshes[0];
-				btTransform transform = character->RigidBody->getGhostObject()->getWorldTransform();
+				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
 				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
 				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
@@ -155,8 +156,7 @@ namespace Window
 
 				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
-				character = (Character *)PolyMesh::Meshes[0];
-				transform = character->RigidBody->getGhostObject()->getWorldTransform();
+				transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
 				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
 				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
@@ -241,15 +241,15 @@ namespace Window
 			Game::moveRight = true;
 			break;
 		case '\t':
-			if (!((Character *)PolyMesh::Meshes[0])->RigidBody->canJump()) {
+			if (!((Character *)Game::Shad)->RigidBody->canJump()) {
 				Game::characterState = Game::TeleportingState;
-				((Character *)PolyMesh::Meshes[0])->RigidBody->setVelocityForTimeInterval(Game::Direction*50.0f, (float)Game::teleportDuration/8000.f);
-				((Character *)PolyMesh::Meshes[0])->RigidBody->setFallSpeed(0.0);
+				((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(Game::Direction*50.0f, (float)Game::teleportDuration/8000.f);
+				((Character *)Game::Shad)->RigidBody->setFallSpeed(0.0);
 				Game::teleportStartTime = PolyMesh::Time;
 			}
 			break;
 		case JUMP:
-			((Character *)PolyMesh::Meshes[0])->RigidBody->jump();
+			((Character *)Game::Shad)->RigidBody->jump();
 			break;
 		default:
 			break;
@@ -316,7 +316,7 @@ namespace Window
 			DeltaY = y - Window::Height/2;
 
 			Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -DeltaX*MouseSensitivity);
-			PolyMesh::Meshes[0]->Rotate(DEGREES(-DeltaX*MouseSensitivity),0,1,0);
+			Game::Shad->Rotate(DEGREES(-DeltaX*MouseSensitivity),0,1,0);
 			glutWarpPointer(Window::Width/2, Window::Height/2);
 		}
 	}
@@ -335,12 +335,13 @@ namespace Window
 			if (PolyMesh::Time - Game::teleportStartTime > Game::teleportDuration/4 - 100) {
 				Game::characterState = Game::DefaultState;
 				// need to reset fallspeed
-				btScalar gravity = ((Character *)PolyMesh::Meshes[0])->RigidBody->getGravity();
-				((Character *)PolyMesh::Meshes[0])->RigidBody->setFallSpeed(gravity);
+				btScalar gravity = ((Character *)Game::Shad)->RigidBody->getGravity();
+				((Character *)Game::Shad)->RigidBody->setFallSpeed(gravity);
 			}
 
 			/* Simulate Physics */
 			Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
+			Game::Shad->SyncDummy();
 
 			for (unsigned int i = 0; i < PolyMesh::Meshes.size(); i++)
 				if (PolyMesh::Meshes[i]->cloth)
@@ -358,14 +359,14 @@ namespace Window
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			
 			if (Game::characterState != Game::TeleportingState)
-				((Character *)PolyMesh::Meshes[0])->RigidBody->setWalkDirection(WalkDirection);
+				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
 			
 			/* reset position on death */
-			btTransform transform = ((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->getWorldTransform();
+			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
 			if (transform.getOrigin().getY() < -30.0) {
 				btTransform id;
 				id.setIdentity();
-				((Character *)PolyMesh::Meshes[0])->RigidBody->getGhostObject()->setWorldTransform(id);
+				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 				Game::Direction = BVEC3F(0,0,-1);
 			}
 
@@ -523,19 +524,18 @@ int main (int argc, char **argv)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Load Mesh
-	Character *Mesh = new Character();
-	Mesh->LoadObj(OBJECT);
-	Mesh->GenerateCharacter();
-	//Mesh->Translate(OVEC3F(0,-0.5f,0));
-	Mesh->AttachShader(TOON_SHADER);
-	Mesh->RigidBody->setJumpSpeed(20.0f);
-	Mesh->RigidBody->setGravity(100.0f);
+	Game::Shad = new Character();
+	Game::Shad->LoadObj(OBJECT);
+	Game::Shad->GenerateCharacter();
+	Game::Shad->AttachShader(TOON_SHADER);
+	Game::Shad->RigidBody->setJumpSpeed(20.0f);
+	Game::Shad->RigidBody->setGravity(100.0f);
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,0,0.5f),10,10,1.2f,0.6f,0.1f);
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,1.0f,0.3f),10,10,1.2f,0.1f,0.1f);
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
-	//Cloak->Pin(9,0,Mesh->RigidBody->getGhostObject(), new BVEC3F(-0.5f,0.2f,-0.3f));
-	//Cloak->Pin(0,0,Mesh->RigidBody->, new BVEC3F(0.5f,0.2f,-0.3f));
+	//Cloak->Pin(9,0,Game::Shad->Dummy, new BVEC3F(-0.5f,1.0f,0.3f));
+	//Cloak->Pin(0,0,Game::Shad->Dummy, new BVEC3F(0.5f,1.0f,0.3f));
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
@@ -546,22 +546,22 @@ int main (int argc, char **argv)
 	one->generateBlocks(TOON_SHADER, space_image);
 
 	// Set Mesh and Plane Material Parameters
-	Mesh->MaterialSpecular = Specular;
+	Game::Shad->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
 
-	Mesh->MaterialDiffuse = Diffuse;
+	Game::Shad->MaterialDiffuse = Diffuse;
 	Cloak->MaterialDiffuse = Diffuse;
 
-	Mesh->MaterialAmbient = Ambient;
+	Game::Shad->MaterialAmbient = Ambient;
 	Cloak->MaterialAmbient = Ambient;
 
-	Mesh->MaterialShininess = Shininess;
+	Game::Shad->MaterialShininess = Shininess;
 	Cloak->MaterialShininess = Shininess;
 
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);
 	image.rgb_to_bgr();
-	Mesh->ApplyTexture(image.data(), image.width(), image.height());
+	Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
 
 	// Setup Lights
 	GLfloat LightPosition[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -578,7 +578,7 @@ int main (int argc, char **argv)
 
 	glEnable(GL_LIGHT0);
 
-	Mesh->EnableLighting();
+	Game::Shad->EnableLighting();
 
 	Game::Direction = BVEC3F(0,0,-1);
 

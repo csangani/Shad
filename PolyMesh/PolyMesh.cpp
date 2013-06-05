@@ -921,6 +921,7 @@ PolyMesh *PolyMesh::SetMass(float mass)
 	RigidBody = new btRigidBody(rbInfo);
 	RigidBody->setContactProcessingThreshold(0.05f);
 	Physics::DynamicsWorld->addRigidBody(RigidBody);
+	RigidBody->setUserPointer(this);
 	return this;
 }
 
@@ -945,6 +946,7 @@ PolyMesh *PolyMesh::GenerateRigidBody()
 	RigidBody = new btRigidBody(rbInfo);
 	RigidBody->setContactProcessingThreshold(0.0f);
 	Physics::DynamicsWorld->addRigidBody(RigidBody);
+	RigidBody->setUserPointer(this);
 	return this;
 }
 
