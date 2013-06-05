@@ -50,56 +50,67 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 			platform = new Platform(cube);
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
 			platform->Translate(0, -5, -3);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(5, 1, 5);
 			platform->Translate(0, -5, -8);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(5, 10, 1);
 			platform->Translate(0, -11, -14);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 10, 5);
 			platform->Translate(3, -11, -16);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 4, 5);
 			platform->Translate(-2, -8, -16);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(10, 1, 5);
 			platform->Translate(-6, -12, -16);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(5, 10, 1);
 			platform->Translate(0, -11, -18);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
 			platform->Translate(-13, -10, -14);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
 			platform->Translate(-13, -10, -19);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(5, 1, 6);
 			platform->Translate(-12, -8, -16);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(5, 1, 6);
 			platform->Translate(-14, -10, -16);
+			platforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(2, 2, 2);
 			platform->Translate(-20, -10, -16);
-			
-			
+			platforms.push_back(platform);
 
 			break;
 	};

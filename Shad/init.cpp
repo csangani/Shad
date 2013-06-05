@@ -388,6 +388,7 @@ namespace Window
 			if (distance < 1.0) {
 				Game::currentLevel = new Level(2);
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
+				Game::currentLevel->drawPlatformEdges();
 				btTransform id;
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
