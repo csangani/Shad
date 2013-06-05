@@ -76,6 +76,7 @@ void PlatformEdge::RenderCylinder(float x1, float y1, float z1, float x2,float y
 	float rx = -vy*vz;
 	float ry = vx*vz;
 	glPushMatrix();
+	glLoadIdentity();
 
 	//hardcoding red color for edge
 	glColor3f(1.0,0.0,0.0);

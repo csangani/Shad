@@ -144,7 +144,7 @@ void Level::drawPlatformEdges()
 }
 
 void Level::destroyPlatforms() {
-	for(int i = 0; i < platforms.size(); i++) {
+	for(unsigned int i = 0; i < platforms.size(); i++) {
 		Platform * p =  platforms[i];
 		delete p;
 	}
