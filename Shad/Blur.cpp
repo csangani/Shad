@@ -8,8 +8,8 @@
 
 Blur::Blur(GLuint width, GLuint height)
 {
-	horizontalTextureTarget = new TextureRender(width, height, GL_RGB);
-	verticalTextureTarget = new TextureRender(width, height, GL_RGB);
+	horizontalTextureTarget = new TextureRender(width, height, GL_RGBA);
+	verticalTextureTarget = new TextureRender(width, height, GL_RGBA);
 	blurShader = new Shader(BLUR_SHADER);
 	if (!blurShader->loaded()) {
 		std::cerr << "Failed to load shader: " << blurShader->path() << std::endl;

@@ -11,6 +11,8 @@ varying vec2 texCoord;
 
 void main ()
 {
+	vec4 redColor = vec4(1.0, 0.0, 0.0, 1.0);
+
 	vec4 color1 = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 color2 = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 color3 = vec4(0.0, 0.0, 0.0, 1.0);
@@ -28,6 +30,16 @@ void main ()
 	if (numFrames > 4)
 		color5 = texture2D(frame5, texCoord);
 
-	vec4 finalColor = (color1+color2+color3+color4+color5)/numFrames;
+	vec4 finalColor;
+	if (numFrames = 5)
+		finalColor = color1 * vec4(1.0, 1.0, 1.0, 0.2) + color2 * vec4(1.0, 1.0, 1.0, 0.4) + color3 * vec4(1.0, 1.0, 1.0, 0.6) + color4 * vec4(1.0, 1.0, 1.0, 0.8) + color5;
+	else if (numFrames = 4)
+		finalColor = color1 * vec4(1.0, 1.0, 1.0, 0.4) + color2 * vec4(1.0, 1.0, 1.0, 0.6) + color3 * vec4(1.0, 1.0, 1.0, 0.8) + color4;
+	else if (numFrames = 3)
+		finalColor = color1 * vec4(1.0, 1.0, 1.0, 0.6) + color2 * vec4(1.0, 1.0, 1.0, 0.8) + color3;
+	else if (numFrames = 2)
+		finalColor = color1 * vec4(1.0, 1.0, 1.0, 0.8) + color2;
+	else
+		finalColor = color1;
 	gl_FragColor = vec4(min(finalColor.r, 1.0), min(finalColor.g, 1.0), min(finalColor.b, 1.0), 1.0);
 }

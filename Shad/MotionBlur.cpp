@@ -11,7 +11,7 @@ MotionBlur::MotionBlur(GLuint width, GLuint height, GLuint numFrames)
 	frames_.reserve(numFrames_ + 1);
 
 	// set up render-to-texture target and shader
-	motionBlurTarget_ = new TextureRender(width, height, GL_RGB);
+	motionBlurTarget_ = new TextureRender(width, height, GL_RGBA);
 	motionBlurShader_ = new Shader(MOTION_BLUR_SHADER);
 	if (!motionBlurShader_->loaded()) {
 		std::cerr << "Failed to load shader: " << motionBlurShader_->path() << std::endl;
