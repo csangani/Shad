@@ -60,9 +60,8 @@ namespace Window
 	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTarget;
-	TextureRender *motionRenderTarget1;
-	TextureRender *motionRenderTarget2;
-	TextureRender *motionRenderTarget3;
+	TextureRender *motionRenderTargets[NUM_BLUR_FRAMES];
+	GLuint currBlurFrame = 0;
 	
 	Blur *blur;
 	Blender *blender;
@@ -84,18 +83,20 @@ namespace Window
 		Width = width;
 		Height = height;
 
+		// resize render targets
 		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
 		delete sceneRenderTarget;
-		delete motionRenderTarget1;
-		delete motionRenderTarget2;
-		delete motionRenderTarget3;
+		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
+			delete motionRenderTargets[i];
 		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
 		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
 		sceneRenderTarget = new TextureRender(Width, Height, GL_RGBA);
-		motionRenderTarget1 = new TextureRender(Width, Height, GL_RGBA);
-		motionRenderTarget2 = new TextureRender(Width, Height, GL_RGBA);
-		motionRenderTarget3 = new TextureRender(Width, Height, GL_RGBA);
+		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
+			motionRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
+
+		// clear frames from motion blur object
+		motionBlur->clearFrames();
 
 		glutPostRedisplay();
 	}
@@ -146,9 +147,8 @@ namespace Window
 
 			glowMapRenderTarget->unbind();
 
-
-			/* ****** BLENDING EXPERIMENT ****** */
-			sceneRenderTarget->bind();
+			/* render entire scene to the current motion blur frame */
+			motionRenderTargets[currBlurFrame]->bind();
 
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -169,17 +169,20 @@ namespace Window
 				//lightning->Draw();
 
 				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
-				glViewport(0, 0, sceneRenderTarget->width(), sceneRenderTarget->height());
+				glViewport(0, 0, motionRenderTargets[currBlurFrame]->width(), motionRenderTargets[currBlurFrame]->height());
 			
-			sceneRenderTarget->unbind();
+			motionRenderTargets[currBlurFrame]->unbind();
 
+			/* apply glow effect */
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
-			GLuint blendedTexID = blender->blendTextures(sceneRenderTarget->textureID(), blurredTexID);
+			GLuint blendedTexID = blender->blendTextures(motionRenderTargets[currBlurFrame]->textureID(), blurredTexID);
 
-			/* TODO: store current frame on motionBlur object
-				perform actual blur on frames only if teleporting */
-			//GLuint texIDs[3] = {motionRenderTarget1->textureID(), motionRenderTarget2->textureID(), motionRenderTarget3->textureID()};
-			//GLuint motionBlurredTexID = motionBlur->blurFrames(3, &texIDs[0]);
+			/* apply motion blur */
+			/*motionBlur->addFrame(motionRenderTargets[currBlurFrame]->textureID());
+			std::cout << "added frame: " << motionRenderTargets[currBlurFrame]->textureID() << std::endl;
+			motionBlur->printFrames();
+			GLuint motionBlurredTexID = motionBlur->blurFrames();
+			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;*/
 
 			/* TODO: perform antialiasing */
 
@@ -485,14 +488,13 @@ int main (int argc, char **argv)
 	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
 	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
-	Window::motionRenderTarget1 = new TextureRender(Window::Width, Window::Height, GL_RGB);
-	Window::motionRenderTarget2 = new TextureRender(Window::Width, Window::Height, GL_RGB);
-	Window::motionRenderTarget3 = new TextureRender(Window::Width, Window::Height, GL_RGB);
+	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
+		Window::motionRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGB);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-	Window::blender = new Blender(ADDITIVE, Window::sceneRenderTarget->width(), Window::sceneRenderTarget->height());
-	Window::motionBlur = new MotionBlur(Window::Width, Window::Height);
+	Window::blender = new Blender(ADDITIVE, Window::Width, Window::Height);
+	Window::motionBlur = new MotionBlur(Window::Width, Window::Height, NUM_BLUR_FRAMES);
 	
 	// Initialize Physics
 	Physics::InitializePhysics();

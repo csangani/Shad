@@ -1,6 +1,8 @@
 #ifndef __MOTION_BLUR_H_
 #define __MOTION_BLUR_H_
 
+#include <vector>
+
 #include <Shad/TextureRender.h>
 #include <Shad\Shader.h>
 #include <GL/glew.h>
@@ -10,17 +12,21 @@
 
 class MotionBlur {
 public:
-	MotionBlur(GLuint width, GLuint height);
-	GLuint blurFrames(GLuint numFrames, GLuint *texIDs);
+	MotionBlur(GLuint width, GLuint height, GLuint numFrames);
 
 	void addFrame(GLuint texID);
+	GLuint blurFrames();
+
+	void clearFrames();
+
+	void printFrames();
 
 private:
-	TextureRender *motionBlurTarget;
-	Shader *motionBlurShader;
+	TextureRender *motionBlurTarget_;
+	Shader *motionBlurShader_;
 
-	// store vector of frames? (texrendertargets?)
-	// push back frames until we have 5, then pop like a queue
+	GLuint numFrames_;
+	std::vector<GLuint> frames_;
 };
 
 #endif

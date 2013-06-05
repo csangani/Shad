@@ -1,5 +1,6 @@
 uniform int numFrames;
 
+// frame1 is the oldest, frame<numFrames> is the newest
 uniform sampler2D frame1;
 uniform sampler2D frame2;
 uniform sampler2D frame3;

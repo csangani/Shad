@@ -3,27 +3,37 @@
 
 #define MOTION_BLUR_SHADER "assets\\shaders\\motionblur"
 
-MotionBlur::MotionBlur(GLuint width, GLuint height)
+MotionBlur::MotionBlur(GLuint width, GLuint height, GLuint numFrames)
 {
-	motionBlurTarget = new TextureRender(width, height, GL_RGB);
-	motionBlurShader = new Shader(MOTION_BLUR_SHADER);
-	if (!motionBlurShader->loaded()) {
-		std::cerr << "Failed to load shader: " << motionBlurShader->path() << std::endl;
-		std::cerr << motionBlurShader->errors() << std::endl;
+	// initialize frames_, limit number of frames
+	numFrames_ = (numFrames > MAX_FRAMES) ? MAX_FRAMES : numFrames;
+	frames_.clear();
+	frames_.reserve(numFrames_ + 1);
+
+	// set up render-to-texture target and shader
+	motionBlurTarget_ = new TextureRender(width, height, GL_RGB);
+	motionBlurShader_ = new Shader(MOTION_BLUR_SHADER);
+	if (!motionBlurShader_->loaded()) {
+		std::cerr << "Failed to load shader: " << motionBlurShader_->path() << std::endl;
+		std::cerr << motionBlurShader_->errors() << std::endl;
 	}
 }
 
-GLuint MotionBlur::blurFrames(GLuint numFrames, GLuint *texIDs)
+void MotionBlur::addFrame(GLuint texID)
 {
-	// Limit of 5 frames max for performance
-	if (numFrames > MAX_FRAMES)
-		return -1;
-	motionBlurTarget->bind();
+	frames_.push_back(texID);
+	if (frames_.size() > numFrames_)
+		frames_.erase(frames_.begin());
+}
+
+GLuint MotionBlur::blurFrames()
+{
+	motionBlurTarget_->bind();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* use blend shader */
-	glUseProgram(motionBlurShader->programID());
+	glUseProgram(motionBlurShader_->programID());
 
 	/* set orthographic projectionation */
 	glMatrixMode(GL_PROJECTION);
@@ -36,48 +46,17 @@ GLuint MotionBlur::blurFrames(GLuint numFrames, GLuint *texIDs)
 	glEnable(GL_TEXTURE_2D);
 
 	/* bind textures to shader samplers */
-	for (unsigned int i = 0; i < MAX_FRAMES; i++) {
-		if (numFrames > i) {
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, texIDs[i]);
-			std::string varName = "frame";
-			varName += i;
-			GLint frame = glGetUniformLocation(motionBlurShader->programID(), varName.c_str());
-			glUniform1i(frame, i);
-		}
+	for (unsigned int i = 0; i < frames_.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, frames_[i]);
+		std::string varName = "frame";
+		varName += i;
+		GLint frame = glGetUniformLocation(motionBlurShader_->programID(), varName.c_str());
+		glUniform1i(frame, i);
 	}
-	/*if (numFrames > 0) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texIDs[0]);
-		GLint texture1 = glGetUniformLocation(motionBlurShader->programID(), "frame1");
-		glUniform1i(texture1, 0);
-	}
-	if (numFrames > 1) {
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texIDs[1]);
-		GLint texture2 = glGetUniformLocation(motionBlurShader->programID(), "frame2");
-		glUniform1i(texture2, 1);
-	}
-	if (numFrames > 2) {
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texIDs[2]);
-		GLint texture3 = glGetUniformLocation(motionBlurShader->programID(), "frame3");
-		glUniform1i(texture3, 2);
-	}
-	if (numFrames > 3) {
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, texIDs[3]);
-		GLint texture4 = glGetUniformLocation(motionBlurShader->programID(), "frame4");
-		glUniform1i(texture4, 3);
-	}
-	if (numFrames > 4) {
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, texIDs[4]);
-		GLint texture5 = glGetUniformLocation(motionBlurShader->programID(), "frame5");
-		glUniform1i(texture5, 4);
-	}*/
-	GLint numFramesLoc = glGetUniformLocation(motionBlurShader->programID(), "numFrames");
-	glUniform1i(numFramesLoc, numFrames);
+
+	GLint numFramesLoc = glGetUniformLocation(motionBlurShader_->programID(), "numFrames");
+	glUniform1i(numFramesLoc, frames_.size());
 
 	/* draw full screen quad with textures */
 	glBegin(GL_QUADS);
@@ -95,12 +74,24 @@ GLuint MotionBlur::blurFrames(GLuint numFrames, GLuint *texIDs)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 
-	glViewport(0, 0, motionBlurTarget->width(), motionBlurTarget->height());
+	glViewport(0, 0, motionBlurTarget_->width(), motionBlurTarget_->height());
 
-	motionBlurTarget->unbind();
+	motionBlurTarget_->unbind();
 
 	glUseProgram(0);
 	glActiveTexture(GL_TEXTURE0);
 
-	return motionBlurTarget->textureID();
+	return motionBlurTarget_->textureID();
+}
+
+void MotionBlur::clearFrames()
+{
+	frames_.clear();
+}
+
+void MotionBlur::printFrames()
+{
+	std::cout << "frames_ contents:" << std::endl;
+	for (unsigned int i = 0; i < frames_.size(); i++)
+		std::cout << "\tindex " << i << " - " << frames_[i] << std::endl;
 }

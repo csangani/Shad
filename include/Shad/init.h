@@ -8,6 +8,8 @@
 
 #define NUM_THREADS 8
 
+#define NUM_BLUR_FRAMES 5
+
 #define OBJECT "assets\\obj\\Platformer-tri.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
 #define DEFAULT_SHADER "assets\\shaders\\default"
