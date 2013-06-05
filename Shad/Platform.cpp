@@ -22,6 +22,8 @@ Platform::Platform(std::string model) {
 }
 
 Platform::~Platform() {
+	Physics::DynamicsWorld->removeRigidBody(platformMesh->RigidBody);
+	delete platformMesh->RigidBody;
 	delete platformMesh;
 }
 

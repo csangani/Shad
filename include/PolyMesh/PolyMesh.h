@@ -1,6 +1,8 @@
 #ifndef POLYMESH_H
 #define POLYMESH_H
 
+#include <list>
+
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
 #include <Shad/Shader.h>
@@ -30,7 +32,7 @@ class PolyMesh : public OpenMesh::PolyMesh_ArrayKernelT<PolyTraits>
 {
 public:
 
-	static std::vector<PolyMesh *> Meshes;
+	static std::list<PolyMesh *> Meshes;
 	static uint64_t Time;
 
 	OpenMesh::Vec3f max;
@@ -58,6 +60,8 @@ public:
 	bool cloth, lightning, character, platform;
 
 	PolyMesh();
+
+	~PolyMesh();
 
 	PolyMesh *ApplyTexture(const unsigned char *, int, int);
 

@@ -27,7 +27,8 @@ class Level {
 
 	void setTarget(float x, float y , float z);
 	void destroyPlatforms();
-
+	
+	void changeUp();
 	
 	void drawPlatformEdges();
 

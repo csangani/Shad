@@ -4,6 +4,8 @@
 #include <omp.h>
 #include <limits>
 
+#include <list>
+
 #include <PolyMesh/PolyMesh.h>
 #include <PolyMesh/util.h>
 #include <PolyMesh/Character.h>
@@ -12,7 +14,7 @@
 
 #include <GL/glut.h>
 
-std::vector<PolyMesh *> PolyMesh::Meshes = std::vector<PolyMesh *>();
+std::list<PolyMesh *> PolyMesh::Meshes = std::list<PolyMesh *>();
 uint64_t PolyMesh::Time = 0;
 
 PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)), 
@@ -23,6 +25,10 @@ PolyMesh::PolyMesh() : max(OpenMesh::Vec3f(FLT_MIN, FLT_MIN, FLT_MIN)),
 	MaterialSpecular(NULL), Color(NULL), lightning(false), character(false), platform(false)
 {
 	Meshes.push_back(this);
+}
+
+PolyMesh::~PolyMesh() {
+	Meshes.remove(this);
 }
 
 PolyMesh *PolyMesh::ApplyTexture(const unsigned char *data, int width, int height)

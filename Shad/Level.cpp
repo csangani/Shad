@@ -116,6 +116,10 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 	};
 }
 
+void Level::changeUp() {
+	_level++;
+}
+
 void Level::createPlatform(float scaleX, float scaleY, float scaleZ, float translateX, float translateY, float translateZ, float rotationAngle, float rotateX, float rotateY, float rotateZ)
 {
 	string cube = "assets\\obj\\cube.obj";
@@ -144,6 +148,7 @@ void Level::destroyPlatforms() {
 		Platform * p =  platforms[i];
 		delete p;
 	}
+	platforms.clear();
 }
 
 void Level::generateMesh (string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture)

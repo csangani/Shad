@@ -351,9 +351,9 @@ namespace Window
 			Physics::DynamicsWorld->stepSimulation(1.0f/FRAME_RATE, 20, 1.0f/FRAME_RATE);
 			Game::Shad->SyncDummy();
 
-			for (unsigned int i = 0; i < PolyMesh::Meshes.size(); i++)
-				if (PolyMesh::Meshes[i]->cloth)
-					((Cloth *)PolyMesh::Meshes[i])->SimulationStep();
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++)
+				if ((*i)->cloth)
+					((Cloth *)(*i))->SimulationStep();
 
 			BVEC3F WalkDirection(0,0,0);
 			/* Character Controls */
@@ -386,7 +386,8 @@ namespace Window
 			float distance = xD*xD + yD*yD + zD*zD;
 			distance = sqrt(distance);
 			if (distance < 1.0) {
-				Game::currentLevel = new Level(2);
+				Game::currentLevel->destroyPlatforms();
+				Game::currentLevel->changeUp();
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 				Game::currentLevel->drawPlatformEdges();
 				btTransform id;
