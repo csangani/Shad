@@ -1,7 +1,6 @@
 #include <string>
 
 #include <Shad/Level.h>
-#include <Shad/Platform.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
@@ -14,27 +13,37 @@ Level::Level(int level) {
 	_level = level;
 	LEVEL = "level";
 	EXT = ".ext";
-	//filename = LEVEL +  to_string(level) + EXT;
+	platforms = std::vector<Platform *>();
 }
 
 	
 void Level::generateBlocks(string shader, bitmap_image& space_image) {
 	switch(_level) {
 		case 1:
-			//string texture = "assets\\bmp\\checkerboard.bmp";
-			//Box2->Texture(space_image, texture);
+			string cube = "assets\\obj\\cube.obj";
 			
-			createPlatform(1,1,10,0,-10,0);
-			createPlatform(1,5,1,0,-13,-6);
-			createPlatform(1,1,5,2,-10,0);
-			createPlatform(1,1,5,-2,-10,0);
-			createPlatform(1,5,1,0,-15,-8);
-			createPlatform(2,2,2,0,-15,-11,45,0,1,1);
-			createPlatform(10,2,2,0,-15,-14,35,1,0,0);
-			createPlatform(8,2,2,0,-15,-16,35,1,0,0);
-			createPlatform(6,2,2,0,-15,-18,35,1,0,0);
-			createPlatform(4,2,2,0,-15,-20,35,1,0,0);
-			createPlatform(2,2,2,0,-15,-22);
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
+
+			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
+
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
+
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
+
+			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
+
+			platforms.push_back((new Platform(cube))->Rotate(45, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
+
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
+
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
+
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(6, 2, 2)->Translate(0,-15,-18));
+
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
+
+			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
+
 			break;
 	};
 }
@@ -43,10 +52,22 @@ void Level::createPlatform(float scaleX, float scaleY, float scaleZ, float trans
 {
 	string cube = "assets\\obj\\cube.obj";
 	Platform *platform = new Platform(cube);
-	platform->Scale(scaleX, scaleY, scaleZ);
-	platform->Translate(translateX, translateY, translateZ);
 	if (rotationAngle > 0) {
 		platform->Rotate(rotationAngle, rotateX, rotateY, rotateZ);
+	}
+	platform->Scale(scaleX, scaleY, scaleZ);
+	platform->Translate(translateX, translateY, translateZ);
+	platforms.push_back(platform);
+}
+
+void Level::drawPlatformEdges()
+{
+	for (unsigned int i = 0; i < platforms.size(); i++) {
+		Platform *platform = platforms[i];
+		for (unsigned int j = 0; j < platform->edges.size(); j++) {
+			PlatformEdge *edge = platform->edges[j];
+			edge->Draw();
+		}
 	}
 }
 

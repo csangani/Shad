@@ -11,6 +11,9 @@ class Quaternion
 public:
 	Quaternion() : _w(1.0f), _x(0.0f), _y(0.0f), _z(0.0f){}
 	Quaternion(float w, float x, float y, float z) : _w(w), _x(x), _y(y), _z(z){}
+	
+	Quaternion(float angle, OpenMesh::Vec3f axis);
+	OpenMesh::Vec3f Quaternion::Rotate(const OpenMesh::Vec3f vec);
 
 	Quaternion operator--() const;
 	Quaternion operator-() const;

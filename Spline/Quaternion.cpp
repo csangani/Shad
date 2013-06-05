@@ -1,6 +1,28 @@
 #include <Spline/Quaternion.h>
 #include <math.h>
 
+Quaternion::Quaternion(float angle, OpenMesh::Vec3f axis)
+{
+	float angleRad = angle*(float)M_PI/180.0f;
+    float wArg = cosf(angleRad/2);
+    float xArg = sinf(angleRad/2) * axis[0];
+    float yArg = sinf(angleRad/2) * axis[1];
+    float zArg = sinf(angleRad/2) * axis[2];
+    _w = wArg;
+    _x = xArg;
+    _y = yArg;
+    _z = zArg;
+}
+
+OpenMesh::Vec3f Quaternion::Rotate(const OpenMesh::Vec3f vec)
+{
+    Quaternion vecQ = Quaternion(0,vec[0],vec[1],vec[2]);
+    Quaternion conjugateQ = this->operator--();
+    Quaternion firstCross = vecQ.operator%(conjugateQ);
+    Quaternion secondCross = this->operator%(firstCross);
+	return OpenMesh::Vec3f(secondCross.x(),secondCross.y(),secondCross.z());
+}
+
 // Conjugate
 Quaternion Quaternion::operator--() const {
 	return Quaternion(_w, -_x, -_y, -_z);

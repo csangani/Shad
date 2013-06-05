@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include <Shad/Platform.h>
+
 #include <GL\glew.h>
 #include <GL\glut.h>
 #include <PolyMesh/bitmap_image.h>
@@ -21,6 +23,8 @@ class Level {
 
 	void generateBlocks(string shader, bitmap_image& space_image);
 	void generateMesh(string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture); 
+	
+	void drawPlatformEdges();
 
 	private:
 		void createPlatform(float scaleX, float scaleY, float scaleZ, float translateX, float translateY, float translateZ, float rotationAngle = 0, float rotateX = 0, float rotateY = 0, float rotateZ = 0);
@@ -30,6 +34,8 @@ class Level {
 		string EXT;
 		string filename;
 		btTransform origin;
+
+		std::vector<Platform *> platforms;
 };
 
 #endif

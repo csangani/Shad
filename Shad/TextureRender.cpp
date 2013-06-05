@@ -91,6 +91,7 @@ void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height, bo
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texID);
 
+	glColor4f(1.f, 1.f, 1.f, 1.f);
 	if (flipHorizontal && flipVertical)
 	{
 		glBegin(GL_QUADS);
