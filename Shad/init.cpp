@@ -51,6 +51,7 @@ namespace Game
 	bool moveRight = false;
 
 	Character *Shad;
+	Level * level;
 }
 
 namespace Window
@@ -370,6 +371,20 @@ namespace Window
 				Game::Direction = BVEC3F(0,0,-1);
 			}
 
+			/*Code to finish level*/
+			OpenMesh::Vec3f goal = Game::level->getTarget();
+			float xD = transform.getOrigin().getX() - goal[0];
+			float yD = transform.getOrigin().getY() - goal[1];
+			float zD = transform.getOrigin().getZ() - goal[2];
+			float distance = xD*xD + yD*yD + zD*zD;
+			distance = sqrt(distance);
+			if (distance < 1.0) {
+				Game::level = new Level(2);
+				Game::level->generateBlocks(TOON_SHADER, space_image);
+				btTransform id;
+				id.setIdentity();
+				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+			}
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
@@ -400,7 +415,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -545,8 +560,11 @@ int main (int argc, char **argv)
 
 	Window::lightning = new Lightning(OVEC3F(-1.f, -1.f, -1.f), OVEC3F(1.f, 1.f, 1.f));
 
-	Level *one = new Level(2);
-	one->generateBlocks(TOON_SHADER, space_image);
+	Game::level = new Level(1);
+	Game::level->generateBlocks(TOON_SHADER, space_image);
+
+	PolyMesh * dummy = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody();
+	dummy->Translate(OpenMesh::Vec3f(0, -14, -22));
 
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;

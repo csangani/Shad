@@ -15,6 +15,7 @@ class Platform {
 		void Translate(float tx, float ty, float tz);
 		void Rotate(float angle, float x, float y, float z);
 		void Platform::Texture(bitmap_image & image, std::string texture);
+		
 	private:
 		PolyMesh *platformMesh;
 		PolyMesh *edgesMesh;

@@ -23,23 +23,72 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 	Platform *platform;
 	switch(_level) {
 		case 1:
-			
 			platform = new Platform(cube);
 			platform->Scale(1, 1, 10);
 			platform->Translate(0, -10, 0);
+			platforms.push_back(platform);
+			delete platform;
+
+			platform = new Platform(cube);
+			platform->Scale(1, 5, 1);
+			platform->Translate(0,-13,-6);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(1, 1, 5);
+			platform->Translate(2,-10,0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(1, 1, 5);
+			platform->Translate(-2,-10,0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(1, 5, 1);
+			platform->Translate(0,-15,-8);
+			platforms.push_back(platform);
 
 
-			createPlatform(1,1,10,0,-10,0);
-			createPlatform(1,5,1,0,-13,-6);
-			createPlatform(1,1,5,2,-10,0);
-			createPlatform(1,1,5,-2,-10,0);
-			createPlatform(1,5,1,0,-15,-8);
-			createPlatform(2,2,2,0,-15,-11,45,0,1,1);
-			createPlatform(10,2,2,0,-15,-14,35,1,0,0);
-			createPlatform(8,2,2,0,-15,-16,35,1,0,0);
-			createPlatform(6,2,2,0,-15,-18,35,1,0,0);
-			createPlatform(4,2,2,0,-15,-20,35,1,0,0);
-			createPlatform(2,2,2,0,-15,-22);
+			platform = new Platform(cube);
+			platform->Scale(2, 2, 2);
+			platform->Translate(0,-15,-11);
+			platform->Rotate(45, 0, 1, 1);
+			platforms.push_back(platform);
+
+
+			platform = new Platform(cube);
+			platform->Scale(10, 2, 2);
+			platform->Translate(0,-15,-14);
+			platform->Rotate(35, 1, 0, 0);
+			platforms.push_back(platform);
+
+
+			platform = new Platform(cube);
+			platform->Scale(8, 2, 2);
+			platform->Translate(0,-15,-16);
+			platform->Rotate(35, 1, 0, 0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(6, 2, 2);
+			platform->Translate(0,-15,-18);
+			platform->Rotate(35, 1, 0, 0);
+			platforms.push_back(platform);
+
+
+			platform = new Platform(cube);
+			platform->Scale(4, 2, 2);
+			platform->Translate(0,-15,-20);
+			platform->Rotate(35, 1, 0, 0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(2, 2, 2);
+			platform->Translate(0,-15,-22);
+			platforms.push_back(platform);
+
+			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
 		case 2:
 			platform = new Platform(cube);
@@ -109,6 +158,13 @@ void Level::createPlatform(float scaleX, float scaleY, float scaleZ, float trans
 	}
 }
 
+void Level::destroyPlatforms() {
+	for(int i = 0; i < platforms.size(); i++) {
+		Platform * p =  platforms[i];
+		delete p;
+	}
+}
+
 void Level::generateMesh (string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture)
 {
 	PolyMesh *Mesh = (new PolyMesh())->LoadObj(object)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
@@ -130,4 +186,11 @@ void Level::generateMesh (string shader, string object, float Diffuse[], float A
 			Mesh->EnableLighting();
 	
 }
-	
+
+void Level::setTarget(float x, float y, float z) {
+	target = OpenMesh::Vec3f(x, y, z);
+}
+
+OpenMesh::Vec3f Level::getTarget() {
+	return target;
+}

@@ -18,6 +18,10 @@ Platform::Platform(std::string model) {
 
 }
 
+Platform::~Platform() {
+	delete platformMesh;
+}
+
 void Platform::Scale(float scalex, float scaley, float scalez) {
 	platformMesh->Scale(OpenMesh::Vec3f(scalex, scaley, scalez));
 }
