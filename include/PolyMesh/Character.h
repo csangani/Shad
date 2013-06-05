@@ -1,3 +1,6 @@
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
 #include <PolyMesh/PolyMesh.h>
 
 class Character : public PolyMesh {
@@ -11,3 +14,5 @@ public:
 	
 	Character *SyncDummy();
 };
+
+#endif

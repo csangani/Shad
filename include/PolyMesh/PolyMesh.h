@@ -16,10 +16,13 @@
 #define RADIANS(angle) (angle*((float)M_PI)/180.0f)
 #define DEGREES(angle) (angle*180.0f/(float)M_PI)
 
-#define BVECO(X) btVector3(X[0], X[1], X[2])
-#define OVECB(X) OpenMesh::Vec3f(X.x(), X.y(), X.z())
+#define BVECO(X) btVector3((X)[0], (X)[1], (X)[2])
+#define OVECB(X) OpenMesh::Vec3f((X).x(), (X).y(), (X).z())
 #define BVEC3F btVector3
 #define OVEC3F OpenMesh::Vec3f
+
+#define FRAME_RATE 60
+#define FRAME_PERIOD (1000.0/FRAME_RATE)
 
 struct PolyTraits : public OpenMesh::DefaultTraits
 {  

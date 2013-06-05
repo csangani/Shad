@@ -2,10 +2,6 @@
 
 #include <PolyMesh/bitmap_image.h>
 
-#define FRAME_RATE 60
-
-#define FRAME_PERIOD (1000.0/FRAME_RATE)
-
 #define NUM_THREADS 8
 
 #define NUM_BLUR_FRAMES 5
@@ -62,8 +58,3 @@ bitmap_image cloth_image;
 
 bitmap_image menu_start_image;
 bitmap_image menu_quit_image;
-
-#define BVECO(X) btVector3(X[0], X[1], X[2])
-#define OVECB(X) OpenMesh::Vec3f(X.x(), X.y(), X.z())
-#define BVEC3F btVector3
-#define OVEC3F OpenMesh::Vec3f
