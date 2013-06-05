@@ -59,8 +59,7 @@ namespace Window
 	Game::Camera* Camera;
 	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
-	TextureRender *sceneRenderTarget;
-	TextureRender *motionRenderTargets[NUM_BLUR_FRAMES];
+	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
 	
 	Blur *blur;
@@ -86,14 +85,12 @@ namespace Window
 		// resize render targets
 		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
-		delete sceneRenderTarget;
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-			delete motionRenderTargets[i];
+			delete sceneRenderTargets[i];
 		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
 		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
-		sceneRenderTarget = new TextureRender(Width, Height, GL_RGBA);
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-			motionRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
+			sceneRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
 
 		// clear frames from motion blur object
 		motionBlur->clearFrames();
@@ -147,8 +144,8 @@ namespace Window
 
 			glowMapRenderTarget->unbind();
 
-			/* render entire scene to the current motion blur frame */
-			motionRenderTargets[currBlurFrame]->bind();
+			/* render entire scene to the current frame */
+			sceneRenderTargets[currBlurFrame]->bind();
 
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -169,17 +166,19 @@ namespace Window
 				//lightning->Draw();
 
 				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
-				glViewport(0, 0, motionRenderTargets[currBlurFrame]->width(), motionRenderTargets[currBlurFrame]->height());
+				glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 			
-			motionRenderTargets[currBlurFrame]->unbind();
+			sceneRenderTargets[currBlurFrame]->unbind();
 
-			/* apply glow effect */
+			/* apply glow effect to current frame */
+			// blur the glow map
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
-			GLuint blendedTexID = blender->blendTextures(motionRenderTargets[currBlurFrame]->textureID(), blurredTexID);
+			// blend glow map with current frame
+			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[currBlurFrame]->textureID(), blurredTexID);
 
 			/* apply motion blur */
-			/*motionBlur->addFrame(motionRenderTargets[currBlurFrame]->textureID());
-			std::cout << "added frame: " << motionRenderTargets[currBlurFrame]->textureID() << std::endl;
+			/*motionBlur->addFrame(sceneRenderTargets[currBlurFrame]->textureID());
+			std::cout << "added frame: " << sceneRenderTargets[currBlurFrame]->textureID() << std::endl;
 			motionBlur->printFrames();
 			GLuint motionBlurredTexID = motionBlur->blurFrames();
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;*/
@@ -441,6 +440,7 @@ int main (int argc, char **argv)
 		std::cerr << "Failed to load shader: " << normalShader->path() << std::endl;
 		std::cerr << normalShader->errors() << std::endl;
 	}
+	/* TODO: abstract out the anit-alias phase, similar to Blur/Blender/MotionBlur classes */
 	Shader *antialiasShader = new Shader(ANTIALIAS_SHADER);
 	if (!antialiasShader->loaded()) {
 		std::cerr << "Failed to load shader: " << antialiasShader->path() << std::endl;
@@ -487,9 +487,8 @@ int main (int argc, char **argv)
 	// Create render-to-texture targets
 	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
-	Window::sceneRenderTarget = new TextureRender(Window::Width, Window::Height, GL_RGB);
 	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-		Window::motionRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGB);
+		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGB);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
@@ -499,6 +498,7 @@ int main (int argc, char **argv)
 	// Initialize Physics
 	Physics::InitializePhysics();
 
+	/* TODO: (potentially) abstract out into a Menu class */
 	// Load Menu Images
 	menu_start_image = bitmap_image(MENU_START_TEXTURE);
 	menu_start_image.rgb_to_bgr();
