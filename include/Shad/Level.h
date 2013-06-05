@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include <Shad/Platform.h>
+
 #include <GL\glew.h>
 #include <GL\glut.h>
 #include <PolyMesh/bitmap_image.h>
@@ -22,8 +24,12 @@ class Level {
 
 	void generateBlocks(string shader, bitmap_image& space_image);
 	void generateMesh(string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture); 
+
 	void setTarget(float x, float y , float z);
 	void destroyPlatforms();
+
+	
+	void drawPlatformEdges();
 
 	OpenMesh::Vec3f getTarget();
 	private:

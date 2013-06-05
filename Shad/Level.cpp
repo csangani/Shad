@@ -1,7 +1,6 @@
 #include <string>
 
 #include <Shad/Level.h>
-#include <Shad/Platform.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
@@ -14,7 +13,7 @@ Level::Level(int level) {
 	_level = level;
 	LEVEL = "level";
 	EXT = ".ext";
-	//filename = LEVEL +  to_string(level) + EXT;
+	platforms = std::vector<Platform *>();
 }
 
 	
@@ -23,70 +22,27 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 	Platform *platform;
 	switch(_level) {
 		case 1:
-			platform = new Platform(cube);
-			platform->Scale(1, 1, 10);
-			platform->Translate(0, -10, 0);
-			platforms.push_back(platform);
-			delete platform;
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
 
-			platform = new Platform(cube);
-			platform->Scale(1, 5, 1);
-			platform->Translate(0,-13,-6);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platform = new Platform(cube);
-			platform->Scale(1, 1, 5);
-			platform->Translate(2,-10,0);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
 
-			platform = new Platform(cube);
-			platform->Scale(1, 1, 5);
-			platform->Translate(-2,-10,0);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
 
-			platform = new Platform(cube);
-			platform->Scale(1, 5, 1);
-			platform->Translate(0,-15,-8);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
 
+			platforms.push_back((new Platform(cube))->Rotate(45, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
 
-			platform = new Platform(cube);
-			platform->Scale(2, 2, 2);
-			platform->Translate(0,-15,-11);
-			platform->Rotate(45, 0, 1, 1);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
 
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
 
-			platform = new Platform(cube);
-			platform->Scale(10, 2, 2);
-			platform->Translate(0,-15,-14);
-			platform->Rotate(35, 1, 0, 0);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(6, 2, 2)->Translate(0,-15,-18));
 
+			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
 
-			platform = new Platform(cube);
-			platform->Scale(8, 2, 2);
-			platform->Translate(0,-15,-16);
-			platform->Rotate(35, 1, 0, 0);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(6, 2, 2);
-			platform->Translate(0,-15,-18);
-			platform->Rotate(35, 1, 0, 0);
-			platforms.push_back(platform);
-
-
-			platform = new Platform(cube);
-			platform->Scale(4, 2, 2);
-			platform->Translate(0,-15,-20);
-			platform->Rotate(35, 1, 0, 0);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(2, 2, 2);
-			platform->Translate(0,-15,-22);
-			platforms.push_back(platform);
+			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
@@ -142,6 +98,8 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 			platform = new Platform(cube);
 			platform->Scale(2, 2, 2);
 			platform->Translate(-20, -10, -16);
+			
+			
 
 			break;
 	};
@@ -151,10 +109,22 @@ void Level::createPlatform(float scaleX, float scaleY, float scaleZ, float trans
 {
 	string cube = "assets\\obj\\cube.obj";
 	Platform *platform = new Platform(cube);
-	platform->Scale(scaleX, scaleY, scaleZ);
-	platform->Translate(translateX, translateY, translateZ);
 	if (rotationAngle > 0) {
 		platform->Rotate(rotationAngle, rotateX, rotateY, rotateZ);
+	}
+	platform->Scale(scaleX, scaleY, scaleZ);
+	platform->Translate(translateX, translateY, translateZ);
+	platforms.push_back(platform);
+}
+
+void Level::drawPlatformEdges()
+{
+	for (unsigned int i = 0; i < platforms.size(); i++) {
+		Platform *platform = platforms[i];
+		for (unsigned int j = 0; j < platform->edges.size(); j++) {
+			PlatformEdge *edge = platform->edges[j];
+			edge->Draw();
+		}
 	}
 }
 

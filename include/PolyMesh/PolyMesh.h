@@ -4,6 +4,7 @@
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
 #include <Shad/Shader.h>
+#include <Shad/PlatformEdge.h>
 #include <PolyMesh/AnimationRoutine.h>
 #include <PolyMesh/Physics.h>
 
@@ -92,6 +93,8 @@ public:
 	PolyMesh *SetMass(float);
 
 	PolyMesh *GenerateRigidBody();
+
+	std::vector<PlatformEdge *> GenerateEdges();
 
 	void Delete();
 

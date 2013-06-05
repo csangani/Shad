@@ -43,6 +43,8 @@ namespace Game
 	GameMenuState gameMenuState = StartGameState;
 	CharacterState characterState = DefaultState;
 
+	Level *currentLevel;
+
 	BVEC3F Direction;
 
 	bool moveForward = false;
@@ -51,7 +53,6 @@ namespace Game
 	bool moveRight = false;
 
 	Character *Shad;
-	Level * level;
 }
 
 namespace Window
@@ -140,8 +141,15 @@ namespace Window
 				// Draw objects
 				//std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 				//lightning->Draw();
+				// Render depth of occlusive objects
 
-				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
+				glColorMask(false,false,false,false);
+				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+
+				// Draw glowing objects
+				glColorMask(true,true,true,true);
+				Game::currentLevel->drawPlatformEdges();
+
 				glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
 			glowMapRenderTarget->unbind();
@@ -164,9 +172,8 @@ namespace Window
 
 				// Draw objects
 				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-				//lightning->Draw();
+				Game::currentLevel->drawPlatformEdges();
 
-				//glViewport(0, 0, aaTexRenderTarget->width(), aaTexRenderTarget->height());
 				glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 			
 			sceneRenderTargets[currBlurFrame]->unbind();
@@ -372,15 +379,15 @@ namespace Window
 			}
 
 			/*Code to finish level*/
-			OpenMesh::Vec3f goal = Game::level->getTarget();
+			OpenMesh::Vec3f goal = Game::currentLevel->getTarget();
 			float xD = transform.getOrigin().getX() - goal[0];
 			float yD = transform.getOrigin().getY() - goal[1];
 			float zD = transform.getOrigin().getZ() - goal[2];
 			float distance = xD*xD + yD*yD + zD*zD;
 			distance = sqrt(distance);
 			if (distance < 1.0) {
-				Game::level = new Level(2);
-				Game::level->generateBlocks(TOON_SHADER, space_image);
+				Game::currentLevel = new Level(2);
+				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 				btTransform id;
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
@@ -497,14 +504,18 @@ int main (int argc, char **argv)
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 
+	// Enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
 	// Create render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGB);
-	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGB);
+	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
+	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
 	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGB);
+		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGBA);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
@@ -560,8 +571,8 @@ int main (int argc, char **argv)
 
 	Window::lightning = new Lightning(OVEC3F(-1.f, -1.f, -1.f), OVEC3F(1.f, 1.f, 1.f));
 
-	Game::level = new Level(1);
-	Game::level->generateBlocks(TOON_SHADER, space_image);
+	Game::currentLevel = new Level(1);
+	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
 	PolyMesh * dummy = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody();
 	dummy->Translate(OpenMesh::Vec3f(0, -14, -22));

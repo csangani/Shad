@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <Shad/TextureRender.h>
-#include <Shad\Shader.h>
+#include <Shad/Shader.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
 

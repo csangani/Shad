@@ -6,7 +6,7 @@
 Blender::Blender(BlendMode mode, GLuint width, GLuint height) 
 {
 	mode_ = mode;
-	blendTarget = new TextureRender(width, height, GL_RGB);
+	blendTarget = new TextureRender(width, height, GL_RGBA);
 	blendShader = new Shader(BLEND_SHADER);
 	if (!blendShader->loaded()) {
 		std::cerr << "Failed to load shader: " << blendShader->path() << std::endl;
