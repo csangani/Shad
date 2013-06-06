@@ -107,6 +107,19 @@ namespace Window
 		mesh->Draw();
 	}
 
+	void setCamera()
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+
+		btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+		Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+
+		gluLookAt(Camera->Position()[0],Camera->Position()[1]+2.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+	}
+
 	void Display(void)
 	{
 		if (Game::gameState == Game::MenuState)
@@ -128,21 +141,9 @@ namespace Window
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				/* Set camera position and direction */
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
+				setCamera();
 
-				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
-
-				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
-
-				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
-
-				// Draw objects
-				//std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-				//lightning->Draw();
 				// Render depth of occlusive objects
-
 				glColorMask(false,false,false,false);
 				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 
@@ -160,15 +161,7 @@ namespace Window
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				/* Set camera position and direction */
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-
-				gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
-
-				transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
-
-				gluLookAt(Camera->Position()[0],Camera->Position()[1]+1.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+				setCamera();
 
 				// Draw objects
 				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
@@ -550,9 +543,6 @@ int main (int argc, char **argv)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_quit_image.width(), menu_quit_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_quit_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Load Mesh
 	Game::Shad = new Character();

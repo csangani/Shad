@@ -101,8 +101,6 @@ public:
 
 	PolyMesh *GenerateRigidBody();
 
-	std::vector<PlatformEdge *> GenerateEdges();
-
 	void Delete();
 
 private:

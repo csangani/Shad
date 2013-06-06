@@ -1,5 +1,7 @@
 #include <Shad/PlatformEdge.h>
-#include <Spline/Quaternion.h>
+
+#include <LinearMath/btQuaternion.h>
+#include <LinearMath/btVector3.h>
 
 #define RADIUS (0.015)
 #define NUM_SUBDIVISIONS (32)
@@ -33,14 +35,17 @@ void PlatformEdge::Rotate(float angle, float x, float y, float z)
 
 OpenMesh::Vec3f PlatformEdge::RotatePoint(OpenMesh::Vec3f point, float angle, float x, float y, float z)
 {
-	Quaternion q = Quaternion(angle,OpenMesh::Vec3f(x,y,z));
-	return q.Rotate(point);
+	btVector3 vec(point[0],point[1],point[2]);
+	btVector3 axis(x,y,z);
+	axis.normalize();
+	btVector3 rotatedVec = vec.rotate(axis,RADIANS(angle));
+
+	return OpenMesh::Vec3f(rotatedVec.x(),rotatedVec.y(),rotatedVec.z());
 }
 
 void PlatformEdge::Draw()
 {
 	//the same quadric can be re-used for drawing many cylinders
-	
 	gluQuadricNormals(quadric, GLU_SMOOTH);
 	float x1 = startPoint_[0];
 	float y1 = startPoint_[1];
@@ -49,16 +54,14 @@ void PlatformEdge::Draw()
 	float y2 = endPoint_[1];
 	float z2 = endPoint_[2];
 
-	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS,quadric);
-	
-	//gluDeleteQuadric(quadric);
+	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS);
 }
 
 /* Code to draw cylinder found online.
    Source: http://lifeofaprogrammergeek.blogspot.com/2008/07/rendering-cylinder-between-two-points.html */
 
 
-void PlatformEdge::RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric)
+void PlatformEdge::RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions)
 {
 	
 	float vx = x2-x1;
@@ -97,4 +100,3 @@ void PlatformEdge::RenderCylinder(float x1, float y1, float z1, float x2,float y
 	gluDisk( quadric, 0.0, radius, subdivisions, 1);
 	glPopMatrix();
 }
-

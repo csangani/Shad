@@ -1,9 +1,10 @@
 #ifndef PLATFORMEDGE_H
 #define PLATFORMEDGE_H
 
-#include <OpenMesh\Core\Geometry\VectorT.hh>
 #include <GL\glew.h>
 #include <GL\glut.h>
+
+#include <PolyMesh/PolyMesh.h>
 
 class PlatformEdge {
 	public:
@@ -16,7 +17,7 @@ class PlatformEdge {
 	private:
 		OpenMesh::Vec3f startPoint_, endPoint_;
 		OpenMesh::Vec3f RotatePoint(OpenMesh::Vec3f point, float angle, float x, float y, float z);
-		void RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions,GLUquadricObj *quadric);
+		void RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions);
 		GLUquadricObj *quadric;
 };
 

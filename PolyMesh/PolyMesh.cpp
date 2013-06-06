@@ -956,34 +956,6 @@ PolyMesh *PolyMesh::GenerateRigidBody()
 	return this;
 }
 
-std::vector<PlatformEdge *> PolyMesh::GenerateEdges()
-{
-	std::vector<PlatformEdge *> edges;
-	
-	for (EdgeIter e_it = edges_begin(); e_it != edges_end(); ++e_it)
-	{
-		// Obtain half edges
-		HalfedgeHandle heHandle = this->halfedge_handle(e_it.handle(), 0);
-
-		// Obtain vertices bounding the edge
-		VertexHandle v1 = this->to_vertex_handle(heHandle);
-		VertexHandle v2 = this->from_vertex_handle(heHandle);
-
-		OpenMesh::Vec3f startPoint = point(v1);
-		OpenMesh::Vec3f endPoint = point(v2);
-		
-		float edgeLength = (endPoint - startPoint).length();
-	
-		// Is it a diagonal?
-		if (edgeLength < 1.4) {
-			PlatformEdge *edge = new PlatformEdge(startPoint, endPoint);
-			edges.push_back(edge);
-		}
-	}
-
-	return edges;
-}
-
 void PolyMesh::Delete()
 {
 	clear();

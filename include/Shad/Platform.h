@@ -16,11 +16,10 @@ class Platform {
 		Platform *Translate(float tx, float ty, float tz);
 		Platform *Rotate(float angle, float x, float y, float z);
 		void Platform::Texture(bitmap_image & image, std::string texture);
-
 		std::vector<PlatformEdge *> edges;
+		PolyMesh *platformMesh;
 
 	private:
-		PolyMesh *platformMesh;
 		void GenerateEdges();
 };
 
