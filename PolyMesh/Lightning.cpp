@@ -68,6 +68,28 @@ void Lightning::ResetColor()
 	color_[3] = 1.0;
 }
 
+void Lightning::Jitter()
+{
+	std::vector<Segment> newSegments;
+	float jitterX, jitterY, jitterZ = 0.0f;
+
+	for (unsigned int i = 0; i < segments.size(); i++) {
+		Segment segment = segments[i];
+		Segment newSegment;
+
+		newSegment.startPoint = OpenMesh::Vec3f(segment.startPoint[0] + jitterX, segment.startPoint[1] + jitterY, segment.startPoint[2] + jitterZ);
+
+		jitterX = ((float)rand()/(float)RAND_MAX)/10.0f;
+		jitterY = ((float)rand()/(float)RAND_MAX)/10.0f;
+		jitterZ = ((float)rand()/(float)RAND_MAX)/10.0f;
+		
+		newSegment.endPoint = OpenMesh::Vec3f(segment.endPoint[0] + jitterX, segment.endPoint[1] + jitterY, segment.endPoint[2] + jitterZ);
+		newSegments.push_back(newSegment);
+	}
+
+	segments = newSegments;
+}
+
 void Lightning::GenerateGeometry()
 {
 	Segment firstSegment = segments[0];

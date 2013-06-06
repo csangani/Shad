@@ -23,11 +23,17 @@ struct Segment {
 class Lightning {    
 	public:
 		Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint);
+		void Regenerate();
+
+		// Rendering
 		void Draw();
+
+		// Animation
 		void Dim();
 		void Brighten();
 		bool isOff();
-		void Regenerate();
+		void Jitter();
+
 		std::vector<Segment> segments;
 	
 	private:
