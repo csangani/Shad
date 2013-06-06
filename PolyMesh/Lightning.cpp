@@ -1,21 +1,24 @@
 #include <PolyMesh\Lightning.h>
+#include <Shad/Cylinder.h>
 
-#define NUM_GENERATIONS (5)
-#define INITIAL_OFFSET_AMOUNT (0.5)
-#define MAX_ANGLE (5)  
-#define LENGTH_SCALE (0.7)
 #include <time.h>
 
-Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
+
+#define NUM_GENERATIONS (5)
+#define INITIAL_OFFSET_AMOUNT (1)
+#define MAX_ANGLE (2.5f)  
+#define LENGTH_SCALE (1)
+
+Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint, float *color)
 {
-	__super::lightning = true;
-    srand((unsigned int)time(NULL));
+	color_ = color;
     float offsetAmount = INITIAL_OFFSET_AMOUNT;
     Segment firstSegment;
     firstSegment.startPoint = startPoint;
     firstSegment.endPoint = endPoint;
     segments.push_back(firstSegment);
-    
+    quadric = gluNewQuadric();
+
     for (int i = 0; i < NUM_GENERATIONS; i++) {
 		std::vector<Segment> newSegments;
         
@@ -25,8 +28,10 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 			OpenMesh::Vec3f normal = OpenMesh::Vec3f(startPoint[1] - endPoint[1], endPoint[0] - startPoint[0], 0).normalize();
             
             //offset midpoint
+			
             float randomOffset = -offsetAmount + (float)rand()/((float)RAND_MAX/(2 * offsetAmount));
-            midPoint = midPoint + normal*randomOffset;
+
+			midPoint = midPoint + normal*randomOffset;
             
             Segment newSegment1;
             newSegment1.startPoint = it->startPoint;
@@ -51,7 +56,7 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 				OpenMesh::Vec3f direction = midPoint - it->startPoint;
                 
                 //rotate a little bit
-                float angle = (float)rand()/((float)RAND_MAX/(MAX_ANGLE));        
+                float angle = -MAX_ANGLE + (float)rand()/((float)RAND_MAX/(2 * MAX_ANGLE));        
                 float angleRadians = (float)(angle * M_PI) / (float)180.0;
                 float newX = (direction[0] - midPoint[0] * cos(angleRadians)) - ((midPoint[1] - direction[1]) * sin(angleRadians)) + midPoint[0];
                 float newY = (direction[1] - midPoint[1] * cos(angleRadians)) - ((midPoint[0] - direction[0]) * sin(angleRadians)) + midPoint[1];
@@ -73,25 +78,49 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
         segments = newSegments;
     }
 
-	for (std::vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
-		OpenMesh::Vec3f startPoint = it->startPoint;
-		OpenMesh::Vec3f endPoint = it->endPoint;
-        float rayRankMultiplier = (float)1.0/(it->dimFactor+1);        
-        float smallRayFactor = 0.005;
-	 
-		//middle quad as two triangles
-		OpenMesh::Vec3f point1 = startPoint - it->normal() * smallRayFactor * rayRankMultiplier;
-		OpenMesh::Vec3f point2 = startPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-		OpenMesh::Vec3f point3 = endPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-		OpenMesh::Vec3f point4 = endPoint - it->normal() * smallRayFactor * rayRankMultiplier;
-
-		VertexHandle v1 = add_vertex(point1);
-		VertexHandle v2 = add_vertex(point2);
-		VertexHandle v3 = add_vertex(point3);
-		VertexHandle v4 = add_vertex(point4);
-
-		add_face(v1,v2,v3);
-		add_face(v1,v3,v4);
-	 }
-
 }
+
+#define RADIUS (0.015f)
+#define NUM_SUBDIVISIONS (32)
+
+void Lightning::Draw()
+{
+	for (unsigned int i = 0; i < segments.size(); i++) {
+		Segment segment = segments[i];
+		OpenMesh::Vec3f startPoint = segment.startPoint;
+		OpenMesh::Vec3f endPoint = segment.endPoint;
+
+		gluQuadricNormals(quadric, GLU_SMOOTH);
+		float x1 = startPoint[0];
+		float y1 = startPoint[1];
+		float z1 = startPoint[2];
+		float x2 = endPoint[0];
+		float y2 = endPoint[1];
+		float z2 = endPoint[2];
+	
+		RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS/(1+segment.dimFactor),NUM_SUBDIVISIONS,color_,quadric);
+	}
+}
+
+
+//KEEP THIS AROUND: USEFUL TO GENERATE RIGID BODY FOR LIGHTNING?
+//for (std::vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
+//		OpenMesh::Vec3f startPoint = it->startPoint;
+//		OpenMesh::Vec3f endPoint = it->endPoint;
+//        float rayRankMultiplier = (float)1.0/(it->dimFactor+1);        
+//        float smallRayFactor = 0.005;
+//	 
+//		//middle quad as two triangles
+//		OpenMesh::Vec3f point1 = startPoint - it->normal() * smallRayFactor * rayRankMultiplier;
+//		OpenMesh::Vec3f point2 = startPoint + it->normal() * smallRayFactor * rayRankMultiplier;
+//		OpenMesh::Vec3f point3 = endPoint + it->normal() * smallRayFactor * rayRankMultiplier;
+//		OpenMesh::Vec3f point4 = endPoint - it->normal() * smallRayFactor * rayRankMultiplier;
+// 
+//		VertexHandle v1 = add_vertex(point1);
+//		VertexHandle v2 = add_vertex(point2);
+//		VertexHandle v3 = add_vertex(point3);
+//		VertexHandle v4 = add_vertex(point4);
+//
+//		add_face(v1,v2,v3);
+//		add_face(v1,v3,v4);
+//}

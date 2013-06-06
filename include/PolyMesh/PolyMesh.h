@@ -60,7 +60,7 @@ public:
 	bool AnimationRepeat;
 
 	btRigidBody *RigidBody;
-	bool cloth, lightning, character, platform;
+	bool cloth, character, platform;
 
 	PolyMesh();
 

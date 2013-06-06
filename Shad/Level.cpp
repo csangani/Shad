@@ -5,21 +5,16 @@
 #include <GL\glew.h>
 #include <GL\glut.h>
 
-
-
-using namespace std;
-
 Level::Level(int level) {
 	_level = level;
-	LEVEL = "level";
-	EXT = ".ext";
 	platforms = std::vector<Platform *>();
+	lightningBolts = std::vector<Lightning *>();
 }
-
 	
-void Level::generateBlocks(string shader, bitmap_image& space_image) {
-	string cube = "assets\\obj\\cube.obj";
+void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
+	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
+	float *brightColor, *dimColor;
 	switch(_level) {
 		case 1:
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
@@ -43,6 +38,21 @@ void Level::generateBlocks(string shader, bitmap_image& space_image) {
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
 
 			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
+
+			brightColor = new float[4];
+			brightColor[0] = 1.0;
+			brightColor[1] = 1.0;
+			brightColor[2] = 1.0;
+			brightColor[3] = 1.0;
+
+			dimColor = new float[4];
+			dimColor[0] = 0.2;
+			dimColor[1] = 0.2;
+			dimColor[2] = 0.2;
+			dimColor[3] = 1.0;
+
+			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0), brightColor));
+			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(1,-10,0), OpenMesh::Vec3f(3,-5,0), dimColor));
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
@@ -120,18 +130,6 @@ void Level::changeUp() {
 	_level++;
 }
 
-void Level::createPlatform(float scaleX, float scaleY, float scaleZ, float translateX, float translateY, float translateZ, float rotationAngle, float rotateX, float rotateY, float rotateZ)
-{
-	string cube = "assets\\obj\\cube.obj";
-	Platform *platform = new Platform(cube);
-	if (rotationAngle > 0) {
-		platform->Rotate(rotationAngle, rotateX, rotateY, rotateZ);
-	}
-	platform->Scale(scaleX, scaleY, scaleZ);
-	platform->Translate(translateX, translateY, translateZ);
-	platforms.push_back(platform);
-}
-
 void Level::drawPlatformEdges()
 {
 	for (unsigned int i = 0; i < platforms.size(); i++) {
@@ -143,34 +141,20 @@ void Level::drawPlatformEdges()
 	}
 }
 
+void Level::drawLightningBolts()
+{
+	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
+		Lightning *lightning = lightningBolts[i];
+		lightning->Draw();
+	}
+}
+
 void Level::destroyPlatforms() {
 	for(unsigned int i = 0; i < platforms.size(); i++) {
 		Platform * p =  platforms[i];
 		delete p;
 	}
 	platforms.clear();
-}
-
-void Level::generateMesh (string shader, string object, float Diffuse[], float Ambient[], float Specular[], float Shininess[], bitmap_image &image, string texture)
-{
-	PolyMesh *Mesh = (new PolyMesh())->LoadObj(object)->GenerateRigidBody()->SetMass(100.0f)->Translate(OpenMesh::Vec3f(0,-0.5f,0));
-	      Mesh->AttachShader(shader);
-	        Mesh->RigidBody->setRollingFriction(0.3f);
-	        Mesh->RigidBody->setActivationState(DISABLE_DEACTIVATION);
-	        Mesh->RigidBody->setAnisotropicFriction(Mesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
-	
-			Mesh->MaterialDiffuse = Diffuse;
-			Mesh->MaterialAmbient = Ambient;
-			Mesh->MaterialShininess = Specular;
-			Mesh->MaterialShininess = Shininess;
-
-			// Apply Texture to Mesh
-			image = bitmap_image(texture);
-			image.rgb_to_bgr();
-			Mesh->ApplyTexture(image.data(), image.width(), image.height());
-	        
-			Mesh->EnableLighting();
-	
 }
 
 void Level::setTarget(float x, float y, float z) {

@@ -2,7 +2,10 @@
 #define __CS248_Assignments_V3__Lightning__
 
 #include <OpenMesh\Core\Geometry\VectorT.hh>
-#include <PolyMesh\PolyMesh.h>
+#include <vector>
+
+#include <GL\glew.h>
+#include <GL\glut.h>
 
 struct Segment {
 	OpenMesh::Vec3f startPoint, endPoint;
@@ -17,11 +20,15 @@ struct Segment {
     };
 };
 
-class Lightning : public PolyMesh {
-    
-public:
-	Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint);
-	std::vector<Segment> segments;
+class Lightning {    
+	public:
+		Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint, float *color);
+		void Draw();
+		std::vector<Segment> segments;
+	
+	private:
+		float *color_;
+		GLUquadricObj *quadric;
 };
 
 #endif /* defined(__CS248_Assignments_V3__Lightning__) */

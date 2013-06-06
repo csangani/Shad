@@ -1,10 +1,8 @@
 #include <Shad/PlatformEdge.h>
+#include <Shad/Cylinder.h>
 
 #include <LinearMath/btQuaternion.h>
 #include <LinearMath/btVector3.h>
-
-#define RADIUS (0.015)
-#define NUM_SUBDIVISIONS (32)
 
 #define RADIANS(angle) (angle*((float)M_PI)/180.0f)
 
@@ -43,6 +41,9 @@ OpenMesh::Vec3f PlatformEdge::RotatePoint(OpenMesh::Vec3f point, float angle, fl
 	return OpenMesh::Vec3f(rotatedVec.x(),rotatedVec.y(),rotatedVec.z());
 }
 
+#define RADIUS (0.015)
+#define NUM_SUBDIVISIONS (32)
+
 void PlatformEdge::Draw()
 {
 	//the same quadric can be re-used for drawing many cylinders
@@ -53,50 +54,6 @@ void PlatformEdge::Draw()
 	float x2 = endPoint_[0];
 	float y2 = endPoint_[1];
 	float z2 = endPoint_[2];
-
-	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS);
-}
-
-/* Code to draw cylinder found online.
-   Source: http://lifeofaprogrammergeek.blogspot.com/2008/07/rendering-cylinder-between-two-points.html */
-
-
-void PlatformEdge::RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions)
-{
 	
-	float vx = x2-x1;
-	float vy = y2-y1;
-	float vz = z2-z1;
-
-	//handle the degenerate case of z1 == z2 with an approximation
-	if(vz == 0)
-		vz = .0001;
-
-	float v = sqrt( vx*vx + vy*vy + vz*vz );
-	float ax = 57.2957795f*acos( vz/v );
-	if ( vz < 0.0 )
-		ax = -ax;
-	float rx = -vy*vz;
-	float ry = vx*vz;
-	glPushMatrix();
-	glLoadIdentity();
-
-	//hardcoding red color for edge
-	glColor3f(1.0,0.0,0.0);
-
-	//draw the cylinder body
-	glTranslatef( x1,y1,z1 );
-	glRotatef(ax, rx, ry, 0.0);
-	gluQuadricOrientation(quadric,GLU_OUTSIDE);
-	gluCylinder(quadric, radius, radius, v, subdivisions, 1);
-
-	//draw the first cap
-	gluQuadricOrientation(quadric,GLU_INSIDE);
-	gluDisk( quadric, 0.0, radius, subdivisions, 1);
-	glTranslatef( 0,0,v );
-
-	//draw the second cap
-	gluQuadricOrientation(quadric,GLU_OUTSIDE);
-	gluDisk( quadric, 0.0, radius, subdivisions, 1);
-	glPopMatrix();
+	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS,NULL,quadric);
 }

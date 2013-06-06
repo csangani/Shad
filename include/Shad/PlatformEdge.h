@@ -17,7 +17,6 @@ class PlatformEdge {
 	private:
 		OpenMesh::Vec3f startPoint_, endPoint_;
 		OpenMesh::Vec3f RotatePoint(OpenMesh::Vec3f point, float angle, float x, float y, float z);
-		void RenderCylinder(float x1, float y1, float z1, float x2,float y2, float z2, float radius,int subdivisions);
 		GLUquadricObj *quadric;
 };
 

@@ -79,8 +79,6 @@ namespace Window
 
 	float MouseSensitivity;
 
-	Lightning *lightning;
-
 	void Reshape(int width, int height)
 	{
 		Width = width;
@@ -150,6 +148,7 @@ namespace Window
 				// Draw glowing objects
 				glColorMask(true,true,true,true);
 				Game::currentLevel->drawPlatformEdges();
+				Game::currentLevel->drawLightningBolts();
 
 				glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
@@ -166,6 +165,7 @@ namespace Window
 				// Draw objects
 				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 				Game::currentLevel->drawPlatformEdges();
+				Game::currentLevel->drawLightningBolts();
 
 				glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 			
@@ -401,6 +401,9 @@ namespace Window
 
 int main (int argc, char **argv)
 {
+	// First call to seed to randomizer, yes man
+	srand((unsigned int)time(NULL));
+
 	// Initialize GL
 	glutInit(&argc, argv);
 
@@ -560,8 +563,6 @@ int main (int argc, char **argv)
 	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
-	Window::lightning = new Lightning(OVEC3F(-1.f, -1.f, -1.f), OVEC3F(1.f, 1.f, 1.f));
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
