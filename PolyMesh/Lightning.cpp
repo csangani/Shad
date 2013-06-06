@@ -9,17 +9,73 @@
 #define MAX_ANGLE (2.5f)  
 #define LENGTH_SCALE (1)
 
-Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint, float *color)
+Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 {
-	color_ = color;
-    float offsetAmount = INITIAL_OFFSET_AMOUNT;
+	color_ = new float[4];
+	ResetColor();
+
     Segment firstSegment;
+	originalStartPoint = startPoint;
+	originalEndPoint = endPoint;
     firstSegment.startPoint = startPoint;
     firstSegment.endPoint = endPoint;
     segments.push_back(firstSegment);
     quadric = gluNewQuadric();
 
-    for (int i = 0; i < NUM_GENERATIONS; i++) {
+	GenerateGeometry();
+}
+
+bool Lightning::isOff()
+{
+	return color_[0] <= 0.0;
+}
+
+#define STEP_SIZE (0.05)
+
+void Lightning::Dim()
+{
+	color_[0] -= STEP_SIZE;
+	color_[1] -= STEP_SIZE;
+	color_[2] -= STEP_SIZE;
+	color_[3] -= STEP_SIZE;
+}
+
+void Lightning::Brighten()
+{
+	color_[0] += STEP_SIZE;
+	color_[1] += STEP_SIZE;
+	color_[2] += STEP_SIZE;
+	color_[3] += STEP_SIZE;
+}
+
+void Lightning::Regenerate()
+{
+	segments.clear();
+	Segment firstSegment;
+	firstSegment.startPoint = originalStartPoint;
+    firstSegment.endPoint = originalEndPoint;
+    segments.push_back(firstSegment);
+
+	ResetColor();
+	GenerateGeometry();
+}
+
+void Lightning::ResetColor()
+{
+	color_[0] = 1.0;
+	color_[1] = 1.0;
+	color_[2] = 1.0;
+	color_[3] = 1.0;
+}
+
+void Lightning::GenerateGeometry()
+{
+	Segment firstSegment = segments[0];
+	OpenMesh::Vec3f startPoint = firstSegment.startPoint;
+	OpenMesh::Vec3f endPoint = firstSegment.endPoint;
+
+	float offsetAmount = INITIAL_OFFSET_AMOUNT;
+	for (int i = 0; i < NUM_GENERATIONS; i++) {
 		std::vector<Segment> newSegments;
         
         int counter = 0;
@@ -77,11 +133,11 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint, float
         offsetAmount /= 2;
         segments = newSegments;
     }
-
 }
 
-#define RADIUS (0.015f)
+#define RADIUS (0.05f)
 #define NUM_SUBDIVISIONS (32)
+#define BRANCH_DECREASE_COEF (3)
 
 void Lightning::Draw()
 {
@@ -98,7 +154,7 @@ void Lightning::Draw()
 		float y2 = endPoint[1];
 		float z2 = endPoint[2];
 	
-		RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS/(1+segment.dimFactor),NUM_SUBDIVISIONS,color_,quadric);
+		RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS/(1+BRANCH_DECREASE_COEF*segment.dimFactor),NUM_SUBDIVISIONS,color_,quadric);
 	}
 }
 

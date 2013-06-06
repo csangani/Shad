@@ -23,14 +23,12 @@ class Level {
 	
 	void setTarget(float x, float y , float z);
 	void destroyPlatforms();
-	
 	void changeUp();
-	
 	void drawPlatformEdges();
-
 	void drawLightningBolts();
-
+	void applyLightningAnimationStep();
 	OpenMesh::Vec3f getTarget();
+
 	private:
 		int _level;
 		btTransform origin;

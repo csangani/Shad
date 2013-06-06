@@ -348,6 +348,9 @@ namespace Window
 				if ((*i)->cloth)
 					((Cloth *)(*i))->SimulationStep();
 
+			/* Animate lightning */
+			Game::currentLevel->applyLightningAnimationStep();
+
 			BVEC3F WalkDirection(0,0,0);
 			/* Character Controls */
 			if (Game::moveForward)
@@ -382,7 +385,10 @@ namespace Window
 				Game::currentLevel->destroyPlatforms();
 				Game::currentLevel->changeUp();
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
+				
+				//GET RID OF THIS?
 				Game::currentLevel->drawPlatformEdges();
+
 				btTransform id;
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);

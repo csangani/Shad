@@ -14,7 +14,6 @@ Level::Level(int level) {
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
-	float *brightColor, *dimColor;
 	switch(_level) {
 		case 1:
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
@@ -39,20 +38,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
 
-			brightColor = new float[4];
-			brightColor[0] = 1.0;
-			brightColor[1] = 1.0;
-			brightColor[2] = 1.0;
-			brightColor[3] = 1.0;
-
-			dimColor = new float[4];
-			dimColor[0] = 0.2;
-			dimColor[1] = 0.2;
-			dimColor[2] = 0.2;
-			dimColor[3] = 1.0;
-
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0), brightColor));
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(1,-10,0), OpenMesh::Vec3f(3,-5,0), dimColor));
+			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
@@ -146,6 +132,18 @@ void Level::drawLightningBolts()
 	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
 		Lightning *lightning = lightningBolts[i];
 		lightning->Draw();
+	}
+}
+
+void Level::applyLightningAnimationStep()
+{
+	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
+		Lightning *lightning = lightningBolts[i];
+		lightning->Dim();
+
+		if (lightning->isOff()) {
+			lightning->Regenerate();
+		}
 	}
 }
 

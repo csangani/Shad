@@ -22,13 +22,20 @@ struct Segment {
 
 class Lightning {    
 	public:
-		Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint, float *color);
+		Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint);
 		void Draw();
+		void Dim();
+		void Brighten();
+		bool isOff();
+		void Regenerate();
 		std::vector<Segment> segments;
 	
 	private:
 		float *color_;
 		GLUquadricObj *quadric;
+		void GenerateGeometry();
+		void ResetColor();
+		OpenMesh::Vec3f originalStartPoint, originalEndPoint;
 };
 
 #endif /* defined(__CS248_Assignments_V3__Lightning__) */
