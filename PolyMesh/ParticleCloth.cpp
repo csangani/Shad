@@ -6,17 +6,23 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 		RigidBody.push_back(std::vector<btRigidBody *>());
 		Points.push_back(std::vector<VertexHandle>());
 		for (int j = 0; j < width; j++) {
-			Points[i].push_back(add_vertex(OVECB(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin())));
-			btScalar mass(0.001f);
+			Points[i].push_back(add_vertex(OVECB(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin())));
+			btScalar mass(0.1f);
 			btVector3 localInertia(0,0,0);
-			btConvexShape *shape = new btSphereShape(0.001f);
+			btCollisionShape *shape = new btSphereShape(0.001f);
 			shape->calculateLocalInertia(mass, localInertia);
 			btTransform transform;
-			transform.setOrigin(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin());
-			btMotionState *state = new btDefaultMotionState(transform);
-			RigidBody[i].push_back(new btRigidBody(mass, state, shape, localInertia));
+			transform.setIdentity();
+			transform.setOrigin(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin());
+			btDefaultMotionState *state = new btDefaultMotionState(transform);
+			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, state, shape, localInertia);
+			RigidBody[i].push_back(new btRigidBody(rbInfo));
+			Physics::DynamicsWorld->addRigidBody(RigidBody[i][j], btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::KinematicFilter);
 			RigidBody[i][j]->setGravity(BVEC3F(0,-gravity,0));
 			RigidBody[i][j]->setActivationState(DISABLE_DEACTIVATION);
+			RigidBody[i][j]->setUserPointer(this);
+			RigidBody[i][j]->setContactProcessingThreshold(0.0f);
+			RigidBody[i][j]->setSleepingThresholds(0.2f,0.2f);
 		}
 	}
 
@@ -32,10 +38,13 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 void ParticleCloth::StepSimulation() {
 	elapsed += (uint64_t)FRAME_PERIOD;
 	if (elapsed > life) {
-		startRow = (startRow + 1) % length;
+		startRow = (startRow + length - 1) % length;
 		elapsed = 0;
 		for (int i = 0; i < width; i++) {
-			RigidBody[length-1][i]->getWorldTransform().setOrigin(((emitEnd-emitStart).normalized() * (float)i + reference->Dummy->getLinearVelocity().normalized()) * segmentLength + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin() +BVEC3F(0,sinf(Character::Time * 0.001f),0));
+			btTransform transform;
+			transform.setIdentity();
+			transform.setOrigin(((emitEnd-emitStart).normalized() * (float)i ) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin() +BVEC3F(0,0.001f*sinf(Character::Time * 0.001f),0));
+			RigidBody[startRow][i]->setCenterOfMassTransform(transform);
 		}
 	}
 
@@ -49,4 +58,6 @@ void ParticleCloth::StepSimulation() {
 				RigidBody[i][j]->getCenterOfMassPosition().getZ()));
 		}
 	}
+
+	GenerateNormals();
 }
