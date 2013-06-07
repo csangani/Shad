@@ -15,7 +15,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
 	switch(_level) {
-		case 3:
+		case 1:
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -108,34 +108,6 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Translate(-20, -10, -16);
 			platforms.push_back(platform);
 
-			break;
-
-		case 1:
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
-
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 5)->Translate(0,-20,-6));
-
-			//platforms.push_back((new Platform(cube))->Scale(10, 5, 5)->Translate(6,-10,0));
-
-			//platforms.push_back((new Platform(cube))->Scale(5, 5, 5)->Translate(-2,-10,0));
-
-			//platforms.push_back((new Platform(cube))->Scale(10, 5, 1)->Translate(0,-15,-8));
-
-			platforms.push_back((new Platform(cube))->Rotate(90, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(6, 2, 2)->Translate(0,-15,-18));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
-
-			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
-
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
-
-			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
 	};
 }
