@@ -1,5 +1,7 @@
 #include <string>
+
 #include <Shad/Level.h>
+
 #include <GL\glew.h>
 #include <GL\glut.h>
 
