@@ -5,6 +5,7 @@
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
+#include <Shad/XboxController.h>
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -45,6 +46,8 @@ namespace Game
 
 	Level *currentLevel;
 
+	XboxController *controller;
+
 	BVEC3F Direction;
 
 	bool moveForward = false;
@@ -53,6 +56,15 @@ namespace Game
 	bool moveRight = false;
 
 	Character *Shad;
+
+	void Teleport() {
+		if (!((Character *)Shad)->RigidBody->canJump()) {
+			characterState = TeleportingState;
+			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
+			((Character *)Shad)->RigidBody->setFallSpeed(0.0);
+			teleportStartTime = PolyMesh::Time;
+		}
+	}
 }
 
 namespace Window
@@ -242,12 +254,7 @@ namespace Window
 			Game::moveRight = true;
 			break;
 		case '\t':
-			if (!((Character *)Game::Shad)->RigidBody->canJump()) {
-				Game::characterState = Game::TeleportingState;
-				((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(Game::Direction*50.0f, (float)Game::teleportDuration/8000.f);
-				((Character *)Game::Shad)->RigidBody->setFallSpeed(0.0);
-				Game::teleportStartTime = PolyMesh::Time;
-			}
+			Game::Teleport();
 			break;
 		case JUMP:
 			((Character *)Game::Shad)->RigidBody->jump();
@@ -361,10 +368,33 @@ namespace Window
 				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
+
+			/* Poll Xbox controller */
+
+			if (Game::controller->isConnected()) {
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+					((Character *)Game::Shad)->RigidBody->jump();
+				}
+
+				if (Game::controller->GetState().Gamepad.bRightTrigger) {
+					Game::Teleport();
+				}
+
+				if (Game::controller->LeftStickMoved()) {
+					float directionAngle = -Game::controller->GetDirectionAngle();
+					WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(directionAngle))*0.1f;
+				}
+
+				if (Game::controller->RightStickMoved()) {
+					float directionAngle = -Game::controller->GetDirectionAngle();
+					WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(directionAngle))*0.1f;
+				}
+
+			}
 			
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
-			
+
 			/* reset position on death */
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
 			if (transform.getOrigin().getY() < -30.0) {
@@ -430,6 +460,9 @@ int main (int argc, char **argv)
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
+
+	// Setup Xbox controller
+	Game::controller = new XboxController(1);
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
