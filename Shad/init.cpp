@@ -77,7 +77,7 @@ namespace Window
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
-	
+
 	Blur *blur;
 	Blender *blender;
 	MotionBlur *motionBlur;
@@ -127,7 +127,7 @@ namespace Window
 		btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
 		Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
-		gluLookAt(Camera->Position()[0],Camera->Position()[1]+2.0f,Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
+		gluLookAt(Camera->Position()[0],Camera->Position()[1]+Camera->VerticalAxis[1],Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 	}
 
 	void Display(void)
@@ -135,7 +135,7 @@ namespace Window
 		if (Game::gameState == Game::MenuState)
 		{
 			glUseProgram(0);
-			
+
 			if (Game::gameMenuState == Game::StartGameState)
 				TextureRender::renderToScreen(menuStartTex, Window::Width, Window::Height, false, true);
 			else if (Game::gameMenuState == Game::QuitGameState)
@@ -148,39 +148,39 @@ namespace Window
 			glUseProgram(0);
 			glowMapRenderTarget->bind();
 
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				/* Set camera position and direction */
-				setCamera();
+			/* Set camera position and direction */
+			setCamera();
 
-				// Render depth of occlusive objects
-				glColorMask(false,false,false,false);
-				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			// Render depth of occlusive objects
+			glColorMask(false,false,false,false);
+			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 
-				// Draw glowing objects
-				glColorMask(true,true,true,true);
-				Game::currentLevel->drawPlatformEdges();
-				Game::currentLevel->drawLightningBolts();
+			// Draw glowing objects
+			glColorMask(true,true,true,true);
+			Game::currentLevel->drawPlatformEdges();
+			Game::currentLevel->drawLightningBolts();
 
-				glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
+			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
 			glowMapRenderTarget->unbind();
 
 			/* render entire scene to the current frame */
 			sceneRenderTargets[currBlurFrame]->bind();
 
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				/* Set camera position and direction */
-				setCamera();
+			/* Set camera position and direction */
+			setCamera();
 
-				// Draw objects
-				std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
-				Game::currentLevel->drawPlatformEdges();
-				Game::currentLevel->drawLightningBolts();
+			// Draw objects
+			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			Game::currentLevel->drawPlatformEdges();
+			Game::currentLevel->drawLightningBolts();
 
-				glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
-			
+			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
+
 			sceneRenderTargets[currBlurFrame]->unbind();
 
 			/* apply glow effect to current frame */
@@ -200,7 +200,7 @@ namespace Window
 
 			/* render final texture to the screen */
 			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
-			
+
 			glutSwapBuffers();
 		}
 		else if (Game::gameState == Game::PauseState)
@@ -325,6 +325,10 @@ namespace Window
 
 			Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -DeltaX*MouseSensitivity);
 			Game::Shad->Rotate(DEGREES(-DeltaX*MouseSensitivity),0,1,0);
+
+			OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), DeltaY*MouseSensitivity));
+			Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
+
 			glutWarpPointer(Window::Width/2, Window::Height/2);
 		}
 	}
@@ -389,14 +393,17 @@ namespace Window
 					if (Game::gameState == Game::PlayState) {
 						float cameraSensitivity = 0.1;
 						int xCameraCoef = Game::controller->GetXCameraCoefficient();
+						int yCameraCoef = Game::controller->GetYCameraCoefficient();
 						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivity);
 						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivity),0,1,0);
 						//Rotate in Y direction as well?
+						OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), yCameraCoef*cameraSensitivity));
+						Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
 					}
 				}
 
 			}
-			
+
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
 
@@ -420,7 +427,7 @@ namespace Window
 				Game::currentLevel->destroyPlatforms();
 				Game::currentLevel->changeUp();
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
-				
+
 				//GET RID OF THIS?
 				Game::currentLevel->drawPlatformEdges();
 
@@ -563,7 +570,7 @@ int main (int argc, char **argv)
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
 	Window::blender = new Blender(ADDITIVE, Window::Width, Window::Height);
 	Window::motionBlur = new MotionBlur(Window::Width, Window::Height, NUM_BLUR_FRAMES);
-	
+
 	// Initialize Physics
 	Physics::InitializePhysics();
 

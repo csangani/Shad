@@ -12,6 +12,7 @@ public:
 	XINPUT_STATE GetState();
 	float GetDirectionAngle();
 	int GetXCameraCoefficient();
+	int GetYCameraCoefficient();
 	bool isConnected();
 	bool LeftStickMoved();
 	bool RightStickMoved();

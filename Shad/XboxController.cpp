@@ -72,6 +72,22 @@ int XboxController::GetXCameraCoefficient()
 	return xCameraCoef;
 }
 
+int XboxController::GetYCameraCoefficient()
+{
+	float y = GetRightStickY();
+
+	int yCameraCoef;
+	if (y > 0) {
+		yCameraCoef = 1;
+	} else if (y < 0) {
+		yCameraCoef = -1;
+	} else {
+		yCameraCoef = 0;
+	}
+
+	return yCameraCoef;
+}
+
 bool XboxController::RightStickMoved()
 {
 	return (abs(GetRightStickX()) > 0 || abs(GetRightStickY()) > 0);
