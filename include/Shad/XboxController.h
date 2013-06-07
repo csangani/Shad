@@ -11,19 +11,20 @@ public:
 	XboxController(int playerNumber);
 	XINPUT_STATE GetState();
 	float GetDirectionAngle();
+	int GetXCameraCoefficient();
 	bool isConnected();
 	bool LeftStickMoved();
 	bool RightStickMoved();
+	
 	void Vibrate(int leftVal = 0, int rightVal = 0);
 
 private:
 	XINPUT_STATE controllerState_;
 	int controllerNum_;
-
-	float GetLeftStickX();
-	float GetLeftStickY();
 	float GetRightStickX();
 	float GetRightStickY();
+	float GetLeftStickX();
+	float GetLeftStickY();
 };
 
 #endif

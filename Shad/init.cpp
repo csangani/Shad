@@ -386,8 +386,13 @@ namespace Window
 				}
 
 				if (Game::controller->RightStickMoved()) {
-					float directionAngle = -Game::controller->GetDirectionAngle();
-					WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(directionAngle))*0.1f;
+					if (Game::gameState == Game::PlayState) {
+						float cameraSensitivity = 0.1;
+						int xCameraCoef = Game::controller->GetXCameraCoefficient();
+						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivity);
+						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivity),0,1,0);
+						//Rotate in Y direction as well?
+					}
 				}
 
 			}
