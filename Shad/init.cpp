@@ -181,6 +181,8 @@ namespace Window
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
+			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+			Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 

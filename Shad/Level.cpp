@@ -135,6 +135,51 @@ void Level::drawLightningBolts()
 	}
 }
 
+void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
+{
+	Platform *foundPlatform;
+	bool found = false;
+	float maxY = -1000.f;
+	for (unsigned int i = 0; i < platforms.size(); i++) {
+		Platform *platform = platforms[i];
+		btVector3 platformMin = BVECO(platform->platformMesh->min);
+		btVector3 platformMax = BVECO(platform->platformMesh->max);
+		btVector3 platformOrigin = platform->platformMesh->RigidBody->getCenterOfMassPosition();
+		// skip if character is below platform
+		if (characterY < platformOrigin.y())
+			continue;
+		// if character is within platform bounds, check platform Y-value to find highest platform (closest to character)
+		if (abs(characterX - platformOrigin.x()) < platformMax.x()
+			&& abs(characterZ - platformOrigin.z()) < platformMax.z())
+		{
+			if (platformOrigin.y() > maxY) {
+				foundPlatform = platform;
+				found = true;
+				maxY = platformOrigin.y();
+			}
+		}
+	}
+	// draw shadow on platform
+	if (found) {
+		float platformYScale = foundPlatform->platformMesh->max[1];
+		float shadowOffset = 0.01f;
+		float r = 0.2f;
+		int num_segments = 20;
+		glColor4f(0.f, 0.f, 0.f, 0.3f);
+		glBegin(GL_POLYGON); 
+		for(int i = 0; i < num_segments; i++) 
+		{ 
+			float theta = 2.0f * float(M_PI) * float(i) / float(num_segments);//get the current angle 
+
+			float x = r * cosf(theta);//calculate the x component 
+			float z = r * sinf(theta);//calculate the z component 
+
+			glVertex3d(x + characterX, maxY + platformYScale + shadowOffset, z + characterZ);//output vertex 
+		} 
+		glEnd(); 
+	}
+}
+
 void Level::applyLightningAnimationStep()
 {
 	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
