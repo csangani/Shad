@@ -90,7 +90,7 @@ end
 solution (SolutionName)
 	configurations		(Configurations)
 	platforms			(Platforms)
-
+	
 	-- Spline
 	Spline = "Spline"
 	DefineStaticLib (Spline, "Spline/", "Spline/", CPP)
@@ -127,7 +127,8 @@ solution (SolutionName)
 				path.join (IncludePath, "Shad/**.hh"),
 				path.join (IncludePath, "Shad/**.hpp"),
 				"Shad/**.cpp", "Shad/**.rc" }
-		links { Spline, OpenMeshCore, GLEW, FreeGLUT, PolyMesh, Bullet }
+		links { Spline, OpenMeshCore, GLEW, FreeGLUT, PolyMesh, Bullet, 
+				path.join (path.join ("../", LibPath), "FMODex/FMODex") }
 
 		configuration "Debug"
 			defines (Defines)
@@ -135,6 +136,8 @@ solution (SolutionName)
 			targetdir (DebugBuildPath)
 			libdirs { DebugLibPath }
 			objdir (path.join (DebugBuildPath, "Shad/"))
+			postbuildcommands { "xcopy Assets ..\\Build\\Debug\\Assets /E /I /Y",
+								"xcopy dll\\* ..\\Build\\Debug /E /I /Y" }
 
 		configuration "Release"
 			defines (Defines)
@@ -142,3 +145,5 @@ solution (SolutionName)
 			targetdir (ReleaseBuildPath)
 			libdirs { ReleaseLibPath }
 			objdir (path.join (ReleaseBuildPath, "Shad/"))
+			postbuildcommands { "xcopy Assets ..\\Build\\Release\\Assets /E /I /Y",
+								"xcopy dll\\* ..\\Build\\Release /E /I /Y" }

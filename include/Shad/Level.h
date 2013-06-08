@@ -26,6 +26,7 @@ class Level {
 	void changeUp();
 	void drawPlatformEdges();
 	void drawLightningBolts();
+	void drawCharacterShadow(float characterX, float characterY, float characterZ);
 	void applyLightningAnimationStep();
 
 	void move(int deltaPoint, bool onGround);

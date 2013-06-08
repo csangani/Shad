@@ -102,10 +102,10 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 
 void Platform::move(int deltaPoint) {
 	if (deltaPoint < 5) {
-		platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
+		//platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
 	}
 	else {
-		platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
+		//platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
 	}
 }
 

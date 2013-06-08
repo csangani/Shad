@@ -18,6 +18,9 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include <FMODex/fmod.hpp>
+#include <FMODex/fmod_errors.h>
+
 namespace Game
 {
 	enum GameState {
@@ -179,6 +182,8 @@ namespace Window
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
+			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+			Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 
@@ -455,6 +460,52 @@ namespace Window
 	}
 }
 
+void ERRCHECK(FMOD_RESULT result)
+{
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+		exit(-1);
+	}
+}
+
+namespace Sound {
+	FMOD::System *system;
+
+	FMOD::Channel *MainMusicChannel = 0;
+	FMOD::Sound *MainMenuMusic;
+
+	void InitSound() {
+		FMOD_RESULT      result;
+		unsigned int     version;
+
+		/*
+		Create a System object and initialize.
+		*/
+		result = FMOD::System_Create(&system);
+		ERRCHECK(result);
+
+		result = system->getVersion(&version);
+		ERRCHECK(result);
+
+		if (version < FMOD_VERSION)
+		{
+			printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version, FMOD_VERSION);
+			exit(-1);
+		}
+
+		result = system->init(32, FMOD_INIT_NORMAL, 0);
+		ERRCHECK(result);
+
+		ERRCHECK(Sound::system->createSound("assets/mp3/MainMenu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
+		ERRCHECK(MainMenuMusic->setMode(FMOD_LOOP_NORMAL));
+		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, false, &MainMusicChannel));
+
+
+		ERRCHECK(system->update());
+	}
+}
+
 int main (int argc, char **argv)
 {
 	// First call to seed to randomizer, yes man
@@ -666,6 +717,10 @@ int main (int argc, char **argv)
 
 	Game::Direction = BVEC3F(0,0,-1);
 	Game::deltaPoint = 0;
+
+	// Init sound
+	Sound::InitSound();
+
 	// Run Loop
 	glutMainLoop();
 
