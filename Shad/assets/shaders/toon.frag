@@ -41,13 +41,13 @@ void main()
 	if (threshold > 0.8)
 		gl_FragColor = vec4(result, 1.0);
 	else if (threshold > 0.5)
-		gl_FragColor = 0.8*vec4(result, 1.0);
-	//else if (threshold > 0.4)
-	//	gl_FragColor = 0.6*vec4(result, 1.0);
-	//else if (threshold > 0.2)
-	//	gl_FragColor = 0.4*vec4(result, 1.0);
+		gl_FragColor = vec4(0.8*result, 1.0);
+	else if (threshold > 0.4)
+		gl_FragColor = vec4(0.6*result, 1.0);
+	else if (threshold > 0.2)
+		gl_FragColor = vec4(0.4*result, 1.0);
 	else
-		gl_FragColor = 0.5*vec4(result, 1.0);
+		gl_FragColor = vec4(0.2*result, 1.0);
 
 	// TODO: add contours
 	/*float dot3 = dot(N, Vm);

@@ -372,7 +372,24 @@ namespace Window
 	{
 		if (Game::gameState == Game::MenuState)
 		{
-			/* menu animation? */
+#ifdef USE_XBOX_CONTROLLER
+			/* Poll Xbox controller */
+			if (Game::controller->isConnected()) {
+				/* A button controls */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+					if (Game::gameMenuState == Game::StartGameState)
+						Game::gameState = Game::PlayState;
+					else if (Game::gameMenuState == Game::QuitGameState)
+						glutLeaveMainLoop();
+				}
+
+				/* D-pad controls */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+					Game::gameMenuState = Game::StartGameState;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+					Game::gameMenuState = Game::QuitGameState;
+			}
+#endif
 		}
 		else if (Game::gameState == Game::PlayState)
 		{
@@ -415,19 +432,28 @@ namespace Window
 #ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
+				/* A button controls */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
 				}
 
+				/* back button controls */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+					Game::gameState = Game::PauseState;
+				}
+
+				/* right trigger controls */
 				if (Game::controller->GetState().Gamepad.bRightTrigger) {
 					Game::Teleport();
 				}
 
+				/* left stick controls */
 				if (Game::controller->LeftStickMoved()) {
 					float directionAngle = -Game::controller->GetDirectionAngle();
 					WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(directionAngle))*0.1f;
 				}
 
+				/* right stick controls */
 				if (Game::controller->RightStickMoved()) {
 					if (Game::gameState == Game::PlayState) {
 						float cameraSensitivity = 0.1;
@@ -490,7 +516,20 @@ namespace Window
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
-			/* animate pause menu? */
+#ifdef USE_XBOX_CONTROLLER
+			/* Poll Xbox controller */
+			if (Game::controller->isConnected()) {
+				/* A button controls */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+					Game::gameState = Game::PlayState;
+				}
+
+				/* back button controls */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+					Game::gameState = Game::MenuState;
+				}
+			}
+#endif
 		}
 
 		glutTimerFunc((int) FRAME_PERIOD, Timer, (int) FRAME_PERIOD);
