@@ -18,7 +18,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
 	switch(_level) {
-		case 1:
+		case 3:
 			platform = new Platform(cube);
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
@@ -120,17 +120,17 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			break;
 
-			case 3:
+			case 1:
 			platform = new Platform(cube);
-			platform->Scale(1,1,10);
+			platform->Scale(5,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
-			movingPlatforms.push_back(platform);
+			//platform->setMoving(true, 0, 0, 1);
+			//movingPlatforms.push_back(platform);
 
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
+			//platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platforms.push_back((new Platform(cube))->Scale(0.25, 50, 15)->Translate(-1,-13,0));
+			platforms.push_back((new Platform(cube))->Scale(0.25, 12, 10)->Translate(-1,-10,0));
 
 			/*
 
@@ -185,8 +185,7 @@ void Level::drawLightningBolts()
 
 void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
 {
-	Platform *foundPlatform;
-	bool found = false;
+	Platform *foundPlatform = NULL;
 	float maxY = -1000.f;
 	for (unsigned int i = 0; i < platforms.size(); i++) {
 		Platform *platform = platforms[i];
@@ -202,16 +201,15 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 		{
 			if (platformOrigin.y() > maxY) {
 				foundPlatform = platform;
-				found = true;
 				maxY = platformOrigin.y();
 			}
 		}
 	}
 	// draw shadow on platform
-	if (found) {
+	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		float r = 0.2f;
+		float r = 0.2f/(characterY - maxY);
 		int num_segments = 20;
 		glColor4f(0.f, 0.f, 0.f, 0.3f);
 		glBegin(GL_POLYGON); 

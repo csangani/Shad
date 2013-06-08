@@ -103,9 +103,13 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 void Platform::moveX(int deltaPoint) {
 	if (deltaPoint < 5) {
 		platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(-0.2f, 0.f, 0.f);
 	}
 	else {
 		platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0.2f, 0.f, 0.f);
 	}
 }
 
@@ -113,18 +117,26 @@ void Platform::moveX(int deltaPoint) {
 void Platform::moveY(int deltaPoint) {
 	if (deltaPoint < 5) {
 		platformMesh->Translate(OpenMesh::Vec3f(0, -0.2, 0));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0.f, -0.2f, 0.f);
 	}
 	else {
 		platformMesh->Translate(OpenMesh::Vec3f(0, 0.2, 0));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0.f, 0.2f, 0.f);
 	}
 }
 
 void Platform::moveZ(int deltaPoint) {
 	if (deltaPoint < 5) {
 		platformMesh->Translate(OpenMesh::Vec3f(0, 0, -0.2));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0.f, 0.f, -0.2f);
 	}
 	else {
 		platformMesh->Translate(OpenMesh::Vec3f(0, 0, 0.2));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0.f, 0.f, 0.2f);
 	}
 }
 
