@@ -119,6 +119,14 @@ void Platform::moveY(int deltaPoint) {
 	}
 }
 
+void Platform::moveZ(int deltaPoint) {
+	if (deltaPoint < 5) {
+		platformMesh->Translate(OpenMesh::Vec3f(0, 0, -0.2));
+	}
+	else {
+		platformMesh->Translate(OpenMesh::Vec3f(0, 0, 0.2));
+	}
+}
 
 void Platform::moveWChar(int deltaPoint) {
 	//platformMesh->
