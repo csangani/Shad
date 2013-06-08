@@ -488,7 +488,9 @@ namespace Sound {
 		ERRCHECK(result);
 
 		ERRCHECK(Sound::system->createSound("assets/mp3/MainMenu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
+		ERRCHECK(MainMenuMusic->setMode(FMOD_LOOP_NORMAL));
 		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, false, &MainMusicChannel));
+
 
 		ERRCHECK(system->update());
 	}
