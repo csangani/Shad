@@ -200,6 +200,17 @@ void Level::drawLightningBolts()
 	}
 }
 
+bool Level::lightningCollisionWithPoint(OpenMesh::Vec3f point)
+{
+	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
+		Lightning *lightning = lightningBolts[i];
+		if (lightning->CollidesWithPoint(point)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
 {
 	Platform *foundPlatform = NULL;

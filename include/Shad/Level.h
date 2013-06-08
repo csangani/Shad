@@ -28,6 +28,7 @@ class Level {
 	void drawLightningBolts();
 	void drawCharacterShadow(float characterX, float characterY, float characterZ);
 	void applyLightningAnimationStep();
+	bool lightningCollisionWithPoint(OpenMesh::Vec3f point);
 
 	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad);
 

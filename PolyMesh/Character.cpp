@@ -41,3 +41,7 @@ Character *Character::SyncDummy() {
 
 	return this;
 }
+
+btVector3 Character::GetPosition() {
+	return RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+}

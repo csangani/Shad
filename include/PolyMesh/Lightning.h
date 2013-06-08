@@ -34,6 +34,9 @@ class Lightning {
 		bool isOff();
 		void Jitter();
 
+		// Collision
+		bool CollidesWithPoint(OpenMesh::Vec3f point);
+
 		std::vector<Segment> segments;
 	
 	private:

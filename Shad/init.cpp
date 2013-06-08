@@ -204,7 +204,7 @@ namespace Window
 				Game::Shad->Draw();
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
-			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+			btVector3 characterPos = Game::Shad->GetPosition();
 			Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
@@ -466,6 +466,13 @@ namespace Window
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
+			
+			/* check lightning collision */
+			
+			btVector3 characterPos = Game::Shad->GetPosition();
+			if (Game::currentLevel->lightningCollisionWithPoint(OpenMesh::Vec3f(characterPos.x(),characterPos.y(),characterPos.z()))) {
+				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
+			}
 
 			/* reset position on death */
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();

@@ -157,6 +157,18 @@ void Lightning::GenerateGeometry()
     }
 }
 
+#define COLLISION_THRESHOLD (0.7);
+
+bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
+{
+	OpenMesh::Vec3f lightningLineDirection = (originalEndPoint - originalStartPoint).normalize();
+	OpenMesh::Vec3f convertedPoint = point - originalStartPoint;
+	OpenMesh::Vec3f projectedPoint = (convertedPoint[0] * lightningLineDirection[0] + convertedPoint[1] * lightningLineDirection[1] + convertedPoint[2] * lightningLineDirection[2])*lightningLineDirection;
+	OpenMesh::Vec3f finalProjectedPoint = projectedPoint + originalStartPoint;
+
+	return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
+}
+
 #define RADIUS (0.05f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
