@@ -13,7 +13,8 @@ class PlatformEdge {
 		void Scale(float scalex, float scaley, float scalez);
 		void Translate(float tx, float ty, float tz);
 		void Rotate(float angle, float x, float y, float z);
-
+		OpenMesh::Vec3f getStartPoint();
+		OpenMesh::Vec3f getEndPoint();
 	private:
 		OpenMesh::Vec3f startPoint_, endPoint_;
 		OpenMesh::Vec3f RotatePoint(OpenMesh::Vec3f point, float angle, float x, float y, float z);

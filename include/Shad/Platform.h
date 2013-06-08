@@ -19,8 +19,17 @@ class Platform {
 		std::vector<PlatformEdge *> edges;
 		PolyMesh *platformMesh;
 
+		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
+		bool isMoving();
+
+		void move(int deltaPoint);
+
+		void moveWChar(int deltaPoint);
+
 	private:
 		void GenerateEdges();
+		bool moving;
+		float deltaX, deltaY, deltaZ;
 };
 
 #endif

@@ -2,14 +2,14 @@
 #define XBOX_CONTROLLER_H
 
 #include <windows.h>
-#include <XInput.h>
+//#include <XInput.h>
 
-#pragma comment(lib, "XInput.lib")
+//#pragma comment(lib, "XInput.lib")
 
 class XboxController {
 public:
 	XboxController(int playerNumber);
-	XINPUT_STATE GetState();
+	//XINPUT_STATE GetState();
 	float GetDirectionAngle();
 	int GetXCameraCoefficient();
 	int GetYCameraCoefficient();
@@ -20,7 +20,7 @@ public:
 	void Vibrate(int leftVal = 0, int rightVal = 0);
 
 private:
-	XINPUT_STATE controllerState_;
+	//XINPUT_STATE controllerState_;
 	int controllerNum_;
 	float GetRightStickX();
 	float GetRightStickY();

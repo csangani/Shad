@@ -1,6 +1,12 @@
 #include <Shad/Platform.h>
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
+struct bounds{
+	float low;
+	float high;
+	bool set;
+};
+
 Platform::Platform(std::string model) {
 	platformMesh = (new PolyMesh())->LoadObj(model)->GenerateRigidBody();
 	
@@ -16,6 +22,10 @@ Platform::Platform(std::string model) {
 	platformMesh->RigidBody->setAnisotropicFriction(platformMesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
 	GenerateEdges();
+
+
+	moving = false;
+
 }
 
 Platform::~Platform() {
@@ -78,3 +88,119 @@ void Platform::Texture(bitmap_image & image, std::string texture) {
 	platformMesh->ApplyTexture(image.data(), image.width(), image.height());
 }
 
+
+bool Platform::isMoving() {
+	return moving;
+}
+
+void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ) {
+	moving = state;
+	deltaX = _deltaX;
+	deltaY = _deltaY;
+	deltaZ = _deltaZ;
+}
+
+void Platform::move(int deltaPoint) {
+	if (deltaPoint < 5) {
+		platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
+	}
+	else {
+		platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
+	}
+}
+
+void Platform::moveWChar(int deltaPoint) {
+	//platformMesh->
+	struct bounds xBounds;
+	xBounds.set = false;
+	struct bounds yBounds;
+	yBounds.set = false;
+	struct bounds zBounds;
+	zBounds.set = false;
+	for (uint i = 0; i < edges.size(); i++)
+	{
+		OpenMesh::Vec3f start = edges[i]->getStartPoint();
+		OpenMesh::Vec3f end = edges[i]->getEndPoint();
+
+		if (xBounds.set == false) {
+			xBounds.set = true;
+			xBounds.low = start[0];
+			xBounds.high = start[0];
+
+			if (xBounds.low > end[0]) {
+				xBounds.low = end[0];
+			}
+			if (xBounds.high < end[0]) {
+				xBounds.high = end[0];
+			}
+		}
+		else {
+			if (xBounds.low < start[0]) {
+				xBounds.low = start[0];
+			}
+			if (xBounds.low < end[0]) {
+				xBounds.low = end[0];
+			}
+			if (xBounds.high > start[0]) {
+				xBounds.high = start[0];
+			}
+			if (xBounds.high > end[0]) {
+				xBounds.high = end[0];
+			}
+		}
+
+		if (yBounds.set == false) {
+			yBounds.set = true;
+			yBounds.low = start[1];
+			yBounds.high = start[1];
+
+			if (yBounds.low > end[1]) {
+				yBounds.low = end[1];
+			}
+			if (yBounds.high < end[1]) {
+				yBounds.high = end[1];
+			}
+		}
+		else {
+			if (yBounds.low < start[1]) {
+				yBounds.low = start[1];
+			}
+			if (yBounds.low < end[1]) {
+				yBounds.low = end[1];
+			}
+			if (yBounds.high > start[1]) {
+				yBounds.high = start[1];
+			}
+			if (yBounds.high > end[1]) {
+				yBounds.high = end[1];
+			}
+		}
+
+		if (zBounds.set == false) {
+			zBounds.set = true;
+			zBounds.low = start[2];
+			zBounds.high = start[2];
+
+			if (zBounds.low > end[2]) {
+				zBounds.low = end[2];
+			}
+			if (zBounds.high < end[2]) {
+				zBounds.high = end[2];
+			}
+		}
+		else {
+			if (zBounds.low < start[2]) {
+				zBounds.low = start[2];
+			}
+			if (zBounds.low < end[2]) {
+				zBounds.low = end[2];
+			}
+			if (zBounds.high > start[2]) {
+				zBounds.high = start[2];
+			}
+			if (zBounds.high > end[2]) {
+				zBounds.high = end[2];
+			}
+		}
+	}
+}

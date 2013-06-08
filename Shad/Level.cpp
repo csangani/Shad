@@ -9,6 +9,9 @@ Level::Level(int level) {
 	_level = level;
 	platforms = std::vector<Platform *>();
 	lightningBolts = std::vector<Lightning *>();
+
+	platforms = std::vector<Platform *>();
+	movingPlatforms = std::vector<Platform *>();
 }
 	
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
@@ -16,7 +19,12 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	Platform *platform;
 	switch(_level) {
 		case 1:
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 10)->Translate(0,-10,0));
+			platform = new Platform(cube);
+			platform->Scale(1,1,10);
+			platform->Translate(0,-10,0);
+			platforms.push_back(platform);
+			platform->setMoving(true, 0, 0, 1);
+			movingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
@@ -47,6 +55,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
 			platforms.push_back(platform);
+			platform->setMoving(true, 0, 0, 1);
+			movingPlatforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
@@ -153,12 +163,29 @@ void Level::destroyPlatforms() {
 		delete p;
 	}
 	platforms.clear();
+	movingPlatforms.clear();
 }
 
 void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
 }
 
+void Level::move(int deltaPoint, bool onGround) {
+	if (onGround == true) {
+		//movingPlatforms[i]->moveWChar(deltaPoint);
+	}
+	else {
+		for(uint i = 0; i < movingPlatforms.size(); i++) {
+			movingPlatforms[i]->move(deltaPoint);
+		}
+	}
+}
+
+
+
+
+
 OpenMesh::Vec3f Level::getTarget() {
 	return target;
 }
+

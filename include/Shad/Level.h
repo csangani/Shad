@@ -27,6 +27,9 @@ class Level {
 	void drawPlatformEdges();
 	void drawLightningBolts();
 	void applyLightningAnimationStep();
+
+	void move(int deltaPoint, bool onGround);
+
 	OpenMesh::Vec3f getTarget();
 
 	private:
@@ -35,6 +38,7 @@ class Level {
 		OpenMesh::Vec3f target;
 		std::vector<Platform *> platforms;
 		std::vector<Lightning *> lightningBolts;
+		std::vector<Platform *> movingPlatforms;
 };
 
 #endif

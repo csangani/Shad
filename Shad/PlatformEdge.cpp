@@ -54,6 +54,15 @@ void PlatformEdge::Draw()
 	float x2 = endPoint_[0];
 	float y2 = endPoint_[1];
 	float z2 = endPoint_[2];
-	
+
 	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS,NULL,quadric);
+}
+
+OpenMesh::Vec3f PlatformEdge::getStartPoint() {
+	OpenMesh::Vec3f placeholder = OpenMesh::Vec3f(0.0,0.0,0.0);
+	return placeholder;
+}
+OpenMesh::Vec3f PlatformEdge::getEndPoint() {
+	OpenMesh::Vec3f placeholder = OpenMesh::Vec3f(0.0,0.0,0.0);
+	return placeholder;
 }

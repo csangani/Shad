@@ -5,7 +5,7 @@
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
-#include <Shad/XboxController.h>
+//#include <Shad/XboxController.h>
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -46,7 +46,7 @@ namespace Game
 
 	Level *currentLevel;
 
-	XboxController *controller;
+	//XboxController *controller;
 
 	BVEC3F Direction;
 
@@ -65,6 +65,7 @@ namespace Game
 			teleportStartTime = PolyMesh::Time;
 		}
 	}
+	int deltaPoint;
 }
 
 namespace Window
@@ -374,7 +375,7 @@ namespace Window
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 
 			/* Poll Xbox controller */
-
+			/*
 			if (Game::controller->isConnected()) {
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
@@ -402,7 +403,7 @@ namespace Window
 					}
 				}
 
-			}
+			}*/
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -435,6 +436,13 @@ namespace Window
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 			}
+
+			/*Code to move platforms*/
+			Game::deltaPoint %= 10;
+			bool onGround = Game::Shad->RigidBody->onGround();
+			Game::currentLevel->move(Game::deltaPoint, onGround);
+
+			Game::deltaPoint++;
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
@@ -474,7 +482,7 @@ int main (int argc, char **argv)
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
 
 	// Setup Xbox controller
-	Game::controller = new XboxController(1);
+//	Game::controller = new XboxController(1);
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
@@ -657,7 +665,7 @@ int main (int argc, char **argv)
 	Game::Shad->EnableLighting();
 
 	Game::Direction = BVEC3F(0,0,-1);
-
+	Game::deltaPoint = 0;
 	// Run Loop
 	glutMainLoop();
 
