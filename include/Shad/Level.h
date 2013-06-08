@@ -29,7 +29,7 @@ class Level {
 	void drawCharacterShadow(float characterX, float characterY, float characterZ);
 	void applyLightningAnimationStep();
 
-	void move(int deltaPoint, bool onGround);
+	void move(int deltaPoint, bool onGround, float charX, float charY, float charZ);
 	
 	OpenMesh::Vec3f getTarget();
 

@@ -25,7 +25,7 @@ class Platform {
 		void move(int deltaPoint);
 
 
-		void moveWChar(int deltaPoint);
+		void moveWChar(int deltaPoint, float charX, float charY, float charZ);
 
 		OpenMesh::Vec3f getDirection();
 

@@ -444,9 +444,15 @@ namespace Window
 			}
 
 			/*Code to move platforms*/
-			Game::deltaPoint %= 8;
+			int time= PolyMesh::Time;
+			time /= 1000;
+			time %= 10;
 			bool onGround = Game::Shad->RigidBody->onGround();
-			Game::currentLevel->move(Game::deltaPoint, onGround);
+			((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
+			float characterX = transform.getOrigin().getX();
+			float characterY = transform.getOrigin().getY();
+			float characterZ = transform.getOrigin().getZ();
+			Game::currentLevel->move(time, onGround);
 
 			Game::deltaPoint++;
 		}
@@ -525,7 +531,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);

@@ -18,12 +18,12 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
 	switch(_level) {
-		case 3:
+		case 1:
 			platform = new Platform(cube);
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
+			platform->setMoving(true, 0, 0, 0.1);
 			movingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -120,7 +120,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			break;
 
-			case 1:
+		case 3:
 			platform = new Platform(cube);
 			platform->Scale(5,1,10);
 			platform->Translate(0,-10,0);
@@ -254,12 +254,14 @@ void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
 }
 
-void Level::move(int deltaPoint, bool onGround) {
+void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ) {
 	if (onGround == true) {
-		//movingPlatforms[i]->moveWChar(deltaPoint);
+		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
+			movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
+		}
 	}
 	else {
-		for(uint i = 0; i < movingPlatforms.size(); i++) {
+		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
 			movingPlatforms[i]->move(deltaPoint);
 		}
 	}

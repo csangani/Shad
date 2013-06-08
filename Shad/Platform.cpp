@@ -121,7 +121,7 @@ void Platform::move(int deltaPoint) {
 
 
 void Platform::moveWChar(int deltaPoint) {
-	//platformMesh->
+	
 	struct bounds xBounds;
 	xBounds.set = false;
 	struct bounds yBounds;
@@ -214,4 +214,6 @@ void Platform::moveWChar(int deltaPoint) {
 			}
 		}
 	}
+
+
 }

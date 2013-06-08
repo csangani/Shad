@@ -59,10 +59,9 @@ void PlatformEdge::Draw()
 }
 
 OpenMesh::Vec3f PlatformEdge::getStartPoint() {
-	OpenMesh::Vec3f placeholder = OpenMesh::Vec3f(0.0,0.0,0.0);
-	return placeholder;
+	return startPoint_;
 }
 OpenMesh::Vec3f PlatformEdge::getEndPoint() {
 	OpenMesh::Vec3f placeholder = OpenMesh::Vec3f(0.0,0.0,0.0);
-	return placeholder;
+	return endPoint_;
 }
