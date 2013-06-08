@@ -51,11 +51,11 @@ namespace Game
 	CharacterState characterState = DefaultState;
 
 	Level *currentLevel;
-	/*
+
 #ifdef USE_XBOX_CONTROLLER
 	XboxController *controller;
 #endif
-	*/
+
 	BVEC3F Direction;
 
 	bool moveForward = false;
@@ -123,7 +123,8 @@ namespace Window
 
 	void _display(PolyMesh *mesh)
 	{
-		mesh->Draw();
+		if (!mesh->cloth && !mesh->particleCloth)
+			mesh->Draw();
 	}
 
 	void setCamera()
@@ -171,6 +172,18 @@ namespace Window
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
 
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
+				if ((*i)->cloth) {
+					((Cloth *)(*i))->Draw();
+				}
+			}
+
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
+				if ((*i)->particleCloth) {
+					((ParticleCloth *)(*i))->Draw();
+				}
+			}
+
 			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
 			glowMapRenderTarget->unbind();
@@ -185,6 +198,17 @@ namespace Window
 
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
+				if ((*i)->cloth) {
+					((Cloth *)(*i))->Draw();
+				}
+			}
+
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
+				if ((*i)->particleCloth) {
+					((ParticleCloth *)(*i))->Draw();
+				}
+			}
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
 			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
@@ -387,10 +411,10 @@ namespace Window
 				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
-			/*
+
 #ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
-		/*	if (Game::controller->isConnected()) {
+			if (Game::controller->isConnected()) {
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
 				}
@@ -418,7 +442,7 @@ namespace Window
 				}
 
 			}
-#endif*/
+#endif
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -461,7 +485,6 @@ namespace Window
 			float charX = transform.getOrigin().getX();
 			float charY = transform.getOrigin().getY();
 			float charZ = transform.getOrigin().getZ();
-			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
 
 			Game::deltaPoint++;
 		}
@@ -494,7 +517,7 @@ namespace Sound {
 	void InitSound() {
 		FMOD_RESULT      result;
 		unsigned int     version;
-		
+
 		result = FMOD::System_Create(&system);
 		ERRCHECK(result);
 
@@ -540,16 +563,16 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
-	/*
+
 #ifdef USE_XBOX_CONTROLLER
 	// Setup Xbox controller
 	Game::controller = new XboxController(1);
 #endif
-	*/
+
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
 	if (GLEW_OK != error)
@@ -680,7 +703,7 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
-	ParticleCloth *cape = new ParticleCloth(6,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+	ParticleCloth *cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
 	cape_image.rgb_to_bgr();
 	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());

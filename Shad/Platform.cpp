@@ -105,7 +105,7 @@ OpenMesh::Vec3f Platform::getDirection() {
 }
 
 
-void Platform::move(int deltaPoint) {
+void Platform::move(uint64_t deltaPoint) {
 	OpenMesh::Vec3f direction = getDirection();
 	if (deltaPoint < 5) {
 		platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
@@ -120,7 +120,7 @@ void Platform::move(int deltaPoint) {
 }
 
 
-bool Platform::moveWChar(int deltaPoint, float charX, float charY, float charZ) {
+bool Platform::moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ) {
 	move(deltaPoint);
 	struct bounds xBounds;
 	xBounds.set = false;

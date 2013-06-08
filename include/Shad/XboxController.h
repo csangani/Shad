@@ -1,4 +1,4 @@
-/*#ifndef XBOX_CONTROLLER_H
+#ifndef XBOX_CONTROLLER_H
 #define XBOX_CONTROLLER_H
 
 #include <windows.h>
@@ -28,4 +28,4 @@ private:
 	float GetLeftStickY();
 };
 
-#endif*/
+#endif

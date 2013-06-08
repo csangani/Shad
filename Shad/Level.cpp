@@ -255,7 +255,7 @@ void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
 }
 
-void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
+void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
