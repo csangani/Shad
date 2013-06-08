@@ -47,7 +47,8 @@ local.properties
 # Build results
 
 build/
-lib/
+lib/Debug/
+lib/Release/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
