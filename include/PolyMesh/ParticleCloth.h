@@ -10,7 +10,7 @@ public:
 	ParticleCloth (int length, int width, float segmentLength, BVEC3F& emitStart,
 		BVEC3F& emitEnd, BVEC3F& lengthVector, float gravity, uint64_t life, Character* reference);
 
-	void StepSimulation();
+	void SimulationStep();
 
 private:
 	int width, length;

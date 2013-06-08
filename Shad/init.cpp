@@ -9,6 +9,7 @@
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
+#include <PolyMesh/ParticleCloth.h>
 #include <PolyMesh/Cloth.h>
 #include <PolyMesh/Character.h>
 #include <PolyMesh/Lightning.h>
@@ -365,6 +366,10 @@ namespace Window
 				if ((*i)->cloth)
 					((Cloth *)(*i))->SimulationStep();
 
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++)
+				if ((*i)->particleCloth)
+					((ParticleCloth *)(*i))->SimulationStep();
+
 			/* Animate lightning */
 			Game::currentLevel->applyLightningAnimationStep();
 
@@ -663,6 +668,10 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
+	ParticleCloth *cape = new ParticleCloth(6,10,0.025, BVEC3F(-0.11f, 0.15f, 0.1f), BVEC3F(0.29f, 0.15f, 0.1f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
+	cape_image.rgb_to_bgr();
+	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
@@ -683,15 +692,19 @@ int main (int argc, char **argv)
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
+	cape->MaterialSpecular = CapeSpecular;
 
 	Game::Shad->MaterialDiffuse = Diffuse;
 	Cloak->MaterialDiffuse = Diffuse;
+	cape->MaterialDiffuse = CapeDiffuse;
 
 	Game::Shad->MaterialAmbient = Ambient;
 	Cloak->MaterialAmbient = Ambient;
+	cape->MaterialAmbient = CapeAmbient;
 
 	Game::Shad->MaterialShininess = Shininess;
 	Cloak->MaterialShininess = Shininess;
+	cape->MaterialShininess = CapeShininess;
 
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);
