@@ -18,7 +18,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
 	switch(_level) {
-		case 1:
+		case 3:
 			platform = new Platform(cube);
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
@@ -120,17 +120,17 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			break;
 
-			case 3:
+			case 1:
 			platform = new Platform(cube);
-			platform->Scale(1,1,10);
+			platform->Scale(5,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
-			movingPlatforms.push_back(platform);
+			//platform->setMoving(true, 0, 0, 1);
+			//movingPlatforms.push_back(platform);
 
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
+			//platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platforms.push_back((new Platform(cube))->Scale(0.25, 50, 15)->Translate(-1,-13,0));
+			platforms.push_back((new Platform(cube))->Scale(0.25, 12, 10)->Translate(-1,-10,0));
 
 			/*
 

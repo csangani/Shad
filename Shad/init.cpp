@@ -5,7 +5,7 @@
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
-//#include <Shad/XboxController.h>
+#include <Shad/XboxController.h>
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -49,7 +49,7 @@ namespace Game
 
 	Level *currentLevel;
 
-	//XboxController *controller;
+	XboxController *controller;
 
 	BVEC3F Direction;
 
@@ -408,7 +408,8 @@ namespace Window
 					}
 				}
 
-			}*/
+			}
+			*/
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -533,7 +534,7 @@ int main (int argc, char **argv)
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
 
 	// Setup Xbox controller
-//	Game::controller = new XboxController(1);
+	// Game::controller = new XboxController(1);
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
