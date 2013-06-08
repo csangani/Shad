@@ -5,7 +5,9 @@
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
+#ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
+#endif
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
@@ -50,7 +52,9 @@ namespace Game
 
 	Level *currentLevel;
 
+#ifdef USE_XBOX_CONTROLLER
 	XboxController *controller;
+#endif
 
 	BVEC3F Direction;
 
@@ -190,23 +194,23 @@ namespace Window
 
 			sceneRenderTargets[currBlurFrame]->unbind();
 
+			/* apply motion blur (not really, this code is just for show :P) */
+			motionBlur->addFrame(sceneRenderTargets[currBlurFrame]->textureID());
+			GLuint motionBlurredTexID = motionBlur->blurFrames();
+
 			/* apply glow effect to current frame */
 			// blur the glow map
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
-			// blend glow map with current frame
-			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[currBlurFrame]->textureID(), blurredTexID);
-
-			/* apply motion blur */
-			/*motionBlur->addFrame(sceneRenderTargets[currBlurFrame]->textureID());
-			std::cout << "added frame: " << sceneRenderTargets[currBlurFrame]->textureID() << std::endl;
-			motionBlur->printFrames();
-			GLuint motionBlurredTexID = motionBlur->blurFrames();
-			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;*/
+			// blend glow map with current frame (or previous when teleporting...for "motion blur")
+			GLuint frameNum = (Game::characterState == Game::TeleportingState) ? (currBlurFrame+1) % NUM_BLUR_FRAMES : currBlurFrame;
+			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[frameNum]->textureID(), blurredTexID);
 
 			/* TODO: perform antialiasing */
 
 			/* render final texture to the screen */
 			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+
+			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
 			glutSwapBuffers();
 		}
@@ -384,8 +388,8 @@ namespace Window
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 
+#ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
-			/*
 			if (Game::controller->isConnected()) {
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
@@ -414,7 +418,7 @@ namespace Window
 				}
 
 			}
-			*/
+#endif
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -535,8 +539,10 @@ int main (int argc, char **argv)
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
 
+#ifdef USE_XBOX_CONTROLLER
 	// Setup Xbox controller
-	// Game::controller = new XboxController(1);
+	Game::controller = new XboxController(1);
+#endif
 
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();

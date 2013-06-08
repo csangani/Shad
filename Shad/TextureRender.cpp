@@ -155,6 +155,19 @@ void TextureRender::renderToScreen(GLuint texID, GLuint width, GLuint height, bo
 	glViewport(0, 0, width, height);
 }
 
+void TextureRender::copyTexture(GLuint fromTexID, GLuint toTexID, GLuint width, GLuint height)
+{
+	long imageSize = width * height * 4;
+	unsigned char *img_data = new unsigned char[imageSize];
+	glBindTexture(GL_TEXTURE_2D, fromTexID);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data);
+
+	glBindTexture(GL_TEXTURE_2D, toTexID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void TextureRender::writeToFile(std::string filename) {
 	long imageSize = width_ * height_ * 3;
 	unsigned char *img_data = new unsigned char[imageSize];

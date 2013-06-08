@@ -23,8 +23,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
-			movingPlatforms.push_back(platform);
+			//platform->setMoving(true, 0, 0, 1);
+			//movingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
@@ -55,8 +55,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
-			movingPlatforms.push_back(platform);
+			//platform->setMoving(true, 0, 0, 1);
+			//movingPlatforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
@@ -134,8 +134,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platform = new Platform(cube);
 			platforms.push_back(platform->Scale(5, 1, 5)->Translate(-2,-10,-13));
-			platform->setMoving(true, 0, 0, 0.9); 
-			movingPlatforms.push_back(platform); 
+			//platform->setMoving(true, 0, 0, 0.9); 
+			//movingPlatforms.push_back(platform); 
 
 			/*
 
