@@ -271,6 +271,7 @@ void Level::move(int deltaPoint, bool onGround, float charX, float charY, float 
 					btTransform id;
 					id.setIdentity();
 					id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 
 				}

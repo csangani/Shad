@@ -34,6 +34,7 @@ class Platform {
 		void GenerateEdges();
 		bool moving;
 		float deltaX, deltaY, deltaZ;
+		float initialX, initalY, initialZ;
 };
 
 #endif
