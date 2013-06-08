@@ -50,11 +50,22 @@ float Ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
 
 float Shininess[] = { 0.5f };
 
+float CapeSpecular[] = { 0.1f, 0.1f, 0.1f, 0.9f };
+
+float CapeDiffuse[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+
+float CapeAmbient[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+
+float CapeShininess[] = { 0.0f };
+
+float ClothColor[] = { 1.0f, 0.0f, 0.0f, 0.7f };
+
 bitmap_image image;
 
 bitmap_image space_image;
 
 bitmap_image cloth_image;
+bitmap_image cape_image;
 
 bitmap_image menu_start_image;
 bitmap_image menu_quit_image;
