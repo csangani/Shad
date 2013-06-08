@@ -26,6 +26,11 @@ Platform::Platform(std::string model) {
 	collapsible = false;
 	moving = false;
 
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 1.0f;
+	color[3] = 1.0f;
+
 }
 
 Platform::~Platform() {
@@ -56,6 +61,10 @@ void Platform::GenerateEdges()
 			edges.push_back(edge);
 		}
 	}
+}
+
+float * Platform::getColor() {
+	return color;
 }
 
 Platform *Platform::Scale(float scalex, float scaley, float scalez) {
@@ -90,6 +99,7 @@ void Platform::Texture(bitmap_image & image, std::string texture) {
 
 
 bool Platform::isMoving() {
+
 	return moving;
 }
 
@@ -98,6 +108,10 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 	deltaX = _deltaX;
 	deltaY = _deltaY;
 	deltaZ = _deltaZ;
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
 }
 
 OpenMesh::Vec3f Platform::getDirection() {
@@ -247,6 +261,10 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 	initialX = _startX;
 	initialY = _startY;
 	initialZ = _startZ;
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
 
 }
 

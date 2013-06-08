@@ -185,9 +185,10 @@ void Level::drawPlatformEdges()
 {
 	for (unsigned int i = 0; i < platforms.size(); i++) {
 		Platform *platform = platforms[i];
+		float *color = platform->getColor();
 		for (unsigned int j = 0; j < platform->edges.size(); j++) {
 			PlatformEdge *edge = platform->edges[j];
-			edge->Draw();
+			edge->Draw(color);
 		}
 	}
 }

@@ -24,12 +24,12 @@ class Level {
 	void setTarget(float x, float y , float z);
 	void destroyPlatforms();
 	void changeUp();
-	void drawPlatformEdges();
+	void drawPlatformEdges();	
 	void drawLightningBolts();
 	void drawCharacterShadow(float characterX, float characterY, float characterZ);
 	void applyLightningAnimationStep();
 	bool lightningCollisionWithPoint(OpenMesh::Vec3f point);
-
+	
 	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad);
 
 	void reset();

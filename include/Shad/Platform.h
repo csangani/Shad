@@ -37,7 +37,7 @@ class Platform {
 		bool withInBounds(float charX, float charY, float charZ);
 
 		void collapse(bool onGround, float charX, float charY, float charZ);
-
+		float * getColor();
 		void reset();
 	private:
 		void GenerateEdges();
@@ -45,6 +45,7 @@ class Platform {
 		float deltaX, deltaY, deltaZ;
 		float initialX, initialY, initialZ;
 		bool collapsible;
+		float color[4];
 };
 
 #endif

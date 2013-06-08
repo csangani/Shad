@@ -11,6 +11,7 @@ PlatformEdge::PlatformEdge(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 	startPoint_ = startPoint;
 	endPoint_ = endPoint;
 	quadric = gluNewQuadric();
+	
 }
 
 void PlatformEdge::Scale(float scalex, float scaley, float scalez)
@@ -44,7 +45,7 @@ OpenMesh::Vec3f PlatformEdge::RotatePoint(OpenMesh::Vec3f point, float angle, fl
 #define RADIUS (0.01)
 #define NUM_SUBDIVISIONS (32)
 
-void PlatformEdge::Draw()
+void PlatformEdge::Draw(float * color)
 {
 	//the same quadric can be re-used for drawing many cylinders
 	gluQuadricNormals(quadric, GLU_SMOOTH);
@@ -54,14 +55,12 @@ void PlatformEdge::Draw()
 	float x2 = endPoint_[0];
 	float y2 = endPoint_[1];
 	float z2 = endPoint_[2];
-
-	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS,NULL,quadric);
+	RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS,NUM_SUBDIVISIONS,color,quadric);
 }
 
 OpenMesh::Vec3f PlatformEdge::getStartPoint() {
 	return startPoint_;
 }
 OpenMesh::Vec3f PlatformEdge::getEndPoint() {
-	OpenMesh::Vec3f placeholder = OpenMesh::Vec3f(0.0,0.0,0.0);
 	return endPoint_;
 }
