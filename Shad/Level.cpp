@@ -185,8 +185,7 @@ void Level::drawLightningBolts()
 
 void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
 {
-	Platform *foundPlatform;
-	bool found = false;
+	Platform *foundPlatform = NULL;
 	float maxY = -1000.f;
 	for (unsigned int i = 0; i < platforms.size(); i++) {
 		Platform *platform = platforms[i];
@@ -202,16 +201,15 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 		{
 			if (platformOrigin.y() > maxY) {
 				foundPlatform = platform;
-				found = true;
 				maxY = platformOrigin.y();
 			}
 		}
 	}
 	// draw shadow on platform
-	if (found) {
+	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		float r = 0.2f;
+		float r = 0.2f/(characterY - maxY);
 		int num_segments = 20;
 		glColor4f(0.f, 0.f, 0.f, 0.3f);
 		glBegin(GL_POLYGON); 
