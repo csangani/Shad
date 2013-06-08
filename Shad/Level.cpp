@@ -23,7 +23,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0.01, 0, 0);
+			platform->setMoving(true, 0, 0, 0.01);
 			movingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -55,8 +55,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 1);
-			movingPlatforms.push_back(platform);
+			//platform->setMoving(true, 0, 0, 1);
+			//movingPlatforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->Scale(1, 5, 1);
@@ -120,6 +120,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			break;
 
+
 		case 3:
 			platform = new Platform(cube);
 			platform->Scale(5,1,10);
@@ -134,8 +135,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platform = new Platform(cube);
 			platforms.push_back(platform->Scale(5, 1, 5)->Translate(-2,-10,-13));
-			platform->setMoving(true, 0, 0, 0.9); 
-			movingPlatforms.push_back(platform); 
+			//platform->setMoving(true, 0, 0, 0.9); 
+			//movingPlatforms.push_back(platform); 
 
 			/*
 
@@ -255,7 +256,6 @@ void Level::setTarget(float x, float y, float z) {
 }
 
 void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
-	std::cout << (onGround == true) << std::endl;
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {

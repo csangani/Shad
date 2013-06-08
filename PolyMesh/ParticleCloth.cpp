@@ -1,12 +1,14 @@
 #include <PolyMesh/ParticleCloth.h>
 
 ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F& emitStart, BVEC3F& emitEnd, BVEC3F& lengthVector, float gravity, uint64_t life, Character* reference) : startRow(0), life(life), elapsed(0), width(width), length(length), reference(reference), emitStart(emitStart), emitEnd(emitEnd), lengthVector(lengthVector), segmentLength(segmentLength) {
-	cloth = true;
+	particleCloth = true;
+	request_vertex_texcoords2D();
 	for (int i = 0; i < length; i++) {
 		RigidBody.push_back(std::vector<btRigidBody *>());
 		Points.push_back(std::vector<VertexHandle>());
 		for (int j = 0; j < width; j++) {
 			Points[i].push_back(add_vertex(OVECB(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin())));
+			set_texcoord2D(Points[i][j],OpenMesh::Vec2f(1.0f/(length-1)*i,(1.0f/(width-1)*j)));
 			btScalar mass(0.1f);
 			btVector3 localInertia(0,0,0);
 			btCollisionShape *shape = new btSphereShape(0.001f);
@@ -23,6 +25,7 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 			RigidBody[i][j]->setUserPointer(this);
 			RigidBody[i][j]->setContactProcessingThreshold(0.0f);
 			RigidBody[i][j]->setSleepingThresholds(0.2f,0.2f);
+			RigidBody[i][j]->setDamping(0.3f, 0.3f);
 		}
 	}
 
@@ -35,7 +38,7 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 	}
 }
 
-void ParticleCloth::StepSimulation() {
+void ParticleCloth::SimulationStep() {
 	elapsed += (uint64_t)FRAME_PERIOD;
 	if (elapsed > life) {
 		startRow = (startRow + length - 1) % length;
@@ -43,7 +46,14 @@ void ParticleCloth::StepSimulation() {
 		for (int i = 0; i < width; i++) {
 			btTransform transform;
 			transform.setIdentity();
-			transform.setOrigin(((emitEnd-emitStart).normalized() * (float)i ) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin() +BVEC3F(0,0.001f*sinf(Character::Time * 0.001f),0));
+			BVEC3F RelPosition = ((emitEnd-emitStart).normalized() * (float)i ) * segmentLength + emitStart;
+			BVEC3F FinPosition = RelPosition.rotate(reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAxis(),reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAngle()) +
+				reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+			transform.setOrigin(FinPosition);
+			transform.setRotation(reference->RigidBody->getGhostObject()->getWorldTransform().getRotation());
+			BVEC3F velocity(cosf(PolyMesh::Time/100.0f)*(0.7f+0.3f*sinf(PolyMesh::Time/200.0f)),-3+0.5f*sinf(PolyMesh::Time/100.0f)*cosf(sinf(i)*5.0f),10);
+			velocity = velocity.rotate(reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAxis(),reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAngle());
+			RigidBody[startRow][i]->setLinearVelocity(velocity); 
 			RigidBody[startRow][i]->setCenterOfMassTransform(transform);
 		}
 	}

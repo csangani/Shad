@@ -5,10 +5,13 @@
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
 #include <Shad/Level.h>
+#ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
+#endif
 
 #include <PolyMesh/bitmap_image.h>
 #include <PolyMesh/PolyMesh.h>
+#include <PolyMesh/ParticleCloth.h>
 #include <PolyMesh/Cloth.h>
 #include <PolyMesh/Character.h>
 #include <PolyMesh/Lightning.h>
@@ -48,9 +51,11 @@ namespace Game
 	CharacterState characterState = DefaultState;
 
 	Level *currentLevel;
-
+	/*
+#ifdef USE_XBOX_CONTROLLER
 	XboxController *controller;
-
+#endif
+	*/
 	BVEC3F Direction;
 
 	bool moveForward = false;
@@ -189,23 +194,23 @@ namespace Window
 
 			sceneRenderTargets[currBlurFrame]->unbind();
 
+			/* apply motion blur (not really, this code is just for show :P) */
+			motionBlur->addFrame(sceneRenderTargets[currBlurFrame]->textureID());
+			GLuint motionBlurredTexID = motionBlur->blurFrames();
+
 			/* apply glow effect to current frame */
 			// blur the glow map
 			GLuint blurredTexID = blur->blurTexture(glowMapRenderTarget->textureID());
-			// blend glow map with current frame
-			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[currBlurFrame]->textureID(), blurredTexID);
-
-			/* apply motion blur */
-			/*motionBlur->addFrame(sceneRenderTargets[currBlurFrame]->textureID());
-			std::cout << "added frame: " << sceneRenderTargets[currBlurFrame]->textureID() << std::endl;
-			motionBlur->printFrames();
-			GLuint motionBlurredTexID = motionBlur->blurFrames();
-			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;*/
+			// blend glow map with current frame (or previous when teleporting...for "motion blur")
+			GLuint frameNum = (Game::characterState == Game::TeleportingState) ? (currBlurFrame+1) % NUM_BLUR_FRAMES : currBlurFrame;
+			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[frameNum]->textureID(), blurredTexID);
 
 			/* TODO: perform antialiasing */
 
 			/* render final texture to the screen */
 			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+
+			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
 			glutSwapBuffers();
 		}
@@ -365,6 +370,10 @@ namespace Window
 				if ((*i)->cloth)
 					((Cloth *)(*i))->SimulationStep();
 
+			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++)
+				if ((*i)->particleCloth)
+					((ParticleCloth *)(*i))->SimulationStep();
+
 			/* Animate lightning */
 			Game::currentLevel->applyLightningAnimationStep();
 
@@ -378,10 +387,10 @@ namespace Window
 				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
-
-			/* Poll Xbox controller */
 			/*
-			if (Game::controller->isConnected()) {
+#ifdef USE_XBOX_CONTROLLER
+			/* Poll Xbox controller */
+		/*	if (Game::controller->isConnected()) {
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
 				}
@@ -409,7 +418,7 @@ namespace Window
 				}
 
 			}
-			*/
+#endif*/
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -444,7 +453,7 @@ namespace Window
 			}
 
 			/*Code to move platforms*/
-			int time= PolyMesh::Time;
+			uint64_t time= PolyMesh::Time;
 			time /= 1000;
 			time %= 10;
 			bool onGround = Game::Shad->RigidBody->onGround();
@@ -535,10 +544,12 @@ int main (int argc, char **argv)
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
-
+	/*
+#ifdef USE_XBOX_CONTROLLER
 	// Setup Xbox controller
-	// Game::controller = new XboxController(1);
-
+	Game::controller = new XboxController(1);
+#endif
+	*/
 	// Initialize GLEW (for shaders)
 	GLint error = glewInit();
 	if (GLEW_OK != error)
@@ -669,6 +680,10 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
+	ParticleCloth *cape = new ParticleCloth(6,10,0.025, BVEC3F(-0.11f, 0.15f, 0.1f), BVEC3F(0.29f, 0.15f, 0.1f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
+	cape_image.rgb_to_bgr();
+	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
@@ -689,15 +704,19 @@ int main (int argc, char **argv)
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;
 	Cloak->MaterialSpecular = Specular;
+	cape->MaterialSpecular = CapeSpecular;
 
 	Game::Shad->MaterialDiffuse = Diffuse;
 	Cloak->MaterialDiffuse = Diffuse;
+	cape->MaterialDiffuse = CapeDiffuse;
 
 	Game::Shad->MaterialAmbient = Ambient;
 	Cloak->MaterialAmbient = Ambient;
+	cape->MaterialAmbient = CapeAmbient;
 
 	Game::Shad->MaterialShininess = Shininess;
 	Cloak->MaterialShininess = Shininess;
+	cape->MaterialShininess = CapeShininess;
 
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);

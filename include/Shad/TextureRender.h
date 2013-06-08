@@ -8,6 +8,7 @@
 class TextureRender {
 public:
 	static void renderToScreen(GLuint texID, GLuint width, GLuint height, bool flipHorizontal, bool flipVertical);
+	static void copyTexture(GLuint fromTexID, GLuint toTexID, GLuint width, GLuint height);
 
     /**
      * Creates a new render buffer for render-to-texture.  When this
