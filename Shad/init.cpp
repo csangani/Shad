@@ -444,7 +444,7 @@ namespace Window
 			}
 
 			/*Code to move platforms*/
-			Game::deltaPoint %= 10;
+			Game::deltaPoint %= 8;
 			bool onGround = Game::Shad->RigidBody->onGround();
 			Game::currentLevel->move(Game::deltaPoint, onGround);
 

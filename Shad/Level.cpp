@@ -134,7 +134,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platform = new Platform(cube);
 			platforms.push_back(platform->Scale(5, 1, 5)->Translate(-2,-10,-13));
-			platform->setMoving(true, 0.5, 0, 1.2); 
+			platform->setMoving(true, 0, 0, 0.9); 
 			movingPlatforms.push_back(platform); 
 
 			/*
