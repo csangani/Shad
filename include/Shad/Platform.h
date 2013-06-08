@@ -3,6 +3,7 @@
 
 #include <Polymesh/PolyMesh.h>
 #include <Shad/PlatformEdge.h>
+#include <Polymesh/Character.h>
 #include <GL\glew.h>
 #include <GL\glut.h>
 #include <string>
@@ -25,7 +26,7 @@ class Platform {
 		void move(int deltaPoint);
 
 
-		void moveWChar(int deltaPoint, float charX, float charY, float charZ);
+		bool moveWChar(int deltaPoint, float charX, float charY, float charZ);
 
 		OpenMesh::Vec3f getDirection();
 

@@ -449,10 +449,10 @@ namespace Window
 			time %= 10;
 			bool onGround = Game::Shad->RigidBody->onGround();
 			((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
-			float characterX = transform.getOrigin().getX();
-			float characterY = transform.getOrigin().getY();
-			float characterZ = transform.getOrigin().getZ();
-			Game::currentLevel->move(time, onGround);
+			float charX = transform.getOrigin().getX();
+			float charY = transform.getOrigin().getY();
+			float charZ = transform.getOrigin().getZ();
+			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
 
 			Game::deltaPoint++;
 		}

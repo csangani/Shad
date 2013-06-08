@@ -23,7 +23,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 0.1);
+			platform->setMoving(true, 0.01, 0, 0);
 			movingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -254,10 +254,30 @@ void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
 }
 
-void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ) {
+void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
+	std::cout << (onGround == true) << std::endl;
 	if (onGround == true) {
+		bool platformFound = false;
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
-			movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
+			if (!platformFound) {
+				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
+				if (platformFound) {
+					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
+					if (deltaPoint < 5) {
+					}
+					else {
+						delta = -delta;
+					}
+					btTransform id;
+					id.setIdentity();
+					id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+
+				}
+			}
+			else {
+				movingPlatforms[i]->move(deltaPoint);
+			}
 		}
 	}
 	else {

@@ -120,8 +120,8 @@ void Platform::move(int deltaPoint) {
 }
 
 
-void Platform::moveWChar(int deltaPoint) {
-	
+bool Platform::moveWChar(int deltaPoint, float charX, float charY, float charZ) {
+	move(deltaPoint);
 	struct bounds xBounds;
 	xBounds.set = false;
 	struct bounds yBounds;
@@ -215,5 +215,25 @@ void Platform::moveWChar(int deltaPoint) {
 		}
 	}
 
+	if (xBounds.high < xBounds.low) {
+		float temp = xBounds.high;
+		xBounds.high = xBounds.low;
+		xBounds.low = temp;
+	}
+
+	if (zBounds.high < zBounds.low) {
+		float temp = zBounds.high;
+		zBounds.high = zBounds.low;
+		zBounds.low = temp;
+	}
+
+
+	if (xBounds.low < charX && xBounds.high > charX) {
+		if (zBounds.low < charZ && zBounds.high > charZ) {
+			return true;
+		}
+	}
+
+	return false;
 
 }
