@@ -12,6 +12,7 @@ Level::Level(int level) {
 
 	platforms = std::vector<Platform *>();
 	movingPlatforms = std::vector<Platform *>();
+	collapsiblePlatforms = std::vector<Platform *>();
 }
 	
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
@@ -39,8 +40,13 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
 
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(6, 2, 2)->Translate(0,-15,-18));
+			platform = new Platform(cube);
+			platform->Rotate(35, 1, 0, 0);
+			platform->Scale(6, 2, 2);
+			platform->Translate(0,-15,-18);
+			platform->setCollapsible(0, -15, -18);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
 
@@ -164,6 +170,13 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	};
 }
 
+void Level::reset() {
+	for (unsigned int i = 0; i < collapsiblePlatforms.size(); i++)
+	{
+		collapsiblePlatforms[i]->reset();
+	}
+}
+
 void Level::changeUp() {
 	_level++;
 }
@@ -249,10 +262,20 @@ void Level::destroyPlatforms() {
 	}
 	platforms.clear();
 	movingPlatforms.clear();
+	collapsiblePlatforms.clear();
 }
 
 void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
+}
+
+void Level::collapse(bool onGround, float charX, float charY, float charZ) {
+	if (onGround) {
+		for (unsigned int i = 0; i < collapsiblePlatforms.size(); i++)
+		{
+			collapsiblePlatforms[i]->collapse(onGround, charX, charY, charZ);
+		}
+	}
 }
 
 void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {

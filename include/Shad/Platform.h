@@ -24,18 +24,27 @@ class Platform {
 		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
 		bool isMoving();
 
+		void setCollapsible(float startX, float startY, float startZ);
+		bool isCollapsible();
+
+
 		void move(uint64_t deltaPoint);
 
 
 		bool moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ);
 
 		OpenMesh::Vec3f getDirection();
+		bool withInBounds(float charX, float charY, float charZ);
 
+		void collapse(bool onGround, float charX, float charY, float charZ);
+
+		void reset();
 	private:
 		void GenerateEdges();
 		bool moving;
 		float deltaX, deltaY, deltaZ;
-		float initialX, initalY, initialZ;
+		float initialX, initialY, initialZ;
+		bool collapsible;
 };
 
 #endif
