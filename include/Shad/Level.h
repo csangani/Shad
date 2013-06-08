@@ -30,7 +30,7 @@ class Level {
 	void applyLightningAnimationStep();
 
 	void move(int deltaPoint, bool onGround);
-
+	
 	OpenMesh::Vec3f getTarget();
 
 	private:

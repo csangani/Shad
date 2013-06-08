@@ -130,11 +130,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			//platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platforms.push_back((new Platform(cube))->Scale(0.25, 12, 10)->Translate(-1,-10,0));
+			platforms.push_back((new Platform(cube))->Scale(0.25, 12, 10)->Translate(-3,-10,0));
+
+			platform = new Platform(cube);
+			platforms.push_back(platform->Scale(5, 1, 5)->Translate(-2,-10,-13));
+			platform->setMoving(true, 0.5, 0, 1.2); 
+			movingPlatforms.push_back(platform); 
 
 			/*
-
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
 
@@ -152,7 +155,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			*/
 
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
+			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-7,-10,-10), OpenMesh::Vec3f(-10,-5,-10)));
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
@@ -257,12 +260,10 @@ void Level::move(int deltaPoint, bool onGround) {
 	}
 	else {
 		for(uint i = 0; i < movingPlatforms.size(); i++) {
-			movingPlatforms[i]->moveX(deltaPoint);
+			movingPlatforms[i]->move(deltaPoint);
 		}
 	}
 }
-
-
 
 OpenMesh::Vec3f Level::getTarget() {
 	return target;

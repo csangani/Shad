@@ -100,45 +100,25 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 	deltaZ = _deltaZ;
 }
 
-void Platform::moveX(int deltaPoint) {
-	if (deltaPoint < 5) {
-		platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(-0.2f, 0.f, 0.f);
-	}
-	else {
-		platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0.2f, 0.f, 0.f);
-	}
+OpenMesh::Vec3f Platform::getDirection() {
+	return OpenMesh::Vec3f(deltaX, deltaY, deltaZ);
 }
 
 
-void Platform::moveY(int deltaPoint) {
+void Platform::move(int deltaPoint) {
+	OpenMesh::Vec3f direction = getDirection();
 	if (deltaPoint < 5) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.2, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0.f, -0.2f, 0.f);
+			edges[i]->Translate(direction[0], direction[1], direction[2]);
 	}
 	else {
-		platformMesh->Translate(OpenMesh::Vec3f(0, 0.2, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(-direction[0], -direction[1], -direction[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0.f, 0.2f, 0.f);
+			edges[i]->Translate(-direction[0], -direction[1], -direction[2]);
 	}
 }
 
-void Platform::moveZ(int deltaPoint) {
-	if (deltaPoint < 5) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, 0, -0.2));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0.f, 0.f, -0.2f);
-	}
-	else {
-		platformMesh->Translate(OpenMesh::Vec3f(0, 0, 0.2));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0.f, 0.f, 0.2f);
-	}
-}
 
 void Platform::moveWChar(int deltaPoint) {
 	//platformMesh->

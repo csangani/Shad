@@ -22,12 +22,12 @@ class Platform {
 		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
 		bool isMoving();
 
-		void moveX(int deltaPoint);
-		void moveY(int deltaPoint);
-        void moveZ(int deltaPoint);
+		void move(int deltaPoint);
 
 
 		void moveWChar(int deltaPoint);
+
+		OpenMesh::Vec3f getDirection();
 
 	private:
 		void GenerateEdges();
