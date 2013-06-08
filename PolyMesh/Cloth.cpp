@@ -1,8 +1,8 @@
 #include <PolyMesh\Cloth.h>
 #include <omp.h>
 
-Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength)
-	: rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag), damping(damping) {
+Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength, BVEC3F& wind)
+	: rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag), damping(damping), wind(wind) {
 	__super::cloth = true;
 	btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
 	btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
@@ -27,7 +27,7 @@ Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenM
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
 			btRigidBody *body = new btRigidBody(rbInfo);
 			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter | btBroadphaseProxy::DebrisFilter);
+			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DebrisFilter);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
 			body->setFriction(0.9f);
@@ -175,6 +175,8 @@ void Cloth::SimulationStep() {
 			RigidBody[i][j]->applyForce(dir * (dist - 2.0f*segmentLength) * bend + dampForce, btVector3(0,0,0));
 		}
 	}
+
+	BVEC3F Wind = wind * sinf(PolyMesh::Time/1000.0f);
 	
 #pragma omp parallel for
 	for (int k = 0; k < (rows-1) * (columns-1); k++) {
@@ -184,16 +186,16 @@ void Cloth::SimulationStep() {
 		btVector3 Normal = (RigidBody[i][j]->getCenterOfMassPosition()-RigidBody[i][j+1]->getCenterOfMassPosition()).cross
 			(RigidBody[i+1][j]->getCenterOfMassPosition() - RigidBody[i][j]->getCenterOfMassPosition()).normalized();
 		btVector3 PlaneVelocity = Normal * (RigidBody[i][j]->getLinearVelocity() + RigidBody[i+1][j]->getLinearVelocity() + RigidBody[i][j+1]->getLinearVelocity()).dot(Normal);
-		RigidBody[i][j]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
-		RigidBody[i+1][j]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
-		RigidBody[i][j+1]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
+		RigidBody[i][j]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
+		RigidBody[i+1][j]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
+		RigidBody[i][j+1]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
 		// Lower Triangle
 		Normal = (RigidBody[i+1][j]->getCenterOfMassPosition()-RigidBody[i][j+1]->getCenterOfMassPosition()).cross
 			(RigidBody[i+1][j+1]->getCenterOfMassPosition() - RigidBody[i+1][j]->getCenterOfMassPosition()).normalized();
 		PlaneVelocity =  Normal * (RigidBody[i+1][j+1]->getLinearVelocity() + RigidBody[i+1][j]->getLinearVelocity() + RigidBody[i][j+1]->getLinearVelocity()).dot(Normal);
-		RigidBody[i+1][j+1]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
-		RigidBody[i+1][j]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
-		RigidBody[i][j+1]->applyForce(-PlaneVelocity * drag,btVector3(0,0,0));
+		RigidBody[i+1][j+1]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
+		RigidBody[i+1][j]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
+		RigidBody[i][j+1]->applyForce(-PlaneVelocity * drag + Wind,btVector3(0,0,0));
 	}
 
 	GenerateNormals();
