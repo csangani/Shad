@@ -105,7 +105,7 @@ OpenMesh::Vec3f Platform::getDirection() {
 }
 
 
-void Platform::move(int deltaPoint) {
+void Platform::move(uint64_t deltaPoint) {
 	OpenMesh::Vec3f direction = getDirection();
 	if (deltaPoint < 5) {
 		platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
@@ -120,7 +120,7 @@ void Platform::move(int deltaPoint) {
 }
 
 
-bool Platform::moveWChar(int deltaPoint, float charX, float charY, float charZ) {
+bool Platform::moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ) {
 	move(deltaPoint);
 	return withInBounds(charX, charY, charZ);
 
@@ -252,7 +252,7 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -1, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.1, 0));
 	}
 }
 

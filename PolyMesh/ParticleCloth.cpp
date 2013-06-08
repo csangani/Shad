@@ -8,13 +8,7 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 		Points.push_back(std::vector<VertexHandle>());
 		for (int j = 0; j < width; j++) {
 			Points[i].push_back(add_vertex(OVECB(((emitEnd-emitStart).normalized() * (float)j + lengthVector.normalized() * (float)i) * segmentLength + emitStart + reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin())));
-			if ( j < width - 1) {
-				Points[i].push_back(add_vertex(OVEC3F(0,0,0)));
-				Points[i].push_back(add_vertex(OVEC3F(0,0,0)));
-				Points[i].push_back(add_vertex(OVEC3F(0,0,0)));
-				Points[i].push_back(add_vertex(OVEC3F(0,0,0)));
-			}
-			set_texcoord2D(Points[i][j/5],OpenMesh::Vec2f(1.0f/(length-1)*i,(1.0f/(width-1)*j)));
+			set_texcoord2D(Points[i][j],OpenMesh::Vec2f(1.0f/(length-1)*i,(1.0f/(width-1)*j)));
 			btScalar mass(0.1f);
 			btVector3 localInertia(0,0,0);
 			btCollisionShape *shape = new btSphereShape(0.001f);
@@ -30,16 +24,14 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 			RigidBody[i][j]->setActivationState(DISABLE_DEACTIVATION);
 			RigidBody[i][j]->setUserPointer(this);
 			RigidBody[i][j]->setContactProcessingThreshold(0.0f);
-			RigidBody[i][j]->setSleepingThresholds(0.2f,0.2f);
-			RigidBody[i][j]->setDamping(0.3f, 0.3f);
+			RigidBody[i][j]->setFriction(0);
+			RigidBody[i][j]->setDamping(0.1f, 0.1f);
 		}
 	}
 
-	/* Add interpolated points */
-
 	/* Add faces for rendering */
 	for (int i = 0; i < length-1; i++) {
-		for (int j = 0; j < 5*width-5; j++) {
+		for (int j = 0; j < width-1; j++) {
 			add_face(Points[i][j], Points[i+1][j], Points[i][j+1]);
 			add_face(Points[i][j+1], Points[i+1][j], Points[i+1][j+1]);
 		}
@@ -59,7 +51,7 @@ void ParticleCloth::SimulationStep() {
 				reference->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
 			transform.setOrigin(FinPosition);
 			transform.setRotation(reference->RigidBody->getGhostObject()->getWorldTransform().getRotation());
-			BVEC3F velocity(cosf(PolyMesh::Time/100.0f)*(0.7f+0.3f*sinf(PolyMesh::Time/200.0f)),-3+0.25f*sinf(PolyMesh::Time/100.0f)*sinf(cosf(i/2*i/2*i)*0.5f),10);
+			BVEC3F velocity(cosf(PolyMesh::Time/100.0f)*(0.7f+0.3f*sinf(PolyMesh::Time/200.0f)),-3+0.25f*sinf(PolyMesh::Time/100.0f)*sinf(cosf(i/2.0f*i/2.0f*i)*0.5f),2);
 			velocity = velocity.rotate(reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAxis(),reference->RigidBody->getGhostObject()->getWorldTransform().getRotation().getAngle());
 			RigidBody[startRow][i]->setLinearVelocity(velocity); 
 			RigidBody[startRow][i]->setCenterOfMassTransform(transform);
@@ -70,18 +62,7 @@ void ParticleCloth::SimulationStep() {
 	{
 		int i = (_i + startRow) % length;
 		for (int j = 0; j < width; j++) {
-			set_point(Points[_i][5*j], OVECB(RigidBody[i][j]->getCenterOfMassPosition()));
-			if (j < width - 1) {
-				BVEC3F Inter(0,0,0);
-				Inter.setInterpolate3(RigidBody[i][j]->getCenterOfMassPosition(), RigidBody[i][j+1]->getCenterOfMassPosition(), 0.2f);
-				set_point(Points[_i][5*j+1], OVECB(Inter));
-				Inter.setInterpolate3(RigidBody[i][j]->getCenterOfMassPosition(), RigidBody[i][j+1]->getCenterOfMassPosition(), 0.4f);
-				set_point(Points[_i][5*j+2], OVECB(Inter));
-				Inter.setInterpolate3(RigidBody[i][j]->getCenterOfMassPosition(), RigidBody[i][j+1]->getCenterOfMassPosition(), 0.6f);
-				set_point(Points[_i][5*j+3], OVECB(Inter));
-				Inter.setInterpolate3(RigidBody[i][j]->getCenterOfMassPosition(), RigidBody[i][j+1]->getCenterOfMassPosition(), 0.8f);
-				set_point(Points[_i][5*j+4], OVECB(Inter));
-			}
+			set_point(Points[_i][j], OVECB(RigidBody[i][j]->getCenterOfMassPosition()));
 		}
 	}
 

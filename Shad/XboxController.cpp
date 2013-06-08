@@ -1,4 +1,3 @@
-/*
 #include <Shad\XboxController.h>
 
 #include <math.h>
@@ -117,4 +116,4 @@ void XboxController::Vibrate(int leftVal, int rightVal)
 	vibration.wRightMotorSpeed = rightVal;
 
 	XInputSetState(controllerNum_, &vibration);
-}*/
+}

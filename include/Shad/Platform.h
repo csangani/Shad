@@ -8,6 +8,7 @@
 #include <GL\glut.h>
 #include <string>
 #include <PolyMesh/bitmap_image.h>
+#include <Spline/stdint.h>
 
 class Platform {
 	public:
@@ -26,10 +27,11 @@ class Platform {
 		void setCollapsible(float startX, float startY, float startZ);
 		bool isCollapsible();
 
-		void move(int deltaPoint);
+
+		void move(uint64_t deltaPoint);
 
 
-		bool moveWChar(int deltaPoint, float charX, float charY, float charZ);
+		bool moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ);
 
 		OpenMesh::Vec3f getDirection();
 		bool withInBounds(float charX, float charY, float charZ);

@@ -278,7 +278,7 @@ void Level::collapse(bool onGround, float charX, float charY, float charZ) {
 	}
 }
 
-void Level::move(int deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
+void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
