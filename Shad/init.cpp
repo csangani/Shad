@@ -123,7 +123,7 @@ namespace Window
 
 	void _display(PolyMesh *mesh)
 	{
-		if (!mesh->cloth && !mesh->particleCloth)
+		if (!mesh->particleCloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
 			mesh->Draw();
 	}
 
@@ -173,16 +173,13 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->cloth) {
-					((Cloth *)(*i))->Draw();
-				}
-			}
-
-			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
 				if ((*i)->particleCloth) {
 					((ParticleCloth *)(*i))->Draw();
 				}
 			}
+
+			if (Game::characterState == Game::TeleportingState)
+				Game::Shad->Draw();
 
 			glViewport(0, 0, glowMapRenderTarget->width(), glowMapRenderTarget->height());
 
@@ -199,16 +196,12 @@ namespace Window
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->cloth) {
-					((Cloth *)(*i))->Draw();
-				}
-			}
-
-			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
 				if ((*i)->particleCloth) {
 					((ParticleCloth *)(*i))->Draw();
 				}
 			}
+			if (Game::characterState == Game::TeleportingState)
+				Game::Shad->Draw();
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
 			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
@@ -467,6 +460,7 @@ namespace Window
 				Game::currentLevel->destroyPlatforms();
 				Game::currentLevel->changeUp();
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
+				Game::Direction = BVEC3F(0,0,-1);
 
 				//GET RID OF THIS?
 				Game::currentLevel->drawPlatformEdges();
@@ -704,7 +698,7 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setGravity(100.0f);
 
 	ParticleCloth *cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
-	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
+	cape_image = bitmap_image("assets\\bmp\\cape_texture.bmp");
 	cape_image.rgb_to_bgr();
 	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 
@@ -720,7 +714,7 @@ int main (int argc, char **argv)
 	Cloak->EnableLighting();
 	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
+	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
 	cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
