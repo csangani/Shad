@@ -668,7 +668,7 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
-	ParticleCloth *cape = new ParticleCloth(6,10,0.025, BVEC3F(-0.11f, 0.15f, 0.1f), BVEC3F(0.29f, 0.15f, 0.1f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+	ParticleCloth *cape = new ParticleCloth(6,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
 	cape_image.rgb_to_bgr();
 	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
