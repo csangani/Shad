@@ -4,7 +4,7 @@
 
 class Cloth : public PolyMesh {
 public:
-	Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength);
+	Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength, BVEC3F& wind);
 	int Rows() { return rows; }
 	int Cols() { return columns; }
 	float Stretch() { return stretch; }
@@ -22,6 +22,7 @@ private:
 	float bend;
 	float segmentLength;
 	float drag;
+	BVEC3F wind;
 	OpenMesh::Vec3f RowVec;
 	OpenMesh::Vec3f ColVec;
 	OpenMesh::Vec3f Origin;

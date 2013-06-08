@@ -478,10 +478,7 @@ namespace Sound {
 	void InitSound() {
 		FMOD_RESULT      result;
 		unsigned int     version;
-
-		/*
-		Create a System object and initialize.
-		*/
+		
 		result = FMOD::System_Create(&system);
 		ERRCHECK(result);
 
@@ -665,20 +662,22 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(-1,0,0), OVEC3F(0,0,1), OVEC3F(0.5f,1.0f,0.3f),10,10,1.2f,0.1f,0.1f);
-	Cloak->AttachShader(TOON_SHADER);
-	Cloak->EnableLighting();
-	//Cloak->Pin(9,0,Game::Shad->Dummy, new BVEC3F(-0.5f,1.0f,0.3f));
-	//Cloak->Pin(0,0,Game::Shad->Dummy, new BVEC3F(0.5f,1.0f,0.3f));
-	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
-	cloth_image.rgb_to_bgr();
-	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
-	PolyMesh * dummy = (new PolyMesh())->LoadObj(OBJECT)->GenerateRigidBody();
-	dummy->Translate(OpenMesh::Vec3f(0, -14, -22));
+	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-13.2f, -22);
+	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22);
+	PolyMesh * pinTarget = (new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22)->platformMesh;
+
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0005f));
+	Cloak->AttachShader(TOON_SHADER);
+	Cloak->EnableLighting();
+	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
+	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+	cloth_image = bitmap_image("assets\\bmp\\Cloth2.bmp");
+	cloth_image.rgb_to_bgr();
+	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;
