@@ -30,6 +30,10 @@ class Level {
 	void applyLightningAnimationStep();
 
 	void move(int deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad);
+
+	void reset();
+
+	void collapse(bool onGround, float charX, float charY, float charZ);
 	
 	OpenMesh::Vec3f getTarget();
 
@@ -40,6 +44,7 @@ class Level {
 		std::vector<Platform *> platforms;
 		std::vector<Lightning *> lightningBolts;
 		std::vector<Platform *> movingPlatforms;
+		std::vector<Platform *> collapsiblePlatforms;
 };
 
 #endif

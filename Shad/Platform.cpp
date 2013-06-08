@@ -23,7 +23,7 @@ Platform::Platform(std::string model) {
 
 	GenerateEdges();
 
-
+	collapsible = false;
 	moving = false;
 
 }
@@ -122,6 +122,11 @@ void Platform::move(int deltaPoint) {
 
 bool Platform::moveWChar(int deltaPoint, float charX, float charY, float charZ) {
 	move(deltaPoint);
+	return withInBounds(charX, charY, charZ);
+
+}
+
+bool Platform::withInBounds(float charX, float charY, float charZ) {
 	struct bounds xBounds;
 	xBounds.set = false;
 	struct bounds yBounds;
@@ -235,5 +240,26 @@ bool Platform::moveWChar(int deltaPoint, float charX, float charY, float charZ) 
 	}
 
 	return false;
+}
 
+void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
+	collapsible = true;
+	initialX = _startX;
+	initialY = _startY;
+	initialZ = _startZ;
+
+}
+
+void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
+	if (withInBounds(charX, charY, charZ) && onGround) {
+		platformMesh->Translate(OpenMesh::Vec3f(0, -1, 0));
+	}
+}
+
+void Platform::reset() {
+	platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
+}
+
+bool Platform::isCollapsible() {
+	return collapsible;
 }

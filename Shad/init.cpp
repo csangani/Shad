@@ -387,10 +387,10 @@ namespace Window
 				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
-			/*
+			
 #ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
-		/*	if (Game::controller->isConnected()) {
+			if (Game::controller->isConnected()) {
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
 				}
@@ -418,7 +418,7 @@ namespace Window
 				}
 
 			}
-#endif*/
+#endif
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
@@ -430,6 +430,7 @@ namespace Window
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 				Game::Direction = BVEC3F(0,0,-1);
+				Game::currentLevel->reset();
 			}
 
 			/*Code to finish level*/
@@ -450,6 +451,7 @@ namespace Window
 				btTransform id;
 				id.setIdentity();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+
 			}
 
 			/*Code to move platforms*/
@@ -462,7 +464,7 @@ namespace Window
 			float charY = transform.getOrigin().getY();
 			float charZ = transform.getOrigin().getZ();
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
-
+			Game::currentLevel->collapse(onGround, charX, charY, charZ);
 			Game::deltaPoint++;
 		}
 		else if (Game::gameState == Game::PauseState)
