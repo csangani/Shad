@@ -228,8 +228,6 @@ void Level::move(int deltaPoint, bool onGround) {
 
 
 
-
-
 OpenMesh::Vec3f Level::getTarget() {
 	return target;
 }

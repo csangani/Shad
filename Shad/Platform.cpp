@@ -100,14 +100,25 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 	deltaZ = _deltaZ;
 }
 
-void Platform::move(int deltaPoint) {
+void Platform::moveX(int deltaPoint) {
 	if (deltaPoint < 5) {
-		//platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(-0.2, 0, 0));
 	}
 	else {
-		//platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0.2, 0, 0));
 	}
 }
+
+
+void Platform::moveY(int deltaPoint) {
+	if (deltaPoint < 5) {
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.2, 0));
+	}
+	else {
+		platformMesh->Translate(OpenMesh::Vec3f(0, 0.2, 0));
+	}
+}
+
 
 void Platform::moveWChar(int deltaPoint) {
 	//platformMesh->
