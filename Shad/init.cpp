@@ -96,6 +96,7 @@ namespace Window
 	SkyBox *skyBox;
 
 	Game::Camera* Camera;
+	bool freezeCamera = false;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
@@ -153,7 +154,8 @@ namespace Window
 		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
 		btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-		Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+		if (!Window::freezeCamera)
+			Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
 		gluLookAt(Camera->Position()[0],Camera->Position()[1]+Camera->VerticalAxis[1],Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 	}
@@ -617,13 +619,18 @@ namespace Window
 				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
 			}
 
-			/* reset position on death */
+			/* freeze camera position and watch character fall to its inevitable death */
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
 			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit()) {
+				Window::freezeCamera = true;
+			}
+			/* reset position on death */
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 100.0) {
 				btTransform id = Game::currentLevel->getStartPosition();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();
+				Window::freezeCamera = false;
 			}
 
 			/*Code to finish level*/
@@ -719,7 +726,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
