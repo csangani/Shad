@@ -320,3 +320,7 @@ void Platform::reset() {
 bool Platform::isCollapsible() {
 	return collapsible;
 }
+
+void Platform::subdivide() {
+	platformMesh->LoopSubdivideP(10);
+}

@@ -48,6 +48,8 @@ class Platform {
 		float * getColor();
 		void reset();
 
+		void subdivide();
+
 	private:
 		void GenerateEdges();
 		bool moving;
@@ -57,6 +59,7 @@ class Platform {
 		float initialX, initialY, initialZ;
 		bool collapsible;
 		float color[4];
+		
 };
 
 #endif

@@ -36,7 +36,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Translate(0,-12,-10);
 			platforms.push_back(platform);
 
-			target = OpenMesh::Vec3f(0, -12, -12);
+			target = OpenMesh::Vec3f(0, 0, 0);
 			break;
 		case 2:
 
@@ -55,8 +55,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 5);
 			platform->Translate(2,-10,0);
 			platforms.push_back(platform);
-			platform->setShrinking(true, 1.0, 1.0, 0.985);
-			shrinkingPlatforms.push_back(platform);
+			//platform->setShrinking(true, 1.0, 1.0, 0.985);
+			//shrinkingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
 
@@ -152,47 +152,6 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Translate(-20, -10, -16);
 			platforms.push_back(platform);
 
-			break;
-
-
-		case 4:
-			platform = new Platform(cube);
-			platform->Scale(5,1,10);
-			platform->Translate(0,-10,0);
-			platforms.push_back(platform);
-			//platform->setMoving(true, 0, 0, 1);
-			//movingPlatforms.push_back(platform);
-
-			//platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
-
-			platforms.push_back((new Platform(cube))->Scale(0.25, 12, 10)->Translate(-3,-10,0));
-
-			platform = new Platform(cube);
-			platforms.push_back(platform->Scale(5, 1, 5)->Translate(-2,-10,-13));
-			//platform->setMoving(true, 0, 0, 0.9); 
-			//movingPlatforms.push_back(platform); 
-
-			/*
-
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
-
-			platforms.push_back((new Platform(cube))->Rotate(45, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(6, 2, 2)->Translate(0,-15,-18));
-
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
-
-			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
-
-			*/
-
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-7,-10,-10), OpenMesh::Vec3f(-10,-5,-10)));
-
-			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
 		
 	};
