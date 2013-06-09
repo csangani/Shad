@@ -17,6 +17,9 @@ public:
 	Blender(BlendMode mode, GLuint width, GLuint height);
 	GLuint blendTextures(GLuint texID1, GLuint texID2);
 
+	GLuint width();
+	GLuint height();
+
 private:
 	BlendMode mode_;
 	TextureRender *blendTarget;

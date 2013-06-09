@@ -4,6 +4,7 @@
 #include <Shad/Blur.h>
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
+#include <Shad/Antialias.h>
 #include <Shad/Level.h>
 #ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
@@ -88,7 +89,6 @@ namespace Window
 	int Width = 600, Height = 480;
 
 	Game::Camera* Camera;
-	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
@@ -96,9 +96,7 @@ namespace Window
 	Blur *blur;
 	Blender *blender;
 	MotionBlur *motionBlur;
-
-	// Post-processing Shader IDs
-	GLuint antialiasShaderID = 0;
+	Antialias *antialias;
 
 	// Menu Textures
 	GLuint menuStartTex;
@@ -112,11 +110,9 @@ namespace Window
 		Height = height;
 
 		// resize render targets
-		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			delete sceneRenderTargets[i];
-		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
 		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			sceneRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
@@ -214,7 +210,6 @@ namespace Window
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093-r;
 			float EPSILON = 0.0001;
-			std::cout << "The difference is " << diff << std::endl;
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
 			}
@@ -234,9 +229,10 @@ namespace Window
 			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[frameNum]->textureID(), blurredTexID);
 
 			/* TODO: perform antialiasing */
+			GLuint aaTexID = antialias->antialiasTexture(blendedTexID, blender->width(), blender->height());
 
 			/* render final texture to the screen */
-			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+			TextureRender::renderToScreen(aaTexID, antialias->width(), antialias->height(), false, false);
 
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
@@ -274,7 +270,6 @@ namespace Window
 			}
 			break;
 		case 'p':
-			aaTexRenderTarget->writeToFile("scene_texture.tga");
 			break;
 		case 'W':
 		case 'w':
@@ -621,7 +616,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -667,14 +662,6 @@ int main (int argc, char **argv)
 		std::cerr << "Failed to load shader: " << normalShader->path() << std::endl;
 		std::cerr << normalShader->errors() << std::endl;
 	}
-	/* TODO: abstract out the anit-alias phase, similar to Blur/Blender/MotionBlur classes */
-	Shader *antialiasShader = new Shader(ANTIALIAS_SHADER);
-	if (!antialiasShader->loaded()) {
-		std::cerr << "Failed to load shader: " << antialiasShader->path() << std::endl;
-		std::cerr << antialiasShader->errors() << std::endl;
-	}
-	// store AA shader ID for use in Display callback
-	Window::antialiasShaderID = antialiasShader->programID();
 
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
@@ -716,15 +703,15 @@ int main (int argc, char **argv)
 	Window::Camera = new Game::Camera();
 
 	// Create render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
 	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGBA);
+		Window::sceneRenderTargets[i] = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-	Window::blender = new Blender(ADDITIVE, Window::Width, Window::Height);
-	Window::motionBlur = new MotionBlur(Window::Width, Window::Height, NUM_BLUR_FRAMES);
+	Window::blender = new Blender(ADDITIVE, 2*Window::Width, 2*Window::Height);
+	Window::motionBlur = new MotionBlur(2*Window::Width, 2*Window::Height, NUM_BLUR_FRAMES);
+	Window::antialias = new Antialias(Window::Width, Window::Height);
 
 	// Initialize Physics
 	Physics::InitializePhysics();

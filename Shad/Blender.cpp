@@ -73,3 +73,13 @@ GLuint Blender::blendTextures(GLuint texID1, GLuint texID2)
 
 	return blendTarget->textureID();
 }
+
+GLuint Blender::width()
+{
+	return blendTarget->width();
+}
+
+GLuint Blender::height()
+{
+	return blendTarget->height();
+}

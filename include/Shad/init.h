@@ -14,7 +14,6 @@
 #define NORMAL_SHADER "assets\\shaders\\normal"
 #define PHONG_SHADER "assets\\shaders\\phong"
 #define TOON_SHADER "assets\\shaders\\toon"
-#define ANTIALIAS_SHADER "assets\\shaders\\antialias"
 
 #define MENU_START_TEXTURE "assets\\bmp\\menu_start_game.bmp"
 #define MENU_QUIT_TEXTURE "assets\\bmp\\menu_quit.bmp"

@@ -84,6 +84,16 @@ GLuint MotionBlur::blurFrames()
 	return motionBlurTarget_->textureID();
 }
 
+GLuint MotionBlur::width()
+{
+	return motionBlurTarget_->width();
+}
+
+GLuint MotionBlur::height()
+{
+	return motionBlurTarget_->height();
+}
+
 void MotionBlur::clearFrames()
 {
 	frames_.clear();
