@@ -26,6 +26,11 @@ Platform::Platform(std::string model) {
 	collapsible = false;
 	moving = false;
 
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 1.0f;
+	color[3] = 1.0f;
+
 }
 
 Platform::~Platform() {
@@ -56,6 +61,10 @@ void Platform::GenerateEdges()
 			edges.push_back(edge);
 		}
 	}
+}
+
+float * Platform::getColor() {
+	return color;
 }
 
 Platform *Platform::Scale(float scalex, float scaley, float scalez) {
@@ -90,18 +99,46 @@ void Platform::Texture(bitmap_image & image, std::string texture) {
 
 
 bool Platform::isMoving() {
+
 	return moving;
 }
+
+
+bool Platform::isShrinking() {
+
+	return shrinking;
+}
+
 
 void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ) {
 	moving = state;
 	deltaX = _deltaX;
 	deltaY = _deltaY;
 	deltaZ = _deltaZ;
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+}
+
+
+void Platform::setShrinking(bool state, float _scaleX, float _scaleY, float _scaleZ) {
+	shrinking = state;
+	scaleX = _scaleX;
+	scaleY = _scaleY;
+	scaleZ = _scaleZ;
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
 }
 
 OpenMesh::Vec3f Platform::getDirection() {
 	return OpenMesh::Vec3f(deltaX, deltaY, deltaZ);
+}
+
+OpenMesh::Vec3f Platform::getShrinking() {
+	return OpenMesh::Vec3f(scaleX, scaleY, scaleZ);
 }
 
 
@@ -116,6 +153,22 @@ void Platform::move(uint64_t deltaPoint) {
 		platformMesh->Translate(OpenMesh::Vec3f(-direction[0], -direction[1], -direction[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->Translate(-direction[0], -direction[1], -direction[2]);
+	}
+}
+
+void Platform::shrink(uint64_t deltaPoint) {
+
+	OpenMesh::Vec3f shrinking = getShrinking();
+
+	if (deltaPoint < 5) {
+		platformMesh->Scale(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Scale(shrinking[0], shrinking[1], shrinking[2]);
+	}
+	else {
+		platformMesh->Scale(OpenMesh::Vec3f(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Scale(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]);
 	}
 }
 
@@ -247,12 +300,16 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 	initialX = _startX;
 	initialY = _startY;
 	initialZ = _startZ;
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
 
 }
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.1, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
 	}
 }
 

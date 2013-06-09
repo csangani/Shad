@@ -12,6 +12,8 @@ public:
 
 	Character *GenerateCharacter();
 	
+	btVector3 GetPosition();
+
 	Character *SyncDummy();
 };
 

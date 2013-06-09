@@ -2,7 +2,7 @@
 
 #include <PolyMesh/bitmap_image.h>
 
-//#define USE_XBOX_CONTROLLER
+#define USE_XBOX_CONTROLLER
 
 #define NUM_THREADS 8
 
@@ -14,10 +14,16 @@
 #define NORMAL_SHADER "assets\\shaders\\normal"
 #define PHONG_SHADER "assets\\shaders\\phong"
 #define TOON_SHADER "assets\\shaders\\toon"
-#define ANTIALIAS_SHADER "assets\\shaders\\antialias"
 
 #define MENU_START_TEXTURE "assets\\bmp\\menu_start_game.bmp"
 #define MENU_QUIT_TEXTURE "assets\\bmp\\menu_quit.bmp"
+
+#define SKYBOX_FRONT_TEXTURE "assets\\bmp\\skybox_front.bmp"
+#define SKYBOX_BACK_TEXTURE "assets\\bmp\\skybox_back.bmp"
+#define SKYBOX_LEFT_TEXTURE "assets\\bmp\\skybox_left.bmp"
+#define SKYBOX_RIGHT_TEXTURE "assets\\bmp\\skybox_right.bmp"
+#define SKYBOX_TOP_TEXTURE "assets\\bmp\\skybox_top.bmp"
+#define SKYBOX_BOTTOM_TEXTURE "assets\\bmp\\skybox_bottom.bmp"
 
 #define AMBIENT 'a'
 #define SPECULAR 's'
@@ -46,21 +52,21 @@ void Boost(float *array, int size, float delta)
 
 float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-float Diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+float Diffuse[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-float Ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+float Ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-float Shininess[] = { 0.5f };
+float Shininess[] = { 0.2f };
 
 float CapeSpecular[] = { 0.1f, 0.1f, 0.1f, 0.9f };
 
-float CapeDiffuse[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+float CapeDiffuse[] = { .2f, .2f, .2f, 0.9f };
 
-float CapeAmbient[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+float CapeAmbient[] = { .2f, .2f, .2f, 0.9f };
 
-float CapeShininess[] = { 0.0f };
+float CapeShininess[] = { 0.2f };
 
-float ClothColor[] = { 1.0f, 0.0f, 0.0f, 0.7f };
+float ClothColor[] = { .5f, .5f, .5f, 0.7f };
 
 bitmap_image image;
 

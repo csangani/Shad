@@ -12,6 +12,7 @@ Level::Level(int level) {
 
 	platforms = std::vector<Platform *>();
 	movingPlatforms = std::vector<Platform *>();
+	shrinkingPlatforms = std::vector<Platform *>(); 
 	collapsiblePlatforms = std::vector<Platform *>();
 }
 	
@@ -21,6 +22,25 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	switch(_level) {
 		case 1:
 			platform = new Platform(cube);
+			platform->Scale(3,1,3);
+			platform->Translate(0,-10,0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(10,10,1);
+			platform->Translate(0,-10,-3);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(10,1,10);
+			platform->Translate(0,-12,-10);
+			platforms.push_back(platform);
+
+			target = OpenMesh::Vec3f(0, -12, -12);
+			break;
+		case 2:
+
+			platform = new Platform(cube);
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
@@ -29,7 +49,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
+			//platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
+
+			platform = new Platform(cube);
+			platform->Scale(1, 1, 5);
+			platform->Translate(2,-10,0);
+			platforms.push_back(platform);
+			platform->setShrinking(true, 1.0, 1.0, 0.985);
+			shrinkingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
 
@@ -40,6 +67,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
 
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
+			
 			platform = new Platform(cube);
 			platform->Rotate(35, 1, 0, 0);
 			platform->Scale(6, 2, 2);
@@ -56,7 +84,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
-		case 2:
+		case 3:
 			platform = new Platform(cube);
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
@@ -127,7 +155,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			break;
 
 
-		case 3:
+		case 4:
 			platform = new Platform(cube);
 			platform->Scale(5,1,10);
 			platform->Translate(0,-10,0);
@@ -185,9 +213,10 @@ void Level::drawPlatformEdges()
 {
 	for (unsigned int i = 0; i < platforms.size(); i++) {
 		Platform *platform = platforms[i];
+		float *color = platform->getColor();
 		for (unsigned int j = 0; j < platform->edges.size(); j++) {
 			PlatformEdge *edge = platform->edges[j];
-			edge->Draw();
+			edge->Draw(color);
 		}
 	}
 }
@@ -200,7 +229,18 @@ void Level::drawLightningBolts()
 	}
 }
 
-void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
+bool Level::lightningCollisionWithPoint(OpenMesh::Vec3f point)
+{
+	for (unsigned int i = 0; i < lightningBolts.size(); i++) {
+		Lightning *lightning = lightningBolts[i];
+		if (lightning->CollidesWithPoint(point)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+float Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
 {
 	Platform *foundPlatform = NULL;
 	float maxY = -1000.f;
@@ -222,11 +262,12 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 			}
 		}
 	}
+	float r = 0;
 	// draw shadow on platform
 	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		float r = 0.2f/(characterY - maxY);
+		r = 0.2f/(characterY - maxY);
 		int num_segments = 20;
 		glColor4f(0.f, 0.f, 0.f, 0.3f);
 		glBegin(GL_POLYGON); 
@@ -241,6 +282,7 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 		} 
 		glEnd(); 
 	}
+	return r;
 }
 
 void Level::applyLightningAnimationStep()
@@ -309,6 +351,12 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 			movingPlatforms[i]->move(deltaPoint);
 		}
 	}
+}
+
+void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad) {
+		for(unsigned int i = 0; i < shrinkingPlatforms.size(); i++) {
+			shrinkingPlatforms[i]->shrink(deltaPoint);
+		}
 }
 
 OpenMesh::Vec3f Level::getTarget() {

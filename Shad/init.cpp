@@ -1,9 +1,11 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
+#include <Shad/SkyBox.h>
 #include <Shad/Blur.h>
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
+#include <Shad/Antialias.h>
 #include <Shad/Level.h>
 #ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
@@ -40,7 +42,8 @@ namespace Game
 	enum CharacterState {
 		DefaultState,
 		JumpingState,
-		TeleportingState
+		TeleportingState,
+		SecondJumpingState
 	};
 
 	uint64_t teleportStartTime = 0;
@@ -65,14 +68,19 @@ namespace Game
 
 	Character *Shad;
 
+	int teleportLeft;
+
+
 	void Teleport() {
-		if (!((Character *)Shad)->RigidBody->canJump()) {
+		if (!((Character *)Shad)->RigidBody->canJump() && teleportLeft > 0) {
 			characterState = TeleportingState;
 			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
 			((Character *)Shad)->RigidBody->setFallSpeed(0.0);
 			teleportStartTime = PolyMesh::Time;
+			teleportLeft--;
 		}
 	}
+
 	int deltaPoint;
 }
 
@@ -81,8 +89,9 @@ namespace Window
 	std::string Title = "Shad";
 	int Width = 600, Height = 480;
 
+	SkyBox *skyBox;
+
 	Game::Camera* Camera;
-	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
@@ -90,9 +99,7 @@ namespace Window
 	Blur *blur;
 	Blender *blender;
 	MotionBlur *motionBlur;
-
-	// Post-processing Shader IDs
-	GLuint antialiasShaderID = 0;
+	Antialias *antialias;
 
 	// Menu Textures
 	GLuint menuStartTex;
@@ -106,11 +113,9 @@ namespace Window
 		Height = height;
 
 		// resize render targets
-		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			delete sceneRenderTargets[i];
-		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
 		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			sceneRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
@@ -123,7 +128,7 @@ namespace Window
 
 	void _display(PolyMesh *mesh)
 	{
-		if (!mesh->particleCloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
+		if (!mesh->particleCloth && !mesh->cloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
 			mesh->Draw();
 	}
 
@@ -173,8 +178,8 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
 
@@ -196,17 +201,22 @@ namespace Window
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
+
 			if (Game::characterState == Game::TeleportingState)
 				Game::Shad->Draw();
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
-			btVector3 characterPos = Game::Shad->RigidBody->getGhostObject()->getWorldTransform().getOrigin();
-			Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
-
+			btVector3 characterPos = Game::Shad->GetPosition();
+			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
+			float diff = 0.202093-r;
+			float EPSILON = 0.0001;
+			if ((diff < EPSILON)) {
+				Game::teleportLeft = 4;
+			}
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 
 			sceneRenderTargets[currBlurFrame]->unbind();
@@ -223,9 +233,11 @@ namespace Window
 			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[frameNum]->textureID(), blurredTexID);
 
 			/* TODO: perform antialiasing */
+			GLuint aaTexID = antialias->antialiasTexture(blendedTexID, blender->width(), blender->height());
 
 			/* render final texture to the screen */
-			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+
+			TextureRender::renderToScreen(aaTexID, antialias->width(), antialias->height(), false, false);
 
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
@@ -263,7 +275,6 @@ namespace Window
 			}
 			break;
 		case 'p':
-			aaTexRenderTarget->writeToFile("scene_texture.tga");
 			break;
 		case 'W':
 		case 'w':
@@ -466,6 +477,13 @@ namespace Window
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
+			
+			/* check lightning collision */
+			
+			btVector3 characterPos = Game::Shad->GetPosition();
+			if (Game::currentLevel->lightningCollisionWithPoint(OpenMesh::Vec3f(characterPos.x(),characterPos.y(),characterPos.z()))) {
+				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
+			}
 
 			/* reset position on death */
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
@@ -511,7 +529,9 @@ namespace Window
 
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
 			Game::currentLevel->collapse(onGround, charX, charY, charZ);
-			Game::deltaPoint++;
+			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
+			
+			//Game::deltaPoint++;
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
@@ -647,14 +667,6 @@ int main (int argc, char **argv)
 		std::cerr << "Failed to load shader: " << normalShader->path() << std::endl;
 		std::cerr << normalShader->errors() << std::endl;
 	}
-	/* TODO: abstract out the anit-alias phase, similar to Blur/Blender/MotionBlur classes */
-	Shader *antialiasShader = new Shader(ANTIALIAS_SHADER);
-	if (!antialiasShader->loaded()) {
-		std::cerr << "Failed to load shader: " << antialiasShader->path() << std::endl;
-		std::cerr << antialiasShader->errors() << std::endl;
-	}
-	// store AA shader ID for use in Display callback
-	Window::antialiasShaderID = antialiasShader->programID();
 
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
@@ -695,16 +707,25 @@ int main (int argc, char **argv)
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
+	// Create Skybox
+	Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
+	Window::skyBox->addTexture(SKYBOX_FRONT_TEXTURE, SkyBoxFront);
+	Window::skyBox->addTexture(SKYBOX_BACK_TEXTURE, SkyBoxBack);
+	Window::skyBox->addTexture(SKYBOX_LEFT_TEXTURE, SkyBoxLeft);
+	Window::skyBox->addTexture(SKYBOX_RIGHT_TEXTURE, SkyBoxRight);
+	Window::skyBox->addTexture(SKYBOX_TOP_TEXTURE, SkyBoxTop);
+	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);
+
 	// Create render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
 	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGBA);
+		Window::sceneRenderTargets[i] = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-	Window::blender = new Blender(ADDITIVE, Window::Width, Window::Height);
-	Window::motionBlur = new MotionBlur(Window::Width, Window::Height, NUM_BLUR_FRAMES);
+	Window::blender = new Blender(ADDITIVE, 2*Window::Width, 2*Window::Height);
+	Window::motionBlur = new MotionBlur(2*Window::Width, 2*Window::Height, NUM_BLUR_FRAMES);
+	Window::antialias = new Antialias(Window::Width, Window::Height);
 
 	// Initialize Physics
 	Physics::InitializePhysics();
@@ -753,13 +774,13 @@ int main (int argc, char **argv)
 	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22);
 	PolyMesh * pinTarget = (new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22)->platformMesh;
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0005f));
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
 	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
 	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-	cloth_image.rgb_to_bgr();
+	//cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	// Set Mesh and Plane Material Parameters

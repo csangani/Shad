@@ -82,3 +82,13 @@ void Blur::directionalBlur(GLuint textureID, int orientation)
 
 	glUseProgram(0);
 }
+
+GLuint Blur::width()
+{
+	return verticalTextureTarget->width();
+}
+
+GLuint Blur::height()
+{
+	return verticalTextureTarget->height();
+}

@@ -17,6 +17,9 @@ public:
 	void addFrame(GLuint texID);
 	GLuint blurFrames();
 
+	GLuint width();
+	GLuint height();
+
 	void clearFrames();
 
 	void printFrames();

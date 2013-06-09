@@ -27,25 +27,26 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 
 bool Lightning::isOff()
 {
-	return color_[0] <= 0.0;
+	return color_[3] <= 0.0;
 }
 
-#define STEP_SIZE (0.05)
+#define OPACITY_STEP_SIZE (0.05)
+#define	COLOR_STEP_DIVIDER (1.1)
 
 void Lightning::Dim()
 {
-	color_[0] -= STEP_SIZE;
-	color_[1] -= STEP_SIZE;
-	color_[2] -= STEP_SIZE;
-	color_[3] -= STEP_SIZE;
+	color_[0] /= COLOR_STEP_DIVIDER;
+	color_[1] /= COLOR_STEP_DIVIDER;
+	color_[2] /= COLOR_STEP_DIVIDER;
+	color_[3] -= OPACITY_STEP_SIZE;
 }
 
 void Lightning::Brighten()
 {
-	color_[0] += STEP_SIZE;
-	color_[1] += STEP_SIZE;
-	color_[2] += STEP_SIZE;
-	color_[3] += STEP_SIZE;
+	color_[0] *= COLOR_STEP_DIVIDER;
+	color_[1] *= COLOR_STEP_DIVIDER;
+	color_[2] *= COLOR_STEP_DIVIDER;
+	color_[3] += OPACITY_STEP_SIZE;
 }
 
 void Lightning::Regenerate()
@@ -62,9 +63,9 @@ void Lightning::Regenerate()
 
 void Lightning::ResetColor()
 {
-	color_[0] = 1.0;
-	color_[1] = 1.0;
-	color_[2] = 1.0;
+	color_[0] = 102.0/255;
+	color_[1] = 163.0/255;
+	color_[2] = 210.0/255;
 	color_[3] = 1.0;
 }
 
@@ -157,7 +158,19 @@ void Lightning::GenerateGeometry()
     }
 }
 
-#define RADIUS (0.05f)
+#define COLLISION_THRESHOLD (0.7);
+
+bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
+{
+	OpenMesh::Vec3f lightningLineDirection = (originalEndPoint - originalStartPoint).normalize();
+	OpenMesh::Vec3f convertedPoint = point - originalStartPoint;
+	OpenMesh::Vec3f projectedPoint = (convertedPoint[0] * lightningLineDirection[0] + convertedPoint[1] * lightningLineDirection[1] + convertedPoint[2] * lightningLineDirection[2])*lightningLineDirection;
+	OpenMesh::Vec3f finalProjectedPoint = projectedPoint + originalStartPoint;
+
+	return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
+}
+
+#define RADIUS (0.01f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 
