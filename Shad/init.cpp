@@ -77,6 +77,7 @@ namespace Game
 
 	void Teleport() {
 		if (!((Character *)Shad)->RigidBody->canJump() && teleportLeft > 0) {
+			Game::soundEngine->PlayTeleportSound();
 			characterState = TeleportingState;
 			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
 			((Character *)Shad)->RigidBody->setFallSpeed(0.0);
@@ -96,6 +97,7 @@ namespace Window
 	SkyBox *skyBox;
 
 	Game::Camera* Camera;
+	bool freezeCamera = false;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
@@ -153,7 +155,8 @@ namespace Window
 		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
 
 		btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-		Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
+		if (!Window::freezeCamera)
+			Camera->UpdatePosition(OVEC3F(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ()), OVECB(Game::Direction));
 
 		gluLookAt(Camera->Position()[0],Camera->Position()[1]+Camera->VerticalAxis[1],Camera->Position()[2],transform.getOrigin().getX(),transform.getOrigin().getY(),transform.getOrigin().getZ(), 0, 1, 0);
 	}
@@ -278,10 +281,14 @@ namespace Window
 		case 27: // esc
 			if (Game::gameState == Game::MenuState)
 				glutLeaveMainLoop();
-			else if (Game::gameState == Game::PlayState)
+			else if (Game::gameState == Game::PlayState) {
 				Game::gameState = Game::PauseState;
-			else if (Game::gameState == Game::PauseState)
+				Game::soundEngine->StopGameplayMusic();
+			}
+			else if (Game::gameState == Game::PauseState) {
 				Game::gameState = Game::MenuState;
+				Game::soundEngine->PlayMenuMusic();
+			}
 			break;
 		case 13: // enter
 			if (Game::gameState == Game::PauseState)
@@ -291,6 +298,7 @@ namespace Window
 					Game::gameState = Game::PlayState;
 					Game::soundEngine->StopMenuMusic();
 					Game::soundEngine->PlayMenuSelection();
+					Game::soundEngine->PlayGameplayMusic();
 				}
 				else if (Game::gameMenuState == Game::QuitGameState)
 					glutLeaveMainLoop();
@@ -319,6 +327,7 @@ namespace Window
 			break;
 		case JUMP:
 			((Character *)Game::Shad)->RigidBody->jump();
+			Game::soundEngine->PlayJumpSound();
 			break;
 		default:
 			break;
@@ -452,6 +461,8 @@ namespace Window
 					if (Game::gameMenuState == Game::StartGameState) {
 						Game::gameState = Game::PlayState;
 						Game::soundEngine->PlayMenuSelection();
+						Game::soundEngine->StopMenuMusic();
+						Game::soundEngine->PlayGameplayMusic();
 					}
 					else if (Game::gameMenuState == Game::QuitGameState) {
 						glutLeaveMainLoop();
@@ -565,11 +576,13 @@ namespace Window
 				/* A button controls */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
+					//Game::soundEngine->PlayJumpSound();
 				}
 
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::PauseState;
+					Game::soundEngine->StopGameplayMusic();
 					Window::ContBackPressed = false;
 				}
 
@@ -615,15 +628,29 @@ namespace Window
 			btVector3 characterPos = Game::Shad->GetPosition();
 			if (Game::currentLevel->lightningCollisionWithPoint(OpenMesh::Vec3f(characterPos.x(),characterPos.y(),characterPos.z()))) {
 				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
+				Game::soundEngine->PlayLightningSound();
+			}
+
+			/* freeze camera position and watch character fall to its inevitable death */
+			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
+
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit()) {
+				if (!Window::freezeCamera) {
+					Game::soundEngine->PlayDeathSound();
+				}
+				Window::freezeCamera = true;
 			}
 
 			/* reset position on death */
-			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
-			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit()) {
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 250.0) {
 				btTransform id = Game::currentLevel->getStartPosition();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+				// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
+				((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(btVector3(0, 1000, 0), 0.1);
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();
+				Window::freezeCamera = false;
+				Game::soundEngine->PlayLifeSound();
 			}
 
 			/*Code to finish level*/
@@ -675,12 +702,14 @@ namespace Window
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					Game::gameState = Game::PlayState;
 					Window::ContAPressed = false;
+					Game::soundEngine->PlayGameplayMusic();
 				}
 
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::MenuState;
 					Window::ContBackPressed = false;
+					Game::soundEngine->PlayMenuMusic();
 				}
 
 				/* Control A and Back button poll events to only occur on button release */
