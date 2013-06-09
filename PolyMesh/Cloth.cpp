@@ -27,7 +27,7 @@ Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenM
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
 			btRigidBody *body = new btRigidBody(rbInfo);
 			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DebrisFilter);
+			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter);
 			RigidBody[i].push_back(body);
 			body->setActivationState(DISABLE_DEACTIVATION);
 			body->setFriction(0.9f);

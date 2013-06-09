@@ -11,6 +11,9 @@ public:
 	Blur(GLuint width, GLuint height);
 	GLuint blurTexture(GLuint textureID);
 
+	GLuint width();
+	GLuint height();
+
 private:
 	TextureRender *horizontalTextureTarget;
 	TextureRender *verticalTextureTarget;

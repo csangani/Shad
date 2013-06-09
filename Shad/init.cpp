@@ -1,9 +1,11 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
+#include <Shad/SkyBox.h>
 #include <Shad/Blur.h>
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
+#include <Shad/Antialias.h>
 #include <Shad/Level.h>
 #ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
@@ -34,7 +36,9 @@ namespace Game
 
 	enum GameMenuState {
 		StartGameState,
-		QuitGameState
+		QuitGameState,
+		InvertYesState,
+		InvertNoState
 	};
 
 	enum CharacterState {
@@ -50,6 +54,8 @@ namespace Game
 	GameState gameState = MenuState;
 	GameMenuState gameMenuState = StartGameState;
 	CharacterState characterState = DefaultState;
+
+	bool invertCameraY = true;
 
 	Level *currentLevel;
 
@@ -87,8 +93,9 @@ namespace Window
 	std::string Title = "Shad";
 	int Width = 600, Height = 480;
 
+	SkyBox *skyBox;
+
 	Game::Camera* Camera;
-	TextureRender *aaTexRenderTarget;
 	TextureRender *glowMapRenderTarget;
 	TextureRender *sceneRenderTargets[NUM_BLUR_FRAMES];
 	GLuint currBlurFrame = 0;
@@ -96,15 +103,22 @@ namespace Window
 	Blur *blur;
 	Blender *blender;
 	MotionBlur *motionBlur;
-
-	// Post-processing Shader IDs
-	GLuint antialiasShaderID = 0;
+	Antialias *antialias;
 
 	// Menu Textures
 	GLuint menuStartTex;
 	GLuint menuQuitTex;
+	GLuint menuInvertYesTex;
+	GLuint menuInvertNoTex;
 
 	float MouseSensitivity;
+
+	bool ContDpadDownPressed = false;
+	bool ContDpadUpPressed = false;
+	bool ContDpadLeftPressed = false;
+	bool ContDpadRightPressed = false;
+	bool ContBackPressed = false;
+	bool ContAPressed = false;
 
 	void Reshape(int width, int height)
 	{
@@ -112,11 +126,9 @@ namespace Window
 		Height = height;
 
 		// resize render targets
-		delete aaTexRenderTarget;
 		delete glowMapRenderTarget;
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			delete sceneRenderTargets[i];
-		aaTexRenderTarget = new TextureRender(2*Width, 2*Height, GL_RGBA);
 		glowMapRenderTarget = new TextureRender(Width/2, Height/2, GL_RGBA);
 		for (int i = 0; i < NUM_BLUR_FRAMES; i++)
 			sceneRenderTargets[i] = new TextureRender(Width, Height, GL_RGBA);
@@ -129,7 +141,7 @@ namespace Window
 
 	void _display(PolyMesh *mesh)
 	{
-		if (!mesh->particleCloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
+		if (!mesh->particleCloth && !mesh->cloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
 			mesh->Draw();
 	}
 
@@ -156,6 +168,10 @@ namespace Window
 				TextureRender::renderToScreen(menuStartTex, Window::Width, Window::Height, false, true);
 			else if (Game::gameMenuState == Game::QuitGameState)
 				TextureRender::renderToScreen(menuQuitTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::InvertYesState)
+				TextureRender::renderToScreen(menuInvertYesTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::InvertNoState)
+				TextureRender::renderToScreen(menuInvertNoTex, Window::Width, Window::Height, false, true);
 
 			glutSwapBuffers();
 		}
@@ -179,8 +195,8 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
 
@@ -202,10 +218,11 @@ namespace Window
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
+
 			if (Game::characterState == Game::TeleportingState)
 				Game::Shad->Draw();
 			Game::currentLevel->drawPlatformEdges();
@@ -214,7 +231,6 @@ namespace Window
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093-r;
 			float EPSILON = 0.0001;
-			std::cout << "The difference is " << diff << std::endl;
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
 			}
@@ -234,9 +250,11 @@ namespace Window
 			GLuint blendedTexID = blender->blendTextures(sceneRenderTargets[frameNum]->textureID(), blurredTexID);
 
 			/* TODO: perform antialiasing */
+			GLuint aaTexID = antialias->antialiasTexture(blendedTexID, blender->width(), blender->height());
 
 			/* render final texture to the screen */
-			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
+
+			TextureRender::renderToScreen(aaTexID, antialias->width(), antialias->height(), false, false);
 
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
@@ -274,7 +292,6 @@ namespace Window
 			}
 			break;
 		case 'p':
-			aaTexRenderTarget->writeToFile("scene_texture.tga");
 			break;
 		case 'W':
 		case 'w':
@@ -333,13 +350,45 @@ namespace Window
 		case GLUT_KEY_UP:
 			{
 				if (Game::gameState == Game::MenuState)
-					Game::gameMenuState = (Game::gameMenuState == Game::StartGameState) ? Game::QuitGameState : Game::StartGameState;
+				{
+					if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = Game::StartGameState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::gameMenuState = Game::QuitGameState;
+				}
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
 				if (Game::gameState == Game::MenuState)
-					Game::gameMenuState = (Game::gameMenuState == Game::StartGameState) ? Game::QuitGameState : Game::StartGameState;
+				{
+					if (Game::gameMenuState == Game::StartGameState)
+						Game::gameMenuState = Game::QuitGameState;
+					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+				}
+				break;
+			}
+		case GLUT_KEY_LEFT:
+			{
+				if (Game::gameState == Game::MenuState)
+				{
+					if (Game::gameMenuState == Game::InvertNoState) {
+						Game::gameMenuState = Game::InvertYesState;
+						Game::invertCameraY = true;
+					}
+				}
+				break;
+			}
+		case GLUT_KEY_RIGHT:
+			{
+				if (Game::gameState == Game::MenuState)
+				{
+					if (Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::InvertNoState;
+						Game::invertCameraY = false;
+					}
+				}
 				break;
 			}
 		default:
@@ -365,7 +414,8 @@ namespace Window
 			Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -DeltaX*MouseSensitivity);
 			Game::Shad->Rotate(DEGREES(-DeltaX*MouseSensitivity),0,1,0);
 
-			OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), DeltaY*MouseSensitivity));
+			float rotationAngle = (Game::invertCameraY) ? -DeltaY*MouseSensitivity : DeltaY*MouseSensitivity;
+			OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), rotationAngle));
 			Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
 
 			glutWarpPointer(Window::Width/2, Window::Height/2);
@@ -380,18 +430,61 @@ namespace Window
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
 				/* A button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					if (Game::gameMenuState == Game::StartGameState)
 						Game::gameState = Game::PlayState;
 					else if (Game::gameMenuState == Game::QuitGameState)
 						glutLeaveMainLoop();
+					Window::ContAPressed = false;
 				}
 
+				/* Back button controls */
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed)
+					glutLeaveMainLoop();
+
 				/* D-pad controls */
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && Window::ContDpadUpPressed) {
+					if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = Game::StartGameState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::gameMenuState = Game::QuitGameState;
+					Window::ContDpadUpPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && Window::ContDpadDownPressed) {
+					if (Game::gameMenuState == Game::StartGameState)
+						Game::gameMenuState = Game::QuitGameState;
+					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+					Window::ContDpadDownPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) && Window::ContDpadLeftPressed) {
+					if (Game::gameMenuState == Game::InvertNoState) {
+						Game::gameMenuState = Game::InvertYesState;
+						Game::invertCameraY = true;
+					}
+					Window::ContDpadLeftPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) && Window::ContDpadRightPressed) {
+					if (Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::InvertNoState;
+						Game::invertCameraY = false;
+					}
+					Window::ContDpadRightPressed = false;
+				}
+
+				/* Control Dpad, A, and Back button poll events to only occur on button release */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-					Game::gameMenuState = Game::StartGameState;
+					Window::ContDpadUpPressed = true;
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-					Game::gameMenuState = Game::QuitGameState;
+					Window::ContDpadDownPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+					Window::ContDpadLeftPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+					Window::ContDpadRightPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+					Window::ContAPressed = true;
 			}
 #endif
 		}
@@ -443,8 +536,9 @@ namespace Window
 				}
 
 				/* back button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::PauseState;
+					Window::ContBackPressed = false;
 				}
 
 				/* right trigger controls */
@@ -461,16 +555,22 @@ namespace Window
 				/* right stick controls */
 				if (Game::controller->RightStickMoved()) {
 					if (Game::gameState == Game::PlayState) {
-						float cameraSensitivity = 0.1;
+						float cameraSensitivityX = 0.1;
+						float cameraSensitivityY = 0.03;
 						int xCameraCoef = Game::controller->GetXCameraCoefficient();
 						int yCameraCoef = Game::controller->GetYCameraCoefficient();
-						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivity);
-						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivity),0,1,0);
+						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivityX);
+						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivityX),0,1,0);
 						//Rotate in Y direction as well?
-						OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), yCameraCoef*cameraSensitivity));
+						float rotationAngle = (Game::invertCameraY) ? yCameraCoef*cameraSensitivityY : -yCameraCoef*cameraSensitivityY;
+						OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), rotationAngle));
 						Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
 					}
 				}
+
+				/* Control Back button poll events to only occur on button release */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
 
 			}
 #endif
@@ -539,14 +639,22 @@ namespace Window
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
 				/* A button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					Game::gameState = Game::PlayState;
+					Window::ContAPressed = false;
 				}
 
 				/* back button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::MenuState;
+					Window::ContBackPressed = false;
 				}
+
+				/* Control A and Back button poll events to only occur on button release */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+					Window::ContAPressed = true;
 			}
 #endif
 		}
@@ -621,7 +729,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -642,7 +750,9 @@ int main (int argc, char **argv)
 	{
 		std::cerr << "This program requires OpenGL 3.0 or higher." << std::endl;
 		const char *version = (const char *)glGetString(GL_VERSION);
-		std::cerr << "Your current version is: " << version << std::endl;
+		std::cerr << "Your current GL version is: " << version << std::endl;
+		const char *glslVersion = (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+		std::cout << "Your current GLSL version is: " << glslVersion << std::endl;
 		exit(-1);
 	}
 
@@ -667,14 +777,6 @@ int main (int argc, char **argv)
 		std::cerr << "Failed to load shader: " << normalShader->path() << std::endl;
 		std::cerr << normalShader->errors() << std::endl;
 	}
-	/* TODO: abstract out the anit-alias phase, similar to Blur/Blender/MotionBlur classes */
-	Shader *antialiasShader = new Shader(ANTIALIAS_SHADER);
-	if (!antialiasShader->loaded()) {
-		std::cerr << "Failed to load shader: " << antialiasShader->path() << std::endl;
-		std::cerr << antialiasShader->errors() << std::endl;
-	}
-	// store AA shader ID for use in Display callback
-	Window::antialiasShaderID = antialiasShader->programID();
 
 	// Register Reshape Handler
 	glutReshapeFunc(Window::Reshape);
@@ -715,16 +817,25 @@ int main (int argc, char **argv)
 	// Create Camera
 	Window::Camera = new Game::Camera();
 
+	// Create Skybox
+	Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
+	Window::skyBox->addTexture(SKYBOX_FRONT_TEXTURE, SkyBoxFront);
+	Window::skyBox->addTexture(SKYBOX_BACK_TEXTURE, SkyBoxBack);
+	Window::skyBox->addTexture(SKYBOX_LEFT_TEXTURE, SkyBoxLeft);
+	Window::skyBox->addTexture(SKYBOX_RIGHT_TEXTURE, SkyBoxRight);
+	Window::skyBox->addTexture(SKYBOX_TOP_TEXTURE, SkyBoxTop);
+	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);
+
 	// Create render-to-texture targets
-	Window::aaTexRenderTarget = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
 	for (int i = 0; i < NUM_BLUR_FRAMES; i++)
-		Window::sceneRenderTargets[i] = new TextureRender(Window::Width, Window::Height, GL_RGBA);
+		Window::sceneRenderTargets[i] = new TextureRender(2*Window::Width, 2*Window::Height, GL_RGBA);
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-	Window::blender = new Blender(ADDITIVE, Window::Width, Window::Height);
-	Window::motionBlur = new MotionBlur(Window::Width, Window::Height, NUM_BLUR_FRAMES);
+	Window::blender = new Blender(SCREEN, 2*Window::Width, 2*Window::Height);
+	Window::motionBlur = new MotionBlur(2*Window::Width, 2*Window::Height, NUM_BLUR_FRAMES);
+	Window::antialias = new Antialias(Window::Width, Window::Height);
 
 	// Initialize Physics
 	Physics::InitializePhysics();
@@ -753,6 +864,28 @@ int main (int argc, char **argv)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_quit_image.width(), menu_quit_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_quit_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	menu_invert_yes_image = bitmap_image(MENU_INVERT_YES_TEXTURE);
+	menu_invert_yes_image.rgb_to_bgr();
+	glGenTextures(1, &Window::menuInvertYesTex);
+	glBindTexture(GL_TEXTURE_2D, Window::menuInvertYesTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_yes_image.width(), menu_invert_yes_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_yes_image.data());
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	menu_invert_no_image = bitmap_image(MENU_INVERT_NO_TEXTURE);
+	menu_invert_no_image.rgb_to_bgr();
+	glGenTextures(1, &Window::menuInvertNoTex);
+	glBindTexture(GL_TEXTURE_2D, Window::menuInvertNoTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_no_image.width(), menu_invert_no_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_no_image.data());
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	// Load Mesh
 	Game::Shad = new Character();
 	Game::Shad->LoadObj(OBJECT);
@@ -773,13 +906,13 @@ int main (int argc, char **argv)
 	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22);
 	PolyMesh * pinTarget = (new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22)->platformMesh;
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0005f));
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
 	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
 	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-	cloth_image.rgb_to_bgr();
+	//cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	// Set Mesh and Plane Material Parameters
