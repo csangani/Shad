@@ -77,6 +77,7 @@ namespace Game
 
 	void Teleport() {
 		if (!((Character *)Shad)->RigidBody->canJump() && teleportLeft > 0) {
+			Game::soundEngine->PlayTeleportSound();
 			characterState = TeleportingState;
 			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
 			((Character *)Shad)->RigidBody->setFallSpeed(0.0);
@@ -323,7 +324,6 @@ namespace Window
 			break;
 		case '\t':
 			Game::Teleport();
-			Game::soundEngine->PlayTeleportSound();
 			break;
 		case JUMP:
 			((Character *)Game::Shad)->RigidBody->jump();
@@ -576,7 +576,7 @@ namespace Window
 				/* A button controls */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
-					Game::soundEngine->PlayJumpSound();
+					//Game::soundEngine->PlayJumpSound();
 				}
 
 				/* back button controls */
@@ -589,7 +589,6 @@ namespace Window
 				/* right trigger controls */
 				if (Game::controller->GetState().Gamepad.bRightTrigger) {
 					Game::Teleport();
-					Game::soundEngine->PlayTeleportSound();
 				}
 
 				/* left stick controls */
@@ -636,8 +635,10 @@ namespace Window
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
 
 			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit()) {
+				if (!Window::freezeCamera) {
+					Game::soundEngine->PlayDeathSound();
+				}
 				Window::freezeCamera = true;
-				Game::soundEngine->PlayDeathSound();
 			}
 
 			/* reset position on death */
@@ -747,7 +748,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);

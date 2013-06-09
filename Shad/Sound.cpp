@@ -31,7 +31,7 @@ void Sound::InitSound() {
 		printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version, FMOD_VERSION);
 	}
 
-	result = system->init(100, FMOD_INIT_NORMAL, 0);
+	result = system->init(200, FMOD_INIT_NORMAL, 0);
 
 	// Create sounds
 	ERRCHECK(Sound::system->createSound("assets/mp3/menu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
@@ -72,7 +72,6 @@ void Sound::StopMenuMusic() {
 
 void Sound::PlayGameplayMusic() {	
 	ERRCHECK(GameplayMusicChannel->setPaused(false));
-		
 }
 
 void Sound::StopGameplayMusic() {
@@ -115,7 +114,8 @@ void Sound::PlayLightningSound()
 void Sound::PlayDeathSound()
 {	
 	FMOD::Channel *DeathChannel;
-	FMOD::Sound *deathSound = (rand()/RAND_MAX > 0.5) ? Death1 : Death2;
+	float whichSoundToPlay = (float)rand()/(float)RAND_MAX;
+	FMOD::Sound *deathSound = (whichSoundToPlay > 0.5) ? Death1 : Death2;
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, deathSound, false, &DeathChannel));
 	DeathChannel->setVolume(0.5);
 }
@@ -124,5 +124,5 @@ void Sound::PlayLifeSound()
 {
 	FMOD::Channel *LifeChannel;
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Life, false, &LifeChannel));
-	LifeChannel->setVolume(0.3);
+	LifeChannel->setVolume(0.5);
 }
