@@ -1,6 +1,7 @@
 #include <Shad/init.h>
 #include <Shad/Camera.h>
 #include <Shad/TextureRender.h>
+#include <Shad/SkyBox.h>
 #include <Shad/Blur.h>
 #include <Shad/Blender.h>
 #include <Shad/MotionBlur.h>
@@ -87,6 +88,8 @@ namespace Window
 {
 	std::string Title = "Shad";
 	int Width = 600, Height = 480;
+
+	SkyBox *skyBox;
 
 	Game::Camera* Camera;
 	TextureRender *glowMapRenderTarget;
@@ -703,6 +706,15 @@ int main (int argc, char **argv)
 
 	// Create Camera
 	Window::Camera = new Game::Camera();
+
+	// Create Skybox
+	Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
+	Window::skyBox->addTexture(SKYBOX_FRONT_TEXTURE, SkyBoxFront);
+	Window::skyBox->addTexture(SKYBOX_BACK_TEXTURE, SkyBoxBack);
+	Window::skyBox->addTexture(SKYBOX_LEFT_TEXTURE, SkyBoxLeft);
+	Window::skyBox->addTexture(SKYBOX_RIGHT_TEXTURE, SkyBoxRight);
+	Window::skyBox->addTexture(SKYBOX_TOP_TEXTURE, SkyBoxTop);
+	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);
 
 	// Create render-to-texture targets
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);
