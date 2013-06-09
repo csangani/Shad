@@ -15,8 +15,33 @@ Level::Level(int level) {
 	shrinkingPlatforms = std::vector<Platform *>(); 
 	collapsiblePlatforms = std::vector<Platform *>();
 	deformablePlatforms = std::vector<Platform *>();
+	btTransform id;
+	id.setIdentity();
+	id.setOrigin(BVEC3F(0, 0, 0));
+	origin = id;
+	fallLimit = -40.0;
 }
 	
+void Level::setStartPosition(float startX, float startY, float startZ) {
+	btTransform id;
+	id.setIdentity();
+	id.setOrigin(BVEC3F(startX, startY, startZ));
+	origin = id;
+	start = OpenMesh::Vec3f(startX, startY, startZ);
+}
+
+btTransform Level::getStartPosition() {
+	return origin;
+}
+
+void Level::setFallLimit(float threshold) {
+	fallLimit = threshold;
+}
+
+float Level::getFallLimit() {
+	return fallLimit;
+}
+
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;

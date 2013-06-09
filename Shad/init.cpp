@@ -619,9 +619,8 @@ namespace Window
 
 			/* reset position on death */
 			btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
-			if (transform.getOrigin().getY() < -30.0) {
-				btTransform id;
-				id.setIdentity();
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit()) {
+				btTransform id = Game::currentLevel->getStartPosition();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();

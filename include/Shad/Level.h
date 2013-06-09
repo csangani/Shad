@@ -42,10 +42,21 @@ class Level {
 
 	void deform(bool onGround, float charX, float charY, float charZ);
 
+	void setStartPosition(float startX, float startY, float startZ);
+
+	btTransform getStartPosition();
+
+	void setFallLimit(float threshold);
+
+	float getFallLimit();
+
 	private:
 		int _level;
+
 		btTransform origin;
+		OpenMesh::Vec3f start;
 		OpenMesh::Vec3f target;
+		float fallLimit;
 		std::vector<Platform *> platforms;
 		std::vector<Lightning *> lightningBolts;
 		std::vector<Platform *> movingPlatforms;
