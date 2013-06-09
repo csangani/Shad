@@ -36,7 +36,9 @@ namespace Game
 
 	enum GameMenuState {
 		StartGameState,
-		QuitGameState
+		QuitGameState,
+		InvertYesState,
+		InvertNoState
 	};
 
 	enum CharacterState {
@@ -52,6 +54,8 @@ namespace Game
 	GameState gameState = MenuState;
 	GameMenuState gameMenuState = StartGameState;
 	CharacterState characterState = DefaultState;
+
+	bool invertCameraY = true;
 
 	Level *currentLevel;
 
@@ -104,8 +108,17 @@ namespace Window
 	// Menu Textures
 	GLuint menuStartTex;
 	GLuint menuQuitTex;
+	GLuint menuInvertYesTex;
+	GLuint menuInvertNoTex;
 
 	float MouseSensitivity;
+
+	bool ContDpadDownPressed = false;
+	bool ContDpadUpPressed = false;
+	bool ContDpadLeftPressed = false;
+	bool ContDpadRightPressed = false;
+	bool ContBackPressed = false;
+	bool ContAPressed = false;
 
 	void Reshape(int width, int height)
 	{
@@ -155,6 +168,10 @@ namespace Window
 				TextureRender::renderToScreen(menuStartTex, Window::Width, Window::Height, false, true);
 			else if (Game::gameMenuState == Game::QuitGameState)
 				TextureRender::renderToScreen(menuQuitTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::InvertYesState)
+				TextureRender::renderToScreen(menuInvertYesTex, Window::Width, Window::Height, false, true);
+			else if (Game::gameMenuState == Game::InvertNoState)
+				TextureRender::renderToScreen(menuInvertNoTex, Window::Width, Window::Height, false, true);
 
 			glutSwapBuffers();
 		}
@@ -333,13 +350,45 @@ namespace Window
 		case GLUT_KEY_UP:
 			{
 				if (Game::gameState == Game::MenuState)
-					Game::gameMenuState = (Game::gameMenuState == Game::StartGameState) ? Game::QuitGameState : Game::StartGameState;
+				{
+					if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = Game::StartGameState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::gameMenuState = Game::QuitGameState;
+				}
 				break;
 			}
 		case GLUT_KEY_DOWN:
 			{
 				if (Game::gameState == Game::MenuState)
-					Game::gameMenuState = (Game::gameMenuState == Game::StartGameState) ? Game::QuitGameState : Game::StartGameState;
+				{
+					if (Game::gameMenuState == Game::StartGameState)
+						Game::gameMenuState = Game::QuitGameState;
+					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+				}
+				break;
+			}
+		case GLUT_KEY_LEFT:
+			{
+				if (Game::gameState == Game::MenuState)
+				{
+					if (Game::gameMenuState == Game::InvertNoState) {
+						Game::gameMenuState = Game::InvertYesState;
+						Game::invertCameraY = true;
+					}
+				}
+				break;
+			}
+		case GLUT_KEY_RIGHT:
+			{
+				if (Game::gameState == Game::MenuState)
+				{
+					if (Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::InvertNoState;
+						Game::invertCameraY = false;
+					}
+				}
 				break;
 			}
 		default:
@@ -365,7 +414,8 @@ namespace Window
 			Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -DeltaX*MouseSensitivity);
 			Game::Shad->Rotate(DEGREES(-DeltaX*MouseSensitivity),0,1,0);
 
-			OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), DeltaY*MouseSensitivity));
+			float rotationAngle = (Game::invertCameraY) ? -DeltaY*MouseSensitivity : DeltaY*MouseSensitivity;
+			OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), rotationAngle));
 			Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
 
 			glutWarpPointer(Window::Width/2, Window::Height/2);
@@ -380,18 +430,61 @@ namespace Window
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
 				/* A button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					if (Game::gameMenuState == Game::StartGameState)
 						Game::gameState = Game::PlayState;
 					else if (Game::gameMenuState == Game::QuitGameState)
 						glutLeaveMainLoop();
+					Window::ContAPressed = false;
 				}
 
+				/* Back button controls */
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed)
+					glutLeaveMainLoop();
+
 				/* D-pad controls */
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && Window::ContDpadUpPressed) {
+					if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = Game::StartGameState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::gameMenuState = Game::QuitGameState;
+					Window::ContDpadUpPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && Window::ContDpadDownPressed) {
+					if (Game::gameMenuState == Game::StartGameState)
+						Game::gameMenuState = Game::QuitGameState;
+					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+					Window::ContDpadDownPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) && Window::ContDpadLeftPressed) {
+					if (Game::gameMenuState == Game::InvertNoState) {
+						Game::gameMenuState = Game::InvertYesState;
+						Game::invertCameraY = true;
+					}
+					Window::ContDpadLeftPressed = false;
+				}
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) && Window::ContDpadRightPressed) {
+					if (Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::InvertNoState;
+						Game::invertCameraY = false;
+					}
+					Window::ContDpadRightPressed = false;
+				}
+
+				/* Control Dpad, A, and Back button poll events to only occur on button release */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-					Game::gameMenuState = Game::StartGameState;
+					Window::ContDpadUpPressed = true;
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-					Game::gameMenuState = Game::QuitGameState;
+					Window::ContDpadDownPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+					Window::ContDpadLeftPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+					Window::ContDpadRightPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+					Window::ContAPressed = true;
 			}
 #endif
 		}
@@ -443,8 +536,9 @@ namespace Window
 				}
 
 				/* back button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::PauseState;
+					Window::ContBackPressed = false;
 				}
 
 				/* right trigger controls */
@@ -461,16 +555,22 @@ namespace Window
 				/* right stick controls */
 				if (Game::controller->RightStickMoved()) {
 					if (Game::gameState == Game::PlayState) {
-						float cameraSensitivity = 0.1;
+						float cameraSensitivityX = 0.1;
+						float cameraSensitivityY = 0.03;
 						int xCameraCoef = Game::controller->GetXCameraCoefficient();
 						int yCameraCoef = Game::controller->GetYCameraCoefficient();
-						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivity);
-						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivity),0,1,0);
+						Game::Direction = Game::Direction.rotate(BVEC3F(0,1,0), -xCameraCoef*cameraSensitivityX);
+						Game::Shad->Rotate(DEGREES(-xCameraCoef*cameraSensitivityX),0,1,0);
 						//Rotate in Y direction as well?
-						OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), yCameraCoef*cameraSensitivity));
+						float rotationAngle = (Game::invertCameraY) ? yCameraCoef*cameraSensitivityY : -yCameraCoef*cameraSensitivityY;
+						OVEC3F NewCamera = OVECB(BVECO(Camera->VerticalAxis).rotate(BVEC3F(1,0,0), rotationAngle));
 						Camera->VerticalAxis = NewCamera[2] * Camera->VerticalAxis[2] >= 0 ? NewCamera : Camera->VerticalAxis;
 					}
 				}
+
+				/* Control Back button poll events to only occur on button release */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
 
 			}
 #endif
@@ -539,14 +639,22 @@ namespace Window
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
 				/* A button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					Game::gameState = Game::PlayState;
+					Window::ContAPressed = false;
 				}
 
 				/* back button controls */
-				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::MenuState;
+					Window::ContBackPressed = false;
 				}
+
+				/* Control A and Back button poll events to only occur on button release */
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					Window::ContBackPressed = true;
+				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+					Window::ContAPressed = true;
 			}
 #endif
 		}
@@ -642,7 +750,9 @@ int main (int argc, char **argv)
 	{
 		std::cerr << "This program requires OpenGL 3.0 or higher." << std::endl;
 		const char *version = (const char *)glGetString(GL_VERSION);
-		std::cerr << "Your current version is: " << version << std::endl;
+		std::cerr << "Your current GL version is: " << version << std::endl;
+		const char *glslVersion = (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+		std::cout << "Your current GLSL version is: " << glslVersion << std::endl;
 		exit(-1);
 	}
 
@@ -752,6 +862,28 @@ int main (int argc, char **argv)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_quit_image.width(), menu_quit_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_quit_image.data());
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	menu_invert_yes_image = bitmap_image(MENU_INVERT_YES_TEXTURE);
+	menu_invert_yes_image.rgb_to_bgr();
+	glGenTextures(1, &Window::menuInvertYesTex);
+	glBindTexture(GL_TEXTURE_2D, Window::menuInvertYesTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_yes_image.width(), menu_invert_yes_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_yes_image.data());
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	menu_invert_no_image = bitmap_image(MENU_INVERT_NO_TEXTURE);
+	menu_invert_no_image.rgb_to_bgr();
+	glGenTextures(1, &Window::menuInvertNoTex);
+	glBindTexture(GL_TEXTURE_2D, Window::menuInvertNoTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_no_image.width(), menu_invert_no_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_no_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Load Mesh

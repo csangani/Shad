@@ -15,8 +15,10 @@
 #define PHONG_SHADER "assets\\shaders\\phong"
 #define TOON_SHADER "assets\\shaders\\toon"
 
-#define MENU_START_TEXTURE "assets\\bmp\\menu_start_game.bmp"
-#define MENU_QUIT_TEXTURE "assets\\bmp\\menu_quit.bmp"
+#define MENU_START_TEXTURE "assets\\bmp\\new_menu_start_game.bmp"
+#define MENU_QUIT_TEXTURE "assets\\bmp\\new_menu_quit.bmp"
+#define MENU_INVERT_YES_TEXTURE "assets\\bmp\\new_menu_invert_yes.bmp"
+#define MENU_INVERT_NO_TEXTURE "assets\\bmp\\new_menu_invert_no.bmp"
 
 #define SKYBOX_FRONT_TEXTURE "assets\\bmp\\skybox_front.bmp"
 #define SKYBOX_BACK_TEXTURE "assets\\bmp\\skybox_back.bmp"
@@ -77,3 +79,5 @@ bitmap_image cape_image;
 
 bitmap_image menu_start_image;
 bitmap_image menu_quit_image;
+bitmap_image menu_invert_yes_image;
+bitmap_image menu_invert_no_image;
