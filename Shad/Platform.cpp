@@ -103,6 +103,13 @@ bool Platform::isMoving() {
 	return moving;
 }
 
+
+bool Platform::isShrinking() {
+
+	return shrinking;
+}
+
+
 void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ) {
 	moving = state;
 	deltaX = _deltaX;
@@ -114,8 +121,24 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 	color[3] = 1.0f;
 }
 
+
+void Platform::setShrinking(bool state, float _scaleX, float _scaleY, float _scaleZ) {
+	shrinking = state;
+	scaleX = _scaleX;
+	scaleY = _scaleY;
+	scaleZ = _scaleZ;
+	color[0] = 0.0f;
+	color[1] = 1.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+}
+
 OpenMesh::Vec3f Platform::getDirection() {
 	return OpenMesh::Vec3f(deltaX, deltaY, deltaZ);
+}
+
+OpenMesh::Vec3f Platform::getShrinking() {
+	return OpenMesh::Vec3f(scaleX, scaleY, scaleZ);
 }
 
 
@@ -130,6 +153,20 @@ void Platform::move(uint64_t deltaPoint) {
 		platformMesh->Translate(OpenMesh::Vec3f(-direction[0], -direction[1], -direction[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->Translate(-direction[0], -direction[1], -direction[2]);
+	}
+}
+
+void Platform::shrink(uint64_t deltaPoint) {
+	OpenMesh::Vec3f shrinking = getShrinking();
+	if (deltaPoint < 5) {
+		platformMesh->Translate(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(shrinking[0], shrinking[1], shrinking[2]);
+	}
+	else {
+		platformMesh->Translate(OpenMesh::Vec3f(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]);
 	}
 }
 

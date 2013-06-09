@@ -22,27 +22,38 @@ class Platform {
 		PolyMesh *platformMesh;
 
 		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
+		
+		void setShrinking(bool state, float deltaX, float deltaY, float deltaZ);
+		
 		bool isMoving();
+		bool isShrinking();
 
 		void setCollapsible(float startX, float startY, float startZ);
 		bool isCollapsible();
 
 
 		void move(uint64_t deltaPoint);
+		
+		void shrink(uint64_t deltaPoint);
 
 
 		bool moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ);
 
 		OpenMesh::Vec3f getDirection();
+		OpenMesh::Vec3f getShrinking();
+
 		bool withInBounds(float charX, float charY, float charZ);
 
 		void collapse(bool onGround, float charX, float charY, float charZ);
 		float * getColor();
 		void reset();
+
 	private:
 		void GenerateEdges();
 		bool moving;
+		bool shrinking;
 		float deltaX, deltaY, deltaZ;
+		float scaleX, scaleY, scaleZ;
 		float initialX, initialY, initialZ;
 		bool collapsible;
 		float color[4];

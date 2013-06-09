@@ -518,7 +518,9 @@ namespace Window
 
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
 			Game::currentLevel->collapse(onGround, charX, charY, charZ);
-			Game::deltaPoint++;
+			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
+			
+			//Game::deltaPoint++;
 		}
 		else if (Game::gameState == Game::PauseState)
 		{
