@@ -45,21 +45,21 @@ void Boost(float *array, int size, float delta)
 
 float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-float Diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+float Diffuse[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-float Ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+float Ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-float Shininess[] = { 0.5f };
+float Shininess[] = { 0.2f };
 
 float CapeSpecular[] = { 0.1f, 0.1f, 0.1f, 0.9f };
 
-float CapeDiffuse[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+float CapeDiffuse[] = { .2f, .2f, .2f, 0.9f };
 
-float CapeAmbient[] = { 0.6f, 0.1f, 0.1f, 0.9f };
+float CapeAmbient[] = { .2f, .2f, .2f, 0.9f };
 
-float CapeShininess[] = { 0.0f };
+float CapeShininess[] = { 0.2f };
 
-float ClothColor[] = { 1.0f, 0.0f, 0.0f, 0.7f };
+float ClothColor[] = { .5f, .5f, .5f, 0.7f };
 
 bitmap_image image;
 

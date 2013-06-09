@@ -125,7 +125,7 @@ namespace Window
 
 	void _display(PolyMesh *mesh)
 	{
-		if (!mesh->particleCloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
+		if (!mesh->particleCloth && !mesh->cloth && (!mesh->character || (mesh->character && Game::characterState != Game::TeleportingState)))
 			mesh->Draw();
 	}
 
@@ -175,8 +175,8 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
 
@@ -198,10 +198,11 @@ namespace Window
 			// Draw objects
 			std::for_each(PolyMesh::Meshes.begin(), PolyMesh::Meshes.end(), _display);
 			for (std::list<PolyMesh *>::iterator i = PolyMesh::Meshes.begin(); i != PolyMesh::Meshes.end(); i++) {
-				if ((*i)->particleCloth) {
-					((ParticleCloth *)(*i))->Draw();
+				if ((*i)->particleCloth || (*i)->cloth) {
+					(*i)->Draw();
 				}
 			}
+
 			if (Game::characterState == Game::TeleportingState)
 				Game::Shad->Draw();
 			Game::currentLevel->drawPlatformEdges();
@@ -232,6 +233,7 @@ namespace Window
 			GLuint aaTexID = antialias->antialiasTexture(blendedTexID, blender->width(), blender->height());
 
 			/* render final texture to the screen */
+
 			TextureRender::renderToScreen(aaTexID, antialias->width(), antialias->height(), false, false);
 
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
@@ -760,13 +762,13 @@ int main (int argc, char **argv)
 	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22);
 	PolyMesh * pinTarget = (new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22)->platformMesh;
 
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0005f));
+	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
 	Cloak->AttachShader(TOON_SHADER);
 	Cloak->EnableLighting();
 	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
 	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-	cloth_image.rgb_to_bgr();
+	//cloth_image.rgb_to_bgr();
 	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
 	// Set Mesh and Plane Material Parameters
