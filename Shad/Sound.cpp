@@ -1,8 +1,8 @@
 #include <Shad\Sound.h>
 #include <stdio.h>
+#include <iostream>
 
-FMOD::Channel *MainMusicChannel;
-FMOD::Channel *MenuSoundEffectChannel;
+
 
 void ERRCHECK(FMOD_RESULT result)
 {
@@ -31,7 +31,29 @@ void Sound::InitSound() {
 		printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version, FMOD_VERSION);
 	}
 
-	result = system->init(32, FMOD_INIT_NORMAL, 0);
+	result = system->init(100, FMOD_INIT_NORMAL, 0);
+
+	// Create sounds
+	ERRCHECK(Sound::system->createSound("assets/mp3/menu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
+	ERRCHECK(Sound::system->createSound("assets/mp3/menu_toggle.mp3", FMOD_HARDWARE, 0, &MenuToggle));
+	ERRCHECK(Sound::system->createSound("assets/mp3/menu_selection.mp3", FMOD_HARDWARE, 0, &MenuSelection));
+	ERRCHECK(Sound::system->createSound("assets/mp3/gameplay.mp3", FMOD_HARDWARE, 0, &GameplayMusic));
+	ERRCHECK(Sound::system->createSound("assets/mp3/teleport.mp3", FMOD_HARDWARE, 0, &Teleport));
+	ERRCHECK(Sound::system->createSound("assets/mp3/jump.mp3", FMOD_HARDWARE, 0, &Jump));
+	ERRCHECK(Sound::system->createSound("assets/mp3/lightning.mp3", FMOD_HARDWARE, 0, &Lightning));
+	ERRCHECK(Sound::system->createSound("assets/mp3/death1.mp3", FMOD_HARDWARE, 0, &Death1));
+	ERRCHECK(Sound::system->createSound("assets/mp3/death2.mp3", FMOD_HARDWARE, 0, &Death2));
+	ERRCHECK(Sound::system->createSound("assets/mp3/new_life.mp3", FMOD_HARDWARE, 0, &Life));
+	
+	// Create channels
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, true, &MainMusicChannel));
+	ERRCHECK(MainMusicChannel->setMode(FMOD_LOOP_NORMAL));
+	MainMusicChannel->setVolume(0.3);
+
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, GameplayMusic, true, &GameplayMusicChannel));
+	ERRCHECK(GameplayMusicChannel->setMode(FMOD_LOOP_NORMAL));
+	GameplayMusicChannel->setVolume(0.2);
+
 	ERRCHECK(result);
 }
 
@@ -40,35 +62,67 @@ void Sound::Update()
 	ERRCHECK(system->update());
 }
 
-void Sound::PlayMenuMusic() {
-	bool isPlaying;
-	ERRCHECK(MainMusicChannel->isPlaying(&isPlaying));
-	if (!isPlaying) {
-		ERRCHECK(Sound::system->createSound("assets/mp3/menu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
-		ERRCHECK(MainMusicChannel->setMode(FMOD_LOOP_NORMAL));
-		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, false, &MainMusicChannel));
-		MainMusicChannel->setVolume(0.3);
-	}
+void Sound::PlayMenuMusic() {	
+	ERRCHECK(MainMusicChannel->setPaused(false));
 }
 
 void Sound::StopMenuMusic() {
-	bool isPlaying;
-	ERRCHECK(MainMusicChannel->isPlaying(&isPlaying));
-	if (isPlaying) {
-		ERRCHECK(MainMusicChannel->stop());
-	}
+	ERRCHECK(MainMusicChannel->setPaused(true));
+}
+
+void Sound::PlayGameplayMusic() {	
+	ERRCHECK(GameplayMusicChannel->setPaused(false));
+		
+}
+
+void Sound::StopGameplayMusic() {
+	ERRCHECK(GameplayMusicChannel->setPaused(true));
 }
 
 void Sound::PlayMenuToggle() {
-	ERRCHECK(Sound::system->createSound("assets/mp3/menu_toggle.mp3", FMOD_HARDWARE, 0, &MenuSoundEffect));
-	ERRCHECK(MainMenuMusic->setMode(FMOD_LOOP_NORMAL));
-	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MenuSoundEffect, false, &MenuSoundEffectChannel));
-	MenuSoundEffectChannel->setVolume(0.2);
+	FMOD::Channel *MenuToggleChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MenuToggle, false, &MenuToggleChannel));
+	MenuToggleChannel->setVolume(0.2);
 }
 
 void Sound::PlayMenuSelection() {
-	ERRCHECK(Sound::system->createSound("assets/mp3/menu_selection.mp3", FMOD_HARDWARE, 0, &MenuSoundEffect));
-	ERRCHECK(MainMenuMusic->setMode(FMOD_LOOP_NORMAL));
-	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MenuSoundEffect, false, &MenuSoundEffectChannel));
-	MenuSoundEffectChannel->setVolume(0.5);
+	FMOD::Channel *MenuSelectionChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MenuSelection, false, &MenuSelectionChannel));
+	MenuSelectionChannel->setVolume(0.5);
+}
+
+void Sound::PlayTeleportSound()
+{
+	FMOD::Channel *TeleportChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Teleport, false, &TeleportChannel));
+	TeleportChannel->setVolume(0.5);
+}
+
+void Sound::PlayJumpSound()
+{
+	FMOD::Channel *JumpChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Jump, false, &JumpChannel));
+	JumpChannel->setVolume(0.3);
+}
+
+void Sound::PlayLightningSound()
+{
+	FMOD::Channel *LightningChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Lightning, false, &LightningChannel));
+	LightningChannel->setVolume(0.1);
+}
+
+void Sound::PlayDeathSound()
+{	
+	FMOD::Channel *DeathChannel;
+	FMOD::Sound *deathSound = (rand()/RAND_MAX > 0.5) ? Death1 : Death2;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, deathSound, false, &DeathChannel));
+	DeathChannel->setVolume(0.5);
+}
+
+void Sound::PlayLifeSound()
+{
+	FMOD::Channel *LifeChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Life, false, &LifeChannel));
+	LifeChannel->setVolume(0.3);
 }
