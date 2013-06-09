@@ -169,7 +169,7 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
 }
 
-#define RADIUS (0.05f)
+#define RADIUS (0.01f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 

@@ -12,6 +12,7 @@ Level::Level(int level) {
 
 	platforms = std::vector<Platform *>();
 	movingPlatforms = std::vector<Platform *>();
+	shrinkingPlatforms = std::vector<Platform *>(); 
 	collapsiblePlatforms = std::vector<Platform *>();
 }
 	
@@ -48,7 +49,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
+			//platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
+
+			platform = new Platform(cube);
+			platform->Scale(1, 1, 5);
+			platform->Translate(2,-10,0);
+			platforms.push_back(platform);
+			platform->setShrinking(true, 1.0, 1.0, 0.985);
+			shrinkingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
 
@@ -59,6 +67,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
 
 			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
+			
 			platform = new Platform(cube);
 			platform->Rotate(35, 1, 0, 0);
 			platform->Scale(6, 2, 2);
@@ -342,6 +351,12 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 			movingPlatforms[i]->move(deltaPoint);
 		}
 	}
+}
+
+void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad) {
+		for(unsigned int i = 0; i < shrinkingPlatforms.size(); i++) {
+			shrinkingPlatforms[i]->shrink(deltaPoint);
+		}
 }
 
 OpenMesh::Vec3f Level::getTarget() {

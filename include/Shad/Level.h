@@ -32,6 +32,8 @@ class Level {
 	
 	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad);
 
+	void shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad);
+
 	void reset();
 
 	void collapse(bool onGround, float charX, float charY, float charZ);
@@ -45,6 +47,7 @@ class Level {
 		std::vector<Platform *> platforms;
 		std::vector<Lightning *> lightningBolts;
 		std::vector<Platform *> movingPlatforms;
+		std::vector<Platform *> shrinkingPlatforms;
 		std::vector<Platform *> collapsiblePlatforms;
 };
 
