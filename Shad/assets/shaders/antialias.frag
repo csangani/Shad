@@ -1,7 +1,4 @@
 #version 120
-
-#extension GL_EXT_gpu_shader4 : enable
-
 uniform sampler2D frame;
 uniform float rt_w; // GeeXLab built-in
 uniform float rt_h; // GeeXLab built-in
