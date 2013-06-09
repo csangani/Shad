@@ -7,6 +7,7 @@
 #include <Shad/MotionBlur.h>
 #include <Shad/Antialias.h>
 #include <Shad/Level.h>
+#include <Shad/Sound.h>
 #ifdef USE_XBOX_CONTROLLER
 #include <Shad/XboxController.h>
 #endif
@@ -22,9 +23,6 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-
-#include <FMODex/fmod.hpp>
-#include <FMODex/fmod_errors.h>
 
 namespace Game
 {
@@ -58,6 +56,8 @@ namespace Game
 	bool invertCameraY = true;
 
 	Level *currentLevel;
+
+	Sound *soundEngine;
 
 #ifdef USE_XBOX_CONTROLLER
 	XboxController *controller;
@@ -160,6 +160,8 @@ namespace Window
 
 	void Display(void)
 	{
+		Game::soundEngine->Update();
+
 		if (Game::gameState == Game::MenuState)
 		{
 			glUseProgram(0);
@@ -229,7 +231,7 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 			btVector3 characterPos = Game::Shad->GetPosition();
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
-			float diff = 0.202093-r;
+			float diff = 0.202093f-r;
 			float EPSILON = 0.0001;
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
@@ -285,8 +287,11 @@ namespace Window
 			if (Game::gameState == Game::PauseState)
 				Game::gameState = Game::PlayState;
 			else if (Game::gameState == Game::MenuState) {
-				if (Game::gameMenuState == Game::StartGameState)
+				if (Game::gameMenuState == Game::StartGameState) {
 					Game::gameState = Game::PlayState;
+					Game::soundEngine->StopMenuMusic();
+					Game::soundEngine->PlayMenuSelection();
+				}
 				else if (Game::gameMenuState == Game::QuitGameState)
 					glutLeaveMainLoop();
 			}
@@ -349,12 +354,17 @@ namespace Window
 		{
 		case GLUT_KEY_UP:
 			{
+
 				if (Game::gameState == Game::MenuState)
 				{
-					if (Game::gameMenuState == Game::QuitGameState)
+					if (Game::gameMenuState == Game::QuitGameState) {
 						Game::gameMenuState = Game::StartGameState;
-					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::soundEngine->PlayMenuToggle();
+					}
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
 						Game::gameMenuState = Game::QuitGameState;
+						Game::soundEngine->PlayMenuToggle();
+					}
 				}
 				break;
 			}
@@ -362,10 +372,14 @@ namespace Window
 			{
 				if (Game::gameState == Game::MenuState)
 				{
-					if (Game::gameMenuState == Game::StartGameState)
+					if (Game::gameMenuState == Game::StartGameState) {
 						Game::gameMenuState = Game::QuitGameState;
-					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::soundEngine->PlayMenuToggle();
+					}
+					else if (Game::gameMenuState == Game::QuitGameState) {
 						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+						Game::soundEngine->PlayMenuToggle();
+					}
 				}
 				break;
 			}
@@ -375,6 +389,7 @@ namespace Window
 				{
 					if (Game::gameMenuState == Game::InvertNoState) {
 						Game::gameMenuState = Game::InvertYesState;
+						Game::soundEngine->PlayMenuToggle();
 						Game::invertCameraY = true;
 					}
 				}
@@ -386,6 +401,7 @@ namespace Window
 				{
 					if (Game::gameMenuState == Game::InvertYesState) {
 						Game::gameMenuState = Game::InvertNoState;
+						Game::soundEngine->PlayMenuToggle();
 						Game::invertCameraY = false;
 					}
 				}
@@ -426,15 +442,20 @@ namespace Window
 	{
 		if (Game::gameState == Game::MenuState)
 		{
+			Game::soundEngine->PlayMenuMusic();
 #ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
 			if (Game::controller->isConnected()) {
 				/* A button controls */
+
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
-					if (Game::gameMenuState == Game::StartGameState)
+					if (Game::gameMenuState == Game::StartGameState) {
 						Game::gameState = Game::PlayState;
-					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::soundEngine->PlayMenuSelection();
+					}
+					else if (Game::gameMenuState == Game::QuitGameState) {
 						glutLeaveMainLoop();
+					}
 					Window::ContAPressed = false;
 				}
 
@@ -443,23 +464,33 @@ namespace Window
 					glutLeaveMainLoop();
 
 				/* D-pad controls */
+
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && Window::ContDpadUpPressed) {
-					if (Game::gameMenuState == Game::QuitGameState)
+					if (Game::gameMenuState == Game::QuitGameState) {
 						Game::gameMenuState = Game::StartGameState;
-					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState)
+						Game::soundEngine->PlayMenuToggle();
+					}
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
 						Game::gameMenuState = Game::QuitGameState;
+						Game::soundEngine->PlayMenuToggle();
+					}
 					Window::ContDpadUpPressed = false;
 				}
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && Window::ContDpadDownPressed) {
-					if (Game::gameMenuState == Game::StartGameState)
+					if (Game::gameMenuState == Game::StartGameState) {
 						Game::gameMenuState = Game::QuitGameState;
-					else if (Game::gameMenuState == Game::QuitGameState)
+						Game::soundEngine->PlayMenuToggle();
+					}
+					else if (Game::gameMenuState == Game::QuitGameState) {
 						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+						Game::soundEngine->PlayMenuToggle();
+					}
 					Window::ContDpadDownPressed = false;
 				}
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) && Window::ContDpadLeftPressed) {
 					if (Game::gameMenuState == Game::InvertNoState) {
 						Game::gameMenuState = Game::InvertYesState;
+						Game::soundEngine->PlayMenuToggle();
 						Game::invertCameraY = true;
 					}
 					Window::ContDpadLeftPressed = false;
@@ -467,6 +498,7 @@ namespace Window
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) && Window::ContDpadRightPressed) {
 					if (Game::gameMenuState == Game::InvertYesState) {
 						Game::gameMenuState = Game::InvertNoState;
+						Game::soundEngine->PlayMenuToggle();
 						Game::invertCameraY = false;
 					}
 					Window::ContDpadRightPressed = false;
@@ -667,49 +699,6 @@ namespace Window
 	}
 }
 
-void ERRCHECK(FMOD_RESULT result)
-{
-	if (result != FMOD_OK)
-	{
-		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		exit(-1);
-	}
-}
-
-namespace Sound {
-	FMOD::System *system;
-
-	FMOD::Channel *MainMusicChannel = 0;
-	FMOD::Sound *MainMenuMusic;
-
-	void InitSound() {
-		FMOD_RESULT      result;
-		unsigned int     version;
-
-		result = FMOD::System_Create(&system);
-		ERRCHECK(result);
-
-		result = system->getVersion(&version);
-		ERRCHECK(result);
-
-		if (version < FMOD_VERSION)
-		{
-			printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version, FMOD_VERSION);
-			exit(-1);
-		}
-
-		result = system->init(32, FMOD_INIT_NORMAL, 0);
-		ERRCHECK(result);
-
-		ERRCHECK(Sound::system->createSound("assets/mp3/MainMenu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
-		ERRCHECK(MainMenuMusic->setMode(FMOD_LOOP_NORMAL));
-		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, false, &MainMusicChannel));
-
-
-		ERRCHECK(system->update());
-	}
-}
-
 int main (int argc, char **argv)
 {
 	// First call to seed to randomizer, yes man
@@ -731,7 +720,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -960,7 +949,7 @@ int main (int argc, char **argv)
 	Game::deltaPoint = 0;
 
 	// Init sound
-	Sound::InitSound();
+	Game::soundEngine = new Sound();
 
 	// Run Loop
 	glutMainLoop();
