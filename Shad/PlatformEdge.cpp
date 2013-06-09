@@ -42,7 +42,7 @@ OpenMesh::Vec3f PlatformEdge::RotatePoint(OpenMesh::Vec3f point, float angle, fl
 	return OpenMesh::Vec3f(rotatedVec.x(),rotatedVec.y(),rotatedVec.z());
 }
 
-#define RADIUS (0.01)
+#define RADIUS (0.025)
 #define NUM_SUBDIVISIONS (32)
 
 void PlatformEdge::Draw(float * color)

@@ -723,7 +723,7 @@ int main (int argc, char **argv)
 
 	// Create post-processing objects
 	Window::blur = new Blur(Window::glowMapRenderTarget->width(), Window::glowMapRenderTarget->height());
-	Window::blender = new Blender(ADDITIVE, 2*Window::Width, 2*Window::Height);
+	Window::blender = new Blender(SCREEN, 2*Window::Width, 2*Window::Height);
 	Window::motionBlur = new MotionBlur(2*Window::Width, 2*Window::Height, NUM_BLUR_FRAMES);
 	Window::antialias = new Antialias(Window::Width, Window::Height);
 

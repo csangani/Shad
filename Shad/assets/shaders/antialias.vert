@@ -1,3 +1,4 @@
+#version 120
 varying vec4 posPos;
 uniform float FXAA_SUBPIX_SHIFT = 1.0/4.0;
 uniform float rt_w; // GeeXLab built-in
