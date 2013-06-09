@@ -193,7 +193,7 @@ PolyMesh *PolyMesh::LoopSubdivideP(int numThreads)
 		{
 			EdgeHandle handle = edge_handle(i);
 
-			// Obtain half edges
+			// Obtain half edges 
 			HalfedgeHandle HalfEdges[2];
 			HalfEdges[0] = halfedge_handle(handle, 0);
 			HalfEdges[1] = halfedge_handle(handle, 1);

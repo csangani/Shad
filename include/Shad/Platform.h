@@ -9,6 +9,7 @@
 #include <string>
 #include <PolyMesh/bitmap_image.h>
 #include <Spline/stdint.h>
+#include <Shad/Vertex.h>
 
 class Platform {
 	public:
@@ -19,6 +20,7 @@ class Platform {
 		Platform *Rotate(float angle, float x, float y, float z);
 		void Platform::Texture(bitmap_image & image, std::string texture);
 		std::vector<PlatformEdge *> edges;
+		std::vector<Vertex *> vertices;
 		PolyMesh *platformMesh;
 
 		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
@@ -50,7 +52,11 @@ class Platform {
 
 		void subdivide();
 
+		void deform(bool onGround, float charX, float charY, float charZ);
+
 	private:
+		void GenerateVertices();
+
 		void GenerateEdges();
 		void GenerateAllEdges();
 		bool moving;
@@ -59,6 +65,8 @@ class Platform {
 		float scaleX, scaleY, scaleZ;
 		float initialX, initialY, initialZ;
 		bool collapsible;
+		bool collapsing;
+		bool deformed;
 		float color[4];
 		
 };

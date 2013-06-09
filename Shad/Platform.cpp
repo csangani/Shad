@@ -22,9 +22,11 @@ Platform::Platform(std::string model) {
 	platformMesh->RigidBody->setAnisotropicFriction(platformMesh->RigidBody->getCollisionShape()->getAnisotropicRollingFrictionDirection(),btCollisionObject::CF_ANISOTROPIC_ROLLING_FRICTION);
 
 	GenerateEdges();
-
 	collapsible = false;
 	moving = false;
+
+	collapsing = false;
+	deformed = false;
 
 	color[0] = 1.0f;
 	color[1] = 1.0f;
@@ -37,7 +39,26 @@ Platform::~Platform() {
 	Physics::DynamicsWorld->removeRigidBody(platformMesh->RigidBody);
 	delete platformMesh->RigidBody;
 	delete platformMesh;
+	
 }
+
+void Platform::GenerateVertices()
+{
+	if (collapsible) {
+		for (PolyMesh::VertexIter v_it = platformMesh->vertices_begin(); v_it != platformMesh->vertices_end(); ++v_it)
+		{
+			PolyMesh::VertexHandle v_handle =v_it.handle();
+		
+			OpenMesh::Vec3f coordinate = platformMesh->point(v_handle);
+
+			Vertex * v = new Vertex(coordinate, v_handle);
+
+			vertices.push_back(v);
+
+		}
+	}
+}
+
 
 void Platform::GenerateEdges()
 {
@@ -79,6 +100,12 @@ Platform *Platform::Translate(float tx, float ty, float tz) {
 	platformMesh->Translate(OpenMesh::Vec3f(tx, ty, tz));
 	for (unsigned int i = 0; i < edges.size(); i++) {
 		edges[i]->Translate(tx,ty,tz);
+	}
+	if (collapsible) {
+		for (unsigned int i = 0; i < vertices.size(); i++)
+		{
+			vertices[i]->Translate(tx, ty, tz);
+		}
 	}
 	return this;
 }
@@ -284,7 +311,10 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 		zBounds.high = zBounds.low;
 		zBounds.low = temp;
 	}
-
+	xBounds.low -=0.1;
+	xBounds.high +=0.1;
+	zBounds.low -=0.1;
+	zBounds.low +=0.1;
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
@@ -308,8 +338,12 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 }
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
-	if (withInBounds(charX, charY, charZ) && onGround) {
+	if (collapsing) {
 		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
+	}
+	else if (withInBounds(charX, charY, charZ) && onGround) {
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
+		collapsing = true;
 	}
 }
 
@@ -344,9 +378,32 @@ void Platform::GenerateAllEdges() {
 }
 
 
+void Platform::deform(bool onGround, float charX, float charY, float charZ) {
+	if (!deformed) {
+		if (onGround) {
+			if (withInBounds(charX, charY, charZ)) {
+				for (unsigned int i = 0; i < vertices.size(); i++)
+				{
+					OpenMesh::Vec3f coord = vertices[i]->getCoordinates();
+					OpenMesh::VertexHandle vh = vertices[i]->getVH();
+					std::cout << "The old y " << coord[1] << std::endl;
+					coord[0] = -1;
+					coord[1] = -1;
+					coord[2] = -1;
+					std::cout << "The new y " << coord[1] << std::endl;
+					platformMesh->set_point(vh, coord);
+					if (i >2)
+						break;
+				}
+				deformed = true;
+			}
+		}	
+	}
+}
 
 void Platform::subdivide() {
 	platformMesh->LoopSubdivideP(100);
+	collapsible = true;
 	color[0] = 1.0f;
 	color[1] = 0.0f;
 	color[2] = 0.0f;
@@ -355,5 +412,6 @@ void Platform::subdivide() {
 		edges[i]->Scale(0,0,0);
 	}
 	GenerateAllEdges();
+	GenerateVertices();
 	
 }

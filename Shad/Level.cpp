@@ -56,7 +56,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
-		case 1:
+		case 2:
 			platform = new Platform(cube);
 			platform->Scale(3,1,3);
 			platform->Translate(0,-10,0);
@@ -69,14 +69,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platform = new Platform(cube);
 			platform->Scale(8,1,8);
-			platform->Translate(0,-12,-10);
+			platform->Translate(0,-13,-10);
 			platforms.push_back(platform);
 
 			placeholder = (new PolyMesh())->LoadObj("assets\\obj\\Platformer-tri.obj")->GenerateRigidBody();
-			placeholder->Translate(OpenMesh::Vec3f(0, -11, -11));
-			target = OpenMesh::Vec3f(0, -11, -11);
+			placeholder->Translate(OpenMesh::Vec3f(0, -12, -11));
+			target = OpenMesh::Vec3f(0, -12, -11);
 			break;
-		case 2:
+		case 1:
 
 			platform = new Platform(cube);
 			platform->Scale(1,1,10);
@@ -92,14 +92,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 5);
 			platform->Translate(2,-10,0);
 			platforms.push_back(platform);
-			//platform->setShrinking(true, 1.0, 1.0, 0.985);
-			//shrinkingPlatforms.push_back(platform);
+			platform->setShrinking(true, 1.0, 1.0, 0.985);
+			shrinkingPlatforms.push_back(platform);
 
 			platform = new Platform(cube);
 			platform->subdivide();
 			platform->Scale(1,1,8);
-			platform->Translate(-2,-10,0);
-			deformablePlatforms.push_back(platform);
+			platform->Translate(-3,-10,0);
+			//deformablePlatforms.push_back(platform);
 			
 			
 			platforms.push_back(platform);
@@ -318,6 +318,12 @@ void Level::setTarget(float x, float y, float z) {
 }
 
 void Level::deform(bool onGround, float charX, float charY, float charZ) {
+	if (onGround) {
+		for (unsigned int i = 0; i < deformablePlatforms.size(); i++)
+		{
+			deformablePlatforms[i]->deform(onGround, charX, charY, charZ);
+		}
+	}
 }
 
 void Level::collapse(bool onGround, float charX, float charY, float charZ) {
