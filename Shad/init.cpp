@@ -462,6 +462,7 @@ namespace Window
 						Game::gameState = Game::PlayState;
 						Game::soundEngine->PlayMenuSelection();
 						Game::soundEngine->StopMenuMusic();
+						Game::soundEngine->PlayGameplayMusic();
 					}
 					else if (Game::gameMenuState == Game::QuitGameState) {
 						glutLeaveMainLoop();
@@ -581,6 +582,7 @@ namespace Window
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::PauseState;
+					Game::soundEngine->StopGameplayMusic();
 					Window::ContBackPressed = false;
 				}
 
@@ -639,9 +641,11 @@ namespace Window
 			}
 
 			/* reset position on death */
-			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 100.0) {
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 250.0) {
 				btTransform id = Game::currentLevel->getStartPosition();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+				// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
+				((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(btVector3(0, 1000, 0), 0.1);
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();
 				Window::freezeCamera = false;
@@ -697,12 +701,14 @@ namespace Window
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					Game::gameState = Game::PlayState;
 					Window::ContAPressed = false;
+					Game::soundEngine->PlayGameplayMusic();
 				}
 
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::MenuState;
 					Window::ContBackPressed = false;
+					Game::soundEngine->PlayMenuMusic();
 				}
 
 				/* Control A and Back button poll events to only occur on button release */
