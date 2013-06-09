@@ -339,15 +339,16 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (collapsing) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -5, 0));
 	}
 	else if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -5, 0));
 		collapsing = true;
 	}
 }
 
 void Platform::reset() {
+	collapsing = false;
 	platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
 }
 

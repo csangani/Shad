@@ -99,7 +99,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->subdivide();
 			platform->Scale(1,1,8);
 			platform->Translate(-3,-10,0);
-			//deformablePlatforms.push_back(platform);
+			deformablePlatforms.push_back(platform);
 			
 			
 			platforms.push_back(platform);
