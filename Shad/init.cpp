@@ -254,7 +254,7 @@ namespace Window
 
 			/* render final texture to the screen */
 
-			TextureRender::renderToScreen(aaTexID, antialias->width(), antialias->height(), false, false);
+			TextureRender::renderToScreen(blendedTexID, Window::Width, Window::Height, false, false);
 
 			currBlurFrame++; currBlurFrame = currBlurFrame % NUM_BLUR_FRAMES;
 
@@ -629,6 +629,8 @@ namespace Window
 
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad);
 			Game::currentLevel->collapse(onGround, charX, charY, charZ);
+			Game::currentLevel->deform(onGround, charX, charY, charZ);
+
 			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
 			
 			//Game::deltaPoint++;
@@ -818,13 +820,13 @@ int main (int argc, char **argv)
 	Window::Camera = new Game::Camera();
 
 	// Create Skybox
-	Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
+	/*Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
 	Window::skyBox->addTexture(SKYBOX_FRONT_TEXTURE, SkyBoxFront);
 	Window::skyBox->addTexture(SKYBOX_BACK_TEXTURE, SkyBoxBack);
 	Window::skyBox->addTexture(SKYBOX_LEFT_TEXTURE, SkyBoxLeft);
 	Window::skyBox->addTexture(SKYBOX_RIGHT_TEXTURE, SkyBoxRight);
 	Window::skyBox->addTexture(SKYBOX_TOP_TEXTURE, SkyBoxTop);
-	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);
+	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);*/
 
 	// Create render-to-texture targets
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);

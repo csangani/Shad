@@ -321,6 +321,39 @@ bool Platform::isCollapsible() {
 	return collapsible;
 }
 
+void Platform::GenerateAllEdges() {
+	for (PolyMesh::EdgeIter e_it = platformMesh->edges_begin(); e_it != platformMesh->edges_end(); ++e_it)
+	{
+		// Obtain half edges
+		PolyMesh::HalfedgeHandle heHandle = platformMesh->halfedge_handle(e_it.handle(), 0);
+
+		// Obtain vertices bounding the edge
+		PolyMesh::VertexHandle v1 = platformMesh->to_vertex_handle(heHandle);
+		PolyMesh::VertexHandle v2 = platformMesh->from_vertex_handle(heHandle);
+
+		OpenMesh::Vec3f startPoint = platformMesh->point(v1);
+		OpenMesh::Vec3f endPoint = platformMesh->point(v2);
+		
+		float edgeLength = (endPoint - startPoint).length();
+	
+
+		PlatformEdge *edge = new PlatformEdge(startPoint, endPoint);
+		edges.push_back(edge);
+
+	}
+}
+
+
+
 void Platform::subdivide() {
-	platformMesh->LoopSubdivideP(10);
+	platformMesh->LoopSubdivideP(100);
+	color[0] = 1.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+	for(unsigned int i = 0; i < edges.size(); i++) {
+		edges[i]->Scale(0,0,0);
+	}
+	GenerateAllEdges();
+	
 }

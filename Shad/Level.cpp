@@ -14,11 +14,22 @@ Level::Level(int level) {
 	movingPlatforms = std::vector<Platform *>();
 	shrinkingPlatforms = std::vector<Platform *>(); 
 	collapsiblePlatforms = std::vector<Platform *>();
+	deformablePlatforms = std::vector<Platform *>();
 }
 	
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
+	/*
+	* While there are functions that return booleans to check the kind of platform,
+	*	I (Gavin) don't use them, and instead plug them into the corresponding vector
+	*  Guide:
+	*	All platforms go into platforms
+	*	moving one go into movingPlatforms
+	*	shrinking ones go into shrinkingPlatforms
+	*	collapsible ones go into collapsiblePlatforms
+	*	deformable ones go into deformablePlatforms
+	*/
 	switch(_level) {
 		case 1:
 			platform = new Platform(cube);
@@ -32,11 +43,13 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platforms.push_back(platform);
 
 			platform = new Platform(cube);
-			platform->Scale(10,1,10);
+			platform->Scale(8,1,8);
 			platform->Translate(0,-12,-10);
 			platforms.push_back(platform);
 
-			target = OpenMesh::Vec3f(0, 0, 0);
+			placeholder = (new PolyMesh())->LoadObj("assets\\obj\\Platformer-tri.obj")->GenerateRigidBody();
+			placeholder->Translate(OpenMesh::Vec3f(0, -11, -11));
+			target = OpenMesh::Vec3f(0, -11, -11);
 			break;
 		case 2:
 
@@ -49,7 +62,6 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
-			//platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(2,-10,0));
 
 			platform = new Platform(cube);
 			platform->Scale(1, 1, 5);
@@ -58,7 +70,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			//platform->setShrinking(true, 1.0, 1.0, 0.985);
 			//shrinkingPlatforms.push_back(platform);
 
-			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));
+			platform = new Platform(cube);
+			platform->subdivide();
+			platform->Scale(1,1,8);
+			platform->Translate(-2,-10,0);
+			deformablePlatforms.push_back(platform);
+			
+			
+			platforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
 
@@ -86,7 +105,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			break;
 		case 3:
 			platform = new Platform(cube);
-			platform->Scale(1, 1, 1);
+			platform->Scale(3, 1, 3);
 			platform->Translate(0, -5, 0);
 			platforms.push_back(platform);
 			//platform->setMoving(true, 0, 0, 1);
@@ -264,10 +283,16 @@ void Level::destroyPlatforms() {
 	platforms.clear();
 	movingPlatforms.clear();
 	collapsiblePlatforms.clear();
+	shrinkingPlatforms.clear();
+	deformablePlatforms.clear();
+	//delete placeholder;
 }
 
 void Level::setTarget(float x, float y, float z) {
 	target = OpenMesh::Vec3f(x, y, z);
+}
+
+void Level::deform(bool onGround, float charX, float charY, float charZ) {
 }
 
 void Level::collapse(bool onGround, float charX, float charY, float charZ) {

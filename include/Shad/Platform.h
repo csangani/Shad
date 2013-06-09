@@ -52,6 +52,7 @@ class Platform {
 
 	private:
 		void GenerateEdges();
+		void GenerateAllEdges();
 		bool moving;
 		bool shrinking;
 		float deltaX, deltaY, deltaZ;

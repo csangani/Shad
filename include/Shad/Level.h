@@ -40,6 +40,8 @@ class Level {
 	
 	OpenMesh::Vec3f getTarget();
 
+	void deform(bool onGround, float charX, float charY, float charZ);
+
 	private:
 		int _level;
 		btTransform origin;
@@ -49,6 +51,9 @@ class Level {
 		std::vector<Platform *> movingPlatforms;
 		std::vector<Platform *> shrinkingPlatforms;
 		std::vector<Platform *> collapsiblePlatforms;
+		std::vector<Platform *> deformablePlatforms;
+
+		PolyMesh * placeholder;
 };
 
 #endif
