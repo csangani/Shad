@@ -21,6 +21,25 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	switch(_level) {
 		case 1:
 			platform = new Platform(cube);
+			platform->Scale(3,1,3);
+			platform->Translate(0,-10,0);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(10,10,1);
+			platform->Translate(0,-10,-3);
+			platforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->Scale(10,1,10);
+			platform->Translate(0,-12,-10);
+			platforms.push_back(platform);
+
+			target = OpenMesh::Vec3f(0, -12, -12);
+			break;
+		case 2:
+
+			platform = new Platform(cube);
 			platform->Scale(1,1,10);
 			platform->Translate(0,-10,0);
 			platforms.push_back(platform);
@@ -56,7 +75,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 			target = OpenMesh::Vec3f(0, -14, -22);
 			break;
-		case 2:
+		case 3:
 			platform = new Platform(cube);
 			platform->Scale(1, 1, 1);
 			platform->Translate(0, -5, 0);
@@ -127,7 +146,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			break;
 
 
-		case 3:
+		case 4:
 			platform = new Platform(cube);
 			platform->Scale(5,1,10);
 			platform->Translate(0,-10,0);
@@ -212,7 +231,7 @@ bool Level::lightningCollisionWithPoint(OpenMesh::Vec3f point)
 	return false;
 }
 
-void Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
+float Level::drawCharacterShadow(float characterX, float characterY, float characterZ)
 {
 	Platform *foundPlatform = NULL;
 	float maxY = -1000.f;
@@ -234,11 +253,12 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 			}
 		}
 	}
+	float r = 0;
 	// draw shadow on platform
 	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		float r = 0.2f/(characterY - maxY);
+		r = 0.2f/(characterY - maxY);
 		int num_segments = 20;
 		glColor4f(0.f, 0.f, 0.f, 0.3f);
 		glBegin(GL_POLYGON); 
@@ -253,6 +273,7 @@ void Level::drawCharacterShadow(float characterX, float characterY, float charac
 		} 
 		glEnd(); 
 	}
+	return r;
 }
 
 void Level::applyLightningAnimationStep()

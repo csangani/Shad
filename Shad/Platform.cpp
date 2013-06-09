@@ -270,7 +270,7 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.1, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
 	}
 }
 

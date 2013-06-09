@@ -1,6 +1,6 @@
 #include <PolyMesh\Physics.h>
 
-btVector3 Physics::Gravity = btVector3(0,-10.0f,0);
+btVector3 Physics::Gravity = btVector3(0,-20.0f,0);
 btDefaultCollisionConfiguration* Physics::CollisionConfiguration;
 btCollisionDispatcher *Physics::Dispatcher;
 btBroadphaseInterface *Physics::OverlappingPairCache;

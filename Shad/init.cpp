@@ -40,7 +40,8 @@ namespace Game
 	enum CharacterState {
 		DefaultState,
 		JumpingState,
-		TeleportingState
+		TeleportingState,
+		SecondJumpingState
 	};
 
 	uint64_t teleportStartTime = 0;
@@ -65,14 +66,19 @@ namespace Game
 
 	Character *Shad;
 
+	int teleportLeft;
+
+
 	void Teleport() {
-		if (!((Character *)Shad)->RigidBody->canJump()) {
+		if (!((Character *)Shad)->RigidBody->canJump() && teleportLeft > 0) {
 			characterState = TeleportingState;
 			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
 			((Character *)Shad)->RigidBody->setFallSpeed(0.0);
 			teleportStartTime = PolyMesh::Time;
+			teleportLeft--;
 		}
 	}
+
 	int deltaPoint;
 }
 
@@ -205,8 +211,13 @@ namespace Window
 			Game::currentLevel->drawPlatformEdges();
 			Game::currentLevel->drawLightningBolts();
 			btVector3 characterPos = Game::Shad->GetPosition();
-			Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
-
+			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
+			float diff = 0.202093-r;
+			float EPSILON = 0.0001;
+			std::cout << "The difference is " << diff << std::endl;
+			if ((diff < EPSILON)) {
+				Game::teleportLeft = 4;
+			}
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 
 			sceneRenderTargets[currBlurFrame]->unbind();
@@ -608,7 +619,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
