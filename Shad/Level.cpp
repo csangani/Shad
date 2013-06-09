@@ -36,7 +36,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 			platform->Scale(1, 1, 5);
 			platform->Translate(2,-10,0);
 			platforms.push_back(platform);
-			platform->setShrinking(true, 1.0, 1.0, 0.1);
+			platform->setShrinking(true, 1.0, 1.0, 0.985);
 			shrinkingPlatforms.push_back(platform);
 
 			platforms.push_back((new Platform(cube))->Scale(1, 1, 5)->Translate(-2,-10,0));

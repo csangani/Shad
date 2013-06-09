@@ -157,16 +157,18 @@ void Platform::move(uint64_t deltaPoint) {
 }
 
 void Platform::shrink(uint64_t deltaPoint) {
+
 	OpenMesh::Vec3f shrinking = getShrinking();
+
 	if (deltaPoint < 5) {
-		platformMesh->Translate(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
+		platformMesh->Scale(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(shrinking[0], shrinking[1], shrinking[2]);
+			edges[i]->Scale(shrinking[0], shrinking[1], shrinking[2]);
 	}
 	else {
-		platformMesh->Translate(OpenMesh::Vec3f(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]));
+		platformMesh->Scale(OpenMesh::Vec3f(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]);
+			edges[i]->Scale(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]);
 	}
 }
 
