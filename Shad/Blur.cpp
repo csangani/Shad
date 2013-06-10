@@ -4,7 +4,7 @@
 #define BLUR_SHADER "assets\\shaders\\blur"
 #define BLUR_AMOUNT 10
 #define BLUR_SCALE 1.f
-#define BLUR_STRENGTH 0.5f
+#define BLUR_STRENGTH 0.2f
 
 Blur::Blur(GLuint width, GLuint height)
 {
