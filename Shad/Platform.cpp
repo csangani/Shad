@@ -349,10 +349,13 @@ bool Platform::checkIfGood(float limit) {
 void Platform::collapse(bool onGround, float charX, float charY, float charZ, float limit) {
 
 	bool check = checkIfGood(limit);
-	//if(!check) {
-		
-		//return;
-	//}
+	if(!check) {
+		platformMesh->Translate(OpenMesh::Vec3f(100, 100, 100));
+		for (unsigned int i = 0; i < edges.size(); i++) {
+			edges[i]->Translate(100,100,100);
+		}
+		return;
+	}
 	if (collapsing) {
 		platformMesh->Translate(OpenMesh::Vec3f(0, -250, 0));
 		for (unsigned int i = 0; i < edges.size(); i++)
@@ -369,6 +372,10 @@ void Platform::collapse(bool onGround, float charX, float charY, float charZ, fl
 void Platform::reset() {
 	collapsing = false;
 	platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
+	for (unsigned int i = 0; i < edges.size(); i++)
+	{
+		edges[i]->Translate(initialX, initialY, initialZ);
+	}
 }
 
 bool Platform::isCollapsible() {
