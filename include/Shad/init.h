@@ -5,7 +5,7 @@
 
 #include <PolyMesh/bitmap_image.h>
 
-//#define USE_XBOX_CONTROLLER
+#define USE_XBOX_CONTROLLER
 
 #define NUM_TELEPORT 4
 
@@ -27,8 +27,8 @@
 
 #define SKYBOX_FRONT_TEXTURE "assets\\bmp\\skybox_front.bmp"
 #define SKYBOX_BACK_TEXTURE "assets\\bmp\\skybox_back.bmp"
-#define SKYBOX_LEFT_TEXTURE "assets\\bmp\\skybox_left.bmp"
-#define SKYBOX_RIGHT_TEXTURE "assets\\bmp\\skybox_right.bmp"
+#define SKYBOX_LEFT_TEXTURE "assets\\bmp\\skybox_side.bmp"
+#define SKYBOX_RIGHT_TEXTURE "assets\\bmp\\skybox_side.bmp"
 #define SKYBOX_TOP_TEXTURE "assets\\bmp\\skybox_top.bmp"
 #define SKYBOX_BOTTOM_TEXTURE "assets\\bmp\\skybox_bottom.bmp"
 
