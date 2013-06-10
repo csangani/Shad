@@ -68,6 +68,7 @@ class Platform {
 		float _scaleX, _scaleY, _scaleZ;
 		float initialX, initialY, initialZ;
 		float _angle, xaxis, yaxis, zaxis;
+		float runningTotalX, runningTotalY, runningTotalZ;
 		bool collapsible;
 		bool collapsing;
 		bool deformed;

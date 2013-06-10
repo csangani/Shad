@@ -33,6 +33,10 @@ Platform::Platform(std::string model) {
 	color[2] = 1.0f;
 	color[3] = 0.6f;
 
+	runningTotalX = 0;
+	runningTotalY = 0;
+	runningTotalZ = 0;
+
 }
 
 Platform::~Platform() {
@@ -322,6 +326,11 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 		zBounds.high = zBounds.low;
 		zBounds.low = temp;
 	}
+	if (yBounds.high < yBounds.low) {
+		float temp = yBounds.high;
+		yBounds.high = yBounds.low;
+		yBounds.low = temp;
+	}
 	xBounds.low -=0.1;
 	xBounds.high +=0.1;
 	zBounds.low -=0.1;
@@ -329,7 +338,10 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			return true;
+			std::cout << (charY - yBounds.high) << std::endl;
+			if (charY - yBounds.high < 0.54) {
+				return true;
+			}
 		}
 	}
 
@@ -359,12 +371,19 @@ bool Platform::checkIfGood(float limit) {
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
+		Translate(0, -0.2, 0);
+		runningTotalX += 0;
+		runningTotalY -= 0.2;
+		runningTotalZ += 0;
 	}
 }
 
 void Platform::reset() {
-	platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
+	//platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
+	Translate(-runningTotalX, -runningTotalY, -runningTotalZ);
+	runningTotalX = 0;
+	runningTotalY = 0;
+	runningTotalZ = 0;
 }
 
 bool Platform::isCollapsible() {
