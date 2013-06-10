@@ -152,7 +152,7 @@ namespace Window
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,100.f);
+		gluPerspective(45,((float)Window::Width)/Window::Height,0.1f,1000.f);
 
 		btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
 		if (!Window::freezeCamera)
@@ -227,6 +227,8 @@ namespace Window
 					(*i)->Draw();
 				}
 			}
+
+			Window::skyBox->draw();
 
 			if (Game::characterState == Game::TeleportingState)
 				Game::Shad->Draw();
@@ -576,7 +578,7 @@ namespace Window
 				/* A button controls */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
-					//Game::soundEngine->PlayJumpSound();
+					Game::soundEngine->PlayJumpSound();
 				}
 
 				/* back button controls */
@@ -747,7 +749,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -836,13 +838,13 @@ int main (int argc, char **argv)
 	Window::Camera = new Game::Camera();
 
 	// Create Skybox
-	/*Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 100.f);
+	Window::skyBox = new SkyBox(0.f, 0.f, 0.f, 1000.f);
 	Window::skyBox->addTexture(SKYBOX_FRONT_TEXTURE, SkyBoxFront);
 	Window::skyBox->addTexture(SKYBOX_BACK_TEXTURE, SkyBoxBack);
 	Window::skyBox->addTexture(SKYBOX_LEFT_TEXTURE, SkyBoxLeft);
 	Window::skyBox->addTexture(SKYBOX_RIGHT_TEXTURE, SkyBoxRight);
 	Window::skyBox->addTexture(SKYBOX_TOP_TEXTURE, SkyBoxTop);
-	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);*/
+	Window::skyBox->addTexture(SKYBOX_BOTTOM_TEXTURE, SkyBoxBottom);
 
 	// Create render-to-texture targets
 	Window::glowMapRenderTarget = new TextureRender(Window::Width/2, Window::Height/2, GL_RGBA);

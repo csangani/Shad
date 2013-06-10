@@ -170,7 +170,7 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
 }
 
-#define RADIUS (0.01f)
+#define RADIUS (0.03f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 
@@ -192,26 +192,3 @@ void Lightning::Draw()
 		RenderCylinder(x1,y1,z1,x2,y2,z2,RADIUS/(1+BRANCH_DECREASE_COEF*segment.dimFactor),NUM_SUBDIVISIONS,color_,quadric);
 	}
 }
-
-
-//KEEP THIS AROUND: USEFUL TO GENERATE RIGID BODY FOR LIGHTNING?
-//for (std::vector<Segment>::iterator it = segments.begin(); it != segments.end(); ++it) {
-//		OpenMesh::Vec3f startPoint = it->startPoint;
-//		OpenMesh::Vec3f endPoint = it->endPoint;
-//        float rayRankMultiplier = (float)1.0/(it->dimFactor+1);        
-//        float smallRayFactor = 0.005;
-//	 
-//		//middle quad as two triangles
-//		OpenMesh::Vec3f point1 = startPoint - it->normal() * smallRayFactor * rayRankMultiplier;
-//		OpenMesh::Vec3f point2 = startPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-//		OpenMesh::Vec3f point3 = endPoint + it->normal() * smallRayFactor * rayRankMultiplier;
-//		OpenMesh::Vec3f point4 = endPoint - it->normal() * smallRayFactor * rayRankMultiplier;
-// 
-//		VertexHandle v1 = add_vertex(point1);
-//		VertexHandle v2 = add_vertex(point2);
-//		VertexHandle v3 = add_vertex(point3);
-//		VertexHandle v4 = add_vertex(point4);
-//
-//		add_face(v1,v2,v3);
-//		add_face(v1,v3,v4);
-//}

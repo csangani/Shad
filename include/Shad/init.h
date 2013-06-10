@@ -2,7 +2,7 @@
 
 #include <PolyMesh/bitmap_image.h>
 
-//#define USE_XBOX_CONTROLLER
+#define USE_XBOX_CONTROLLER
 
 #define NUM_THREADS 8
 
@@ -54,17 +54,17 @@ void Boost(float *array, int size, float delta)
 
 float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
-float Diffuse[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+float Diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-float Ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+float Ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 float Shininess[] = { 0.2f };
 
 float CapeSpecular[] = { 0.1f, 0.1f, 0.1f, 0.9f };
 
-float CapeDiffuse[] = { .2f, .2f, .2f, 0.9f };
+float CapeDiffuse[] = { .4f, .4f, .4f, 0.9f };
 
-float CapeAmbient[] = { .2f, .2f, .2f, 0.9f };
+float CapeAmbient[] = { .4f, .4f, .4f, 0.9f };
 
 float CapeShininess[] = { 0.2f };
 
