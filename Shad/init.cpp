@@ -616,30 +616,35 @@ namespace Window
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 
+			static bool Forward;
 			/* Animate Character */
 			if ((!WalkDirection.fuzzyZero() && Game::Shad->RigidBody->onGround()) || Game::Shad->AnimationTime > 0) {
 				Game::Shad->AnimationTime += (uint64_t)FRAME_PERIOD;
-				if (Game::Shad->AnimationTime > 1000)
+				if (Game::Shad->AnimationTime > 100) {
 					Game::Shad->AnimationTime = 0;
+					Forward = !Forward;
+					btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+					Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+				}
 			}
-			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 250) {
+			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && Forward) {
 				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS((Game::Shad->AnimationTime*30.0f)/250.0f)));
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS((Game::Shad->AnimationTime*60.0f)/50.0f)));
 				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
 			}
-			if (Game::Shad->AnimationTime > 250 && Game::Shad->AnimationTime <= 500) {
+			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && Forward) {
 				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((500-Game::Shad->AnimationTime)*30.0f)/250.0f)));
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
 				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
 			}
-			if (Game::Shad->AnimationTime > 500 && Game::Shad->AnimationTime <= 750) {
+			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && !Forward) {
 				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((500-Game::Shad->AnimationTime)*30.0f)/250.0f)));
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,-1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
 				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
 			}
-			if (Game::Shad->AnimationTime > 750 && Game::Shad->AnimationTime <= 1000) {
+			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && !Forward) {
 				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((Game::Shad->AnimationTime-1000)*30.0f)/250.0f)));
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,-1,0),RADIANS(((Game::Shad->AnimationTime)*60.0f)/50.0f)));
 				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
 			}
 
@@ -715,7 +720,7 @@ namespace Window
 
 			/* reset position on death */
 			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 150.0) {
-				
+
 				setUpCharacter();
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();

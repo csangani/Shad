@@ -85,6 +85,7 @@ void Cloth::SimulationStep() {
 	float diagonal = segmentLength * sqrtf(2);
 
 	// Synchronize mesh points and collision objects
+#pragma omp parallel for
 	for(int i = 0; i < rows; i++) {
 		for(int j = 0; j < columns; j++) {
 			set_point(Points[i][j], OpenMesh::Vec3f(

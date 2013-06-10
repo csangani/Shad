@@ -39,6 +39,13 @@ Character *Character::GenerateCharacter() {
 Character::~Character() {
 	Physics::DynamicsWorld->removeCollisionObject(RigidBody->getGhostObject());
 	Physics::DynamicsWorld->removeAction(RigidBody);
+	Physics::DynamicsWorld->removeRigidBody(Dummy);
+	Physics::DynamicsWorld->removeRigidBody(Arms->RigidBody);
+	delete Dummy->getCollisionShape();
+	delete Dummy;
+	delete Arms->RigidBody->getCollisionShape();
+	delete Arms->RigidBody;
+	delete Arms;
 	delete RigidBody->getGhostObject();
 	delete RigidBody;
 }

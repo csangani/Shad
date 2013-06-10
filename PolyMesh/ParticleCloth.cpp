@@ -54,6 +54,7 @@ void ParticleCloth::SimulationStep() {
 	if (elapsed > life) {
 		startRow = (startRow + length - 1) % length;
 		elapsed = 0;
+#pragma omp parallel for
 		for (int i = 0; i < width; i++) {
 			btTransform transform;
 			transform.setIdentity();
@@ -69,6 +70,7 @@ void ParticleCloth::SimulationStep() {
 		}
 	}
 
+#pragma omp parallel for
 	for (int _i = 0; _i < length; _i++)
 	{
 		int i = (_i + startRow) % length;
