@@ -7,6 +7,8 @@
 
 //#define USE_XBOX_CONTROLLER
 
+#define NUM_TELEPORT 4
+
 #define NUM_THREADS 8
 
 #define NUM_BLUR_FRAMES 5

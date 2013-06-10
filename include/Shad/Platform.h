@@ -30,7 +30,7 @@ class Platform {
 		bool isMoving();
 		bool isShrinking();
 
-		void setCollapsible(float startX, float startY, float startZ);
+		void setCollapsible();
 		bool isCollapsible();
 
 

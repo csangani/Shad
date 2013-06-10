@@ -110,12 +110,13 @@ Platform *Platform::Translate(float tx, float ty, float tz) {
 	for (unsigned int i = 0; i < edges.size(); i++) {
 		edges[i]->Translate(tx,ty,tz);
 	}
+
 	if (collapsible) {
-		for (unsigned int i = 0; i < vertices.size(); i++)
-		{
-			vertices[i]->Translate(tx, ty, tz);
-		}
+		initialX = tx;
+		initialY = ty;
+		initialZ =	tz;
 	}
+
 	return this;
 }
 
@@ -348,11 +349,9 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 	return false;
 }
 
-void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
+void Platform::setCollapsible() {
 	collapsible = true;
-	initialX = _startX;
-	initialY = _startY;
-	initialZ = _startZ;
+
 	color[0] = 0.0f;
 	color[1] = 1.0f;
 	color[2] = 0.0f;

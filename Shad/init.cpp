@@ -241,7 +241,7 @@ namespace Window
 			float EPSILON = 0.01;
 			
 			if ((diff < EPSILON)) {
-				Game::teleportLeft = 4;
+				Game::teleportLeft = NUM_TELEPORT;
 			}
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());
 
@@ -760,7 +760,7 @@ namespace Window
 				Game::currentLevel->reset();
 				Window::freezeCamera = false;
 				Game::soundEngine->PlayLifeSound();
-				Game::teleportLeft = 4;
+				Game::teleportLeft = NUM_TELEPORT;
 			}
 
 			/*Code to finish level*/
