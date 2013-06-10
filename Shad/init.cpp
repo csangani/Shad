@@ -239,7 +239,7 @@ namespace Window
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093f-r;
 			float EPSILON = 0.01;
-			std::cout << diff << std::endl;
+			
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
 			}
