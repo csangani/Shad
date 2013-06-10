@@ -27,18 +27,19 @@ Lightning::Lightning(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 
 bool Lightning::isOff()
 {
-	return color_[3] <= 0.0;
+	return color_[3] <= 0.0f;
 }
 
-#define OPACITY_STEP_SIZE (0.05)
-#define	COLOR_STEP_DIVIDER (1.1)
+#define OPACITY_STEP_SIZE (0.05f)
+#define	COLOR_STEP_DIVIDER (1.1f)
 
 void Lightning::Dim()
 {
+	float Random = sinf((float)rand());
 	color_[0] /= COLOR_STEP_DIVIDER;
 	color_[1] /= COLOR_STEP_DIVIDER;
 	color_[2] /= COLOR_STEP_DIVIDER;
-	color_[3] -= OPACITY_STEP_SIZE;
+	color_[3] -= (OPACITY_STEP_SIZE * (1.0f + Random));
 }
 
 void Lightning::Brighten()

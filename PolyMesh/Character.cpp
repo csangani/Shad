@@ -1,6 +1,6 @@
 #include <PolyMesh\Character.h>
 
-Character::Character() {
+Character::Character() : AnimationTime(0) {
 	__super::character = true;
 }
 
@@ -38,10 +38,36 @@ Character *Character::GenerateCharacter() {
 
 Character *Character::SyncDummy() {
 	Dummy->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
-
+	Arms->RigidBody->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
 	return this;
 }
 
 btVector3 Character::GetPosition() {
 	return RigidBody->getGhostObject()->getWorldTransform().getOrigin();
+}
+
+Character *Character::GenerateLimbs(std::string filePath) {
+	Arms = (new PolyMesh())->LoadObj(filePath);
+
+		/* Enable physics */
+	btConvexHullShape *ConvexShape = new btConvexHullShape();
+	for(VertexIter v_it = vertices_begin(); v_it != vertices_end(); ++v_it)
+	{
+		ConvexShape->addPoint(btVector3(point(v_it.handle())[0],point(v_it.handle())[1],point(v_it.handle())[2]));
+	}
+	btCollisionShape *ConvexHull = ConvexShape;
+	btVector3 localInertia(0.0f,0.0f,0.0f);
+	btScalar m(0);
+	bool isDynamic = (m != 0.0f);
+	if (isDynamic)
+		ConvexHull->calculateLocalInertia(m,localInertia);
+	btTransform transform;
+	transform.setIdentity();
+	btDefaultMotionState *myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
+	Arms->RigidBody = new btRigidBody(rbInfo);
+	Arms->RigidBody->setContactProcessingThreshold(0.0f);
+	Physics::DynamicsWorld->addRigidBody(Arms->RigidBody, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::CharacterFilter);
+	Arms->RigidBody->setUserPointer(this);
+	return this;
 }
