@@ -238,7 +238,8 @@ namespace Window
 			btVector3 characterPos = Game::Shad->GetPosition();
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093f-r;
-			float EPSILON = 0.0001;
+			float EPSILON = 0.01;
+			
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
 			}
@@ -330,7 +331,6 @@ namespace Window
 			break;
 		case JUMP:
 			((Character *)Game::Shad)->RigidBody->jump();
-			Game::soundEngine->PlayJumpSound();
 			break;
 		default:
 			break;
@@ -442,8 +442,8 @@ namespace Window
 		Game::Shad->GenerateCharacter();
 		Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 		Game::Shad->AttachShader(TOON_SHADER);
-		Game::Shad->RigidBody->setJumpSpeed(20.0f);
-		Game::Shad->RigidBody->setGravity(100.0f);
+		Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
+		Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
 
 		btTransform id = Game::currentLevel->getStartPosition();
 		((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
@@ -666,7 +666,6 @@ namespace Window
 				/* A button controls */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) {
 					((Character *)Game::Shad)->RigidBody->jump();
-					Game::soundEngine->PlayJumpSound();
 				}
 
 				/* back button controls */
@@ -738,6 +737,7 @@ namespace Window
 				Game::currentLevel->reset();
 				Window::freezeCamera = false;
 				Game::soundEngine->PlayLifeSound();
+				Game::teleportLeft = 4;
 			}
 
 			/*Code to finish level*/
@@ -997,8 +997,8 @@ int main (int argc, char **argv)
 	Game::Shad->LoadObj(OBJECT);
 	Game::Shad->GenerateCharacter();
 	Game::Shad->AttachShader(TOON_SHADER);
-	Game::Shad->RigidBody->setJumpSpeed(20.0f);
-	Game::Shad->RigidBody->setGravity(100.0f);
+	Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
+	Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
 	Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 
 	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);

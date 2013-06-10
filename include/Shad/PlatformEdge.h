@@ -16,6 +16,7 @@ class PlatformEdge {
 		void Draw(float * color);
 		OpenMesh::Vec3f getStartPoint();
 		OpenMesh::Vec3f getEndPoint();
+
 		
 	private:
 		OpenMesh::Vec3f startPoint_, endPoint_;

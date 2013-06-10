@@ -43,16 +43,18 @@ class Platform {
 
 		OpenMesh::Vec3f getDirection();
 		OpenMesh::Vec3f getShrinking();
+		bool checkIfGood(float limit);
 
 		bool withInBounds(float charX, float charY, float charZ);
 
-		void collapse(bool onGround, float charX, float charY, float charZ);
+		void collapse(bool onGround, float charX, float charY, float charZ, float limit);
 		float * getColor();
 		void reset();
 
 		void subdivide();
 
 		void deform(bool onGround, float charX, float charY, float charZ);
+
 
 	private:
 		void GenerateVertices();

@@ -12,9 +12,9 @@ Platform::Platform(std::string model) {
 	
 	//translucent red platform?
 	float *platformColor = new float[4];
-	platformColor[0] = 1.0;
-	platformColor[1] = 1.0;
-	platformColor[2] = 1.0;
+	platformColor[0] = 0.0;
+	platformColor[1] = 0.0;
+	platformColor[2] = 0.0;
 	platformColor[3] = 0.5;
 	platformMesh->Color = platformColor;
 
@@ -337,13 +337,32 @@ void Platform::setCollapsible(float _startX, float _startY, float _startZ) {
 
 }
 
-void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
+bool Platform::checkIfGood(float limit) {
+	PlatformEdge * e= edges[0];
+	OpenMesh::Vec3f loc = e->getStartPoint();
+	if (loc[2] < limit) {
+		return false;
+	}
+	return true;
+}
+
+void Platform::collapse(bool onGround, float charX, float charY, float charZ, float limit) {
+
+	bool check = checkIfGood(limit);
+	//if(!check) {
+		
+		//return;
+	//}
 	if (collapsing) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -5, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -250, 0));
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0, -250, 0);
 	}
 	else if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -5, 0));
+		platformMesh->Translate(OpenMesh::Vec3f(0, -250, 0));
 		collapsing = true;
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->Translate(0, -250, 0);
 	}
 }
 
