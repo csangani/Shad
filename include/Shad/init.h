@@ -69,9 +69,9 @@ float Shininess[] = { 0.2f };
 
 float CapeSpecular[] = { 0.1f, 0.1f, 0.1f, 0.9f };
 
-float CapeDiffuse[] = { .4f, .4f, .4f, 0.9f };
+float CapeDiffuse[] = { .7f, .7f, .7f, 0.9f };
 
-float CapeAmbient[] = { .4f, .4f, .4f, 0.9f };
+float CapeAmbient[] = { .7f, .7f, .7f, 0.9f };
 
 float CapeShininess[] = { 0.2f };
 
