@@ -1,52 +1,69 @@
 #include <PolyMesh\Cloth.h>
 #include <omp.h>
 
+float ClothSpecular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+float ClothDiffuse[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+
+float ClothAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+
+float ClothShininess[] = { 0.2f };
+
 Cloth::Cloth(float mass, float drag, float damping, OpenMesh::Vec3f RowVec,OpenMesh::Vec3f ColVec,OpenMesh::Vec3f Origin,int rows, int columns, float stretch, float bend, float segmentlength, BVEC3F& wind)
 	: rows(rows), columns(columns), stretch (stretch), bend(bend), segmentLength(segmentlength), drag(drag), damping(damping), wind(wind) {
-	__super::cloth = true;
-	btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
-	btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
-	btVector3 bColVec(ColVec[0], ColVec[1], ColVec[2]);
-	request_vertex_texcoords2D();
-	/* Add vertices and rigid bodies */
-	for (int i = 0; i < rows; i++) {
-		Points.push_back(std::vector<VertexHandle>());
-		RigidBody.push_back(std::vector<btRigidBody *>());
-		for (int j = 0; j < columns; j++) {
-			Points[i].push_back(add_vertex(Origin + RowVec.normalized() * (float)i * segmentLength + ColVec.normalized() * (float)j * segmentLength));
-			set_texcoord2D(Points[i][j],OpenMesh::Vec2f(1.0f/(rows-1)*i,(1.0f/(columns-1)*j)));
-			btCollisionShape *Sphere = new btSphereShape(0.00001f);
-			btVector3 localInertia(0.0f, 0.0f, 0.0f);
-			btScalar m(mass);
-			if (m != 0.0f)
-				Sphere->calculateLocalInertia(m, localInertia);
-			btTransform transform;
-			transform.setIdentity();
-			transform.setOrigin(bOrigin + bRowVec.normalized() * (float)i * segmentLength + bColVec.normalized() * (float)j * segmentLength);
-			btDefaultMotionState *MS = new btDefaultMotionState(transform);
-			btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
-			btRigidBody *body = new btRigidBody(rbInfo);
-			body->setContactProcessingThreshold(0.0f);
-			Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter);
-			RigidBody[i].push_back(body);
-			body->setActivationState(DISABLE_DEACTIVATION);
-			body->setFriction(0.9f);
-			body->setHitFraction(0.9f);
-			body->setRollingFriction(0.9f);
-			body->setRestitution(0.0f);
-			body->setGravity(btVector3(0,-1.0f,0));
-			body->setSleepingThresholds(0.2f,0.2f);
-			body->setUserPointer(this);
+		__super::cloth = true;
+		btVector3 bOrigin(Origin[0], Origin[1], Origin[2]);
+		btVector3 bRowVec(RowVec[0], RowVec[1], RowVec[2]);
+		btVector3 bColVec(ColVec[0], ColVec[1], ColVec[2]);
+		request_vertex_texcoords2D();
+		/* Add vertices and rigid bodies */
+		for (int i = 0; i < rows; i++) {
+			Points.push_back(std::vector<VertexHandle>());
+			RigidBody.push_back(std::vector<btRigidBody *>());
+			for (int j = 0; j < columns; j++) {
+				Points[i].push_back(add_vertex(Origin + RowVec.normalized() * (float)i * segmentLength + ColVec.normalized() * (float)j * segmentLength));
+				set_texcoord2D(Points[i][j],OpenMesh::Vec2f(i*1.0f/(rows-1),j*(1.0f/(columns-1))));
+				btCollisionShape *Sphere = new btSphereShape(0.00001f);
+				btVector3 localInertia(0.0f, 0.0f, 0.0f);
+				btScalar m(mass);
+				if (m != 0.0f)
+					Sphere->calculateLocalInertia(m, localInertia);
+				btTransform transform;
+				transform.setIdentity();
+				transform.setOrigin(bOrigin + bRowVec.normalized() * (float)i * segmentLength + bColVec.normalized() * (float)j * segmentLength);
+				btDefaultMotionState *MS = new btDefaultMotionState(transform);
+				btRigidBody::btRigidBodyConstructionInfo rbInfo(m,MS,Sphere,localInertia);
+				btRigidBody *body = new btRigidBody(rbInfo);
+				body->setContactProcessingThreshold(0.0f);
+				Physics::DynamicsWorld->addRigidBody(body, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter);
+				RigidBody[i].push_back(body);
+				body->setActivationState(DISABLE_DEACTIVATION);
+				body->setFriction(0.9f);
+				body->setHitFraction(0.9f);
+				body->setRollingFriction(0.9f);
+				body->setRestitution(0.0f);
+				body->setGravity(btVector3(0,-1.0f,0));
+				body->setSleepingThresholds(0.2f,0.2f);
+				body->setUserPointer(this);
+			}
 		}
-	}
 
-	/* Add faces for rendering */
-	for (int i = 0; i < rows-1; i++) {
-		for (int j = 0; j < columns-1; j++) {
-			add_face(Points[i][j], Points[i+1][j], Points[i][j+1]);
-			add_face(Points[i][j+1], Points[i+1][j], Points[i+1][j+1]);
+		/* Add faces for rendering */
+		for (int i = 0; i < rows-1; i++) {
+			for (int j = 0; j < columns-1; j++) {
+				add_face(Points[i][j], Points[i+1][j], Points[i][j+1]);
+				add_face(Points[i][j+1], Points[i+1][j], Points[i+1][j+1]);
+			}
 		}
-	}
+
+		MaterialSpecular = ClothSpecular;
+
+		MaterialDiffuse = ClothDiffuse;
+
+		MaterialAmbient = ClothAmbient;
+
+		MaterialShininess = ClothShininess;
+
 }
 
 btPoint2PointConstraint *Cloth::Pin(int row, int col, btRigidBody *object, btVector3 *Pivot) {
@@ -54,11 +71,14 @@ btPoint2PointConstraint *Cloth::Pin(int row, int col, btRigidBody *object, btVec
 	constraint->setParam(BT_CONSTRAINT_STOP_CFM, 0);
 	constraint->setParam(BT_CONSTRAINT_STOP_ERP, 0.7f);
 	Physics::DynamicsWorld->addConstraint(constraint, true);
+	Constraints.push_back(constraint);
 	return constraint;
 }
 
 void Cloth::Unpin(btPoint2PointConstraint * handle){
+	Constraints.remove(handle);
 	Physics::DynamicsWorld->removeConstraint(handle);
+	delete handle;
 }
 
 void Cloth::SimulationStep() {
@@ -177,7 +197,7 @@ void Cloth::SimulationStep() {
 	}
 
 	BVEC3F Wind = wind * sinf(PolyMesh::Time/1000.0f);
-	
+
 #pragma omp parallel for
 	for (int k = 0; k < (rows-1) * (columns-1); k++) {
 		int i = k / (columns-1);
@@ -199,4 +219,20 @@ void Cloth::SimulationStep() {
 	}
 
 	GenerateNormals();
+}
+
+Cloth::~Cloth() {
+	for (std::list<btPoint2PointConstraint *>::iterator i = Constraints.begin(); i != Constraints.end(); i++) {
+		Physics::DynamicsWorld->removeConstraint(*i);
+	}
+	
+	Constraints.clear();
+
+	for (unsigned int i = 0; i < RigidBody.size(); i++) {
+		for(unsigned int j = 0; j < RigidBody.size(); j++) {
+			Physics::DynamicsWorld->removeRigidBody(RigidBody[i][j]);
+			delete RigidBody[i][j]->getCollisionShape();
+			delete (RigidBody[i][j]);
+		}
+	}
 }

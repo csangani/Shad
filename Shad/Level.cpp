@@ -2,6 +2,8 @@
 
 #include <Shad/Level.h>
 
+#include <PolyMesh/Cloth.h>
+
 #include <GL\glew.h>
 #include <GL\glut.h>
 
@@ -21,7 +23,7 @@ Level::Level(int level) {
 	origin = id;
 	fallLimit = -40.0;
 }
-	
+
 void Level::setStartPosition(float startX, float startY, float startZ) {
 	btTransform id;
 	id.setIdentity();
@@ -56,148 +58,174 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
-		case 2:
-			platform = new Platform(cube);
-			platform->Scale(3,1,3);
-			platform->Translate(0,-10,0);
-			platforms.push_back(platform);
+	case 2:
+		platform = new Platform(cube);
+		platform->Scale(3,1,3);
+		platform->Translate(0,-10,0);
+		platforms.push_back(platform);
 
-			platform = new Platform(cube);
-			platform->Scale(10,10,1);
-			platform->Translate(0,-10,-3);
-			platforms.push_back(platform);
+		platform = new Platform(cube);
+		platform->Scale(10,10,1);
+		platform->Translate(0,-10,-3);
+		platforms.push_back(platform);
 
-			platform = new Platform(cube);
-			platform->Scale(8,1,8);
-			platform->Translate(0,-13,-10);
-			platforms.push_back(platform);
+		platform = new Platform(cube);
+		platform->Scale(8,1,8);
+		platform->Translate(0,-13,-10);
+		platforms.push_back(platform);
 
-			placeholder = (new PolyMesh())->LoadObj("assets\\obj\\Platformer-tri.obj")->GenerateRigidBody();
-			placeholder->Translate(OpenMesh::Vec3f(0, -12, -11));
-			target = OpenMesh::Vec3f(0, -12, -11);
-			break;
-		case 1:
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -11));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-11.7f, -11));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-10.95, -11));
+		pinTarget = (*platforms.rbegin())->platformMesh;
 
-			platform = new Platform(cube);
-			platform->Scale(1,1,10);
-			platform->Translate(0,-10,0);
-			platforms.push_back(platform);
-			platform->setMoving(true, 0, 0, 0.01);
-			movingPlatforms.push_back(platform);
+		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -11.05f, -11),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
+		Cloak->AttachShader("assets\\shaders\\toon");
+		Cloak->EnableLighting();
+		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
+		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+		cloth_image = bitmap_image("assets\\bmp\\Cloth3.bmp");
+		cloth_image.rgb_to_bgr();
+		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
+		target = OpenMesh::Vec3f(0, -12, -11);
+		break;
+	case 1:
+
+		platform = new Platform(cube);
+		platform->Scale(1,1,10);
+		platform->Translate(0,-10,0);
+		platforms.push_back(platform);
+		platform->setMoving(true, 0, 0, 0.01);
+		movingPlatforms.push_back(platform);
+
+		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
 
-			platform = new Platform(cube);
-			platform->Scale(1, 1, 5);
-			platform->Translate(2,-10,0);
-			platforms.push_back(platform);
-			platform->setShrinking(true, 1.0, 1.0, 0.985);
-			shrinkingPlatforms.push_back(platform);
+		platform = new Platform(cube);
+		platform->Scale(1, 1, 5);
+		platform->Translate(2,-10,0);
+		platforms.push_back(platform);
+		platform->setShrinking(true, 1.0, 1.0, 0.985);
+		shrinkingPlatforms.push_back(platform);
 
-			platform = new Platform(cube);
-			platform->subdivide();
-			platform->Scale(1,1,8);
-			platform->Translate(-3,-10,0);
-			deformablePlatforms.push_back(platform);
-			
-			
-			platforms.push_back(platform);
+		platform = new Platform(cube);
+		platform->subdivide();
+		platform->Scale(1,1,8);
+		platform->Translate(-3,-10,0);
+		deformablePlatforms.push_back(platform);
 
-			platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
 
-			platforms.push_back((new Platform(cube))->Rotate(45, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
+		platforms.push_back(platform);
 
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
+		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-15,-8));
 
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
-			
-			platform = new Platform(cube);
-			platform->Rotate(35, 1, 0, 0);
-			platform->Scale(6, 2, 2);
-			platform->Translate(0,-15,-18);
-			platform->setCollapsible(0, -15, -18);
-			platforms.push_back(platform);
-			collapsiblePlatforms.push_back(platform);
+		platforms.push_back((new Platform(cube))->Rotate(45, 0, 1, 1)->Scale(2, 2, 2)->Translate(0,-15,-11));
 
-			platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
+		platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(10, 2, 2)->Translate(0,-15,-14));
 
-			platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
+		platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
 
-			lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
+		platform = new Platform(cube);
+		platform->Rotate(35, 1, 0, 0);
+		platform->Scale(6, 2, 2);
+		platform->Translate(0,-15,-18);
+		platform->setCollapsible(0, -15, -18);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
 
-			target = OpenMesh::Vec3f(0, -14, -22);
-			break;
-		case 3:
-			platform = new Platform(cube);
-			platform->Scale(3, 1, 3);
-			platform->Translate(0, -5, 0);
-			platforms.push_back(platform);
-			//platform->setMoving(true, 0, 0, 1);
-			//movingPlatforms.push_back(platform);
+		platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(4, 2, 2)->Translate(0,-15,-20));
 
-			platform = new Platform(cube);
-			platform->Scale(1, 5, 1);
-			platform->Translate(0, -5, -3);
-			platforms.push_back(platform);
+		platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
 
-			platform = new Platform(cube);
-			platform->Scale(5, 1, 5);
-			platform->Translate(0, -5, -8);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(5, 10, 1);
-			platform->Translate(0, -11, -14);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(1, 10, 5);
-			platform->Translate(3, -11, -16);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(1, 4, 5);
-			platform->Translate(-2, -8, -16);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(10, 1, 5);
-			platform->Translate(-6, -12, -16);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(5, 10, 1);
-			platform->Translate(0, -11, -18);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(1, 5, 1);
-			platform->Translate(-13, -10, -14);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(1, 5, 1);
-			platform->Translate(-13, -10, -19);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(5, 1, 6);
-			platform->Translate(-12, -8, -16);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(5, 1, 6);
-			platform->Translate(-14, -10, -16);
-			platforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->Scale(2, 2, 2);
-			platform->Translate(-20, -10, -16);
-			platforms.push_back(platform);
-
-			break;
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
 		
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-13.2f, -22));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22));
+		pinTarget = (*platforms.rbegin())->platformMesh;
+
+		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
+		Cloak->AttachShader("assets\\shaders\\toon");
+		Cloak->EnableLighting();
+		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
+		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
+		cloth_image.rgb_to_bgr();
+		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
+
+		target = OpenMesh::Vec3f(0, -14, -22);
+		break;
+	case 3:
+		platform = new Platform(cube);
+		platform->Scale(3, 1, 3);
+		platform->Translate(0, -5, 0);
+		platforms.push_back(platform);
+		//platform->setMoving(true, 0, 0, 1);
+		//movingPlatforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(1, 5, 1);
+		platform->Translate(0, -5, -3);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(5, 1, 5);
+		platform->Translate(0, -5, -8);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(5, 10, 1);
+		platform->Translate(0, -11, -14);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(1, 10, 5);
+		platform->Translate(3, -11, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(1, 4, 5);
+		platform->Translate(-2, -8, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(10, 1, 5);
+		platform->Translate(-6, -12, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(5, 10, 1);
+		platform->Translate(0, -11, -18);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(1, 5, 1);
+		platform->Translate(-13, -10, -14);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(1, 5, 1);
+		platform->Translate(-13, -10, -19);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(5, 1, 6);
+		platform->Translate(-12, -8, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(5, 1, 6);
+		platform->Translate(-14, -10, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(2, 2, 2);
+		platform->Translate(-20, -10, -16);
+		platforms.push_back(platform);
+
+		break;
+
 	};
 }
 
@@ -301,6 +329,7 @@ void Level::applyLightningAnimationStep()
 }
 
 void Level::destroyPlatforms() {
+	delete Cloak;
 	for(unsigned int i = 0; i < platforms.size(); i++) {
 		Platform * p =  platforms[i];
 		delete p;
@@ -369,9 +398,9 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 }
 
 void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad) {
-		for(unsigned int i = 0; i < shrinkingPlatforms.size(); i++) {
-			shrinkingPlatforms[i]->shrink(deltaPoint);
-		}
+	for(unsigned int i = 0; i < shrinkingPlatforms.size(); i++) {
+		shrinkingPlatforms[i]->shrink(deltaPoint);
+	}
 }
 
 OpenMesh::Vec3f Level::getTarget() {

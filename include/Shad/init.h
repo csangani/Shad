@@ -1,3 +1,6 @@
+#ifndef INIT_H
+#define INIT_H
+
 #include <cstdlib>
 
 #include <PolyMesh/bitmap_image.h>
@@ -8,7 +11,7 @@
 
 #define NUM_BLUR_FRAMES 5
 
-#define OBJECT "assets\\obj\\Platformer-tri.obj"
+#define OBJECT "assets\\obj\\littlebig-noarms.obj"
 #define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
 #define DEFAULT_SHADER "assets\\shaders\\default"
 #define NORMAL_SHADER "assets\\shaders\\normal"
@@ -74,10 +77,11 @@ bitmap_image image;
 
 bitmap_image space_image;
 
-bitmap_image cloth_image;
 bitmap_image cape_image;
 
 bitmap_image menu_start_image;
 bitmap_image menu_quit_image;
 bitmap_image menu_invert_yes_image;
 bitmap_image menu_invert_no_image;
+
+#endif
