@@ -238,7 +238,8 @@ namespace Window
 			btVector3 characterPos = Game::Shad->GetPosition();
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093f-r;
-			float EPSILON = 0.0001;
+			float EPSILON = 0.01;
+			std::cout << diff << std::endl;
 			if ((diff < EPSILON)) {
 				Game::teleportLeft = 4;
 			}
@@ -720,6 +721,7 @@ namespace Window
 				Game::currentLevel->reset();
 				Window::freezeCamera = false;
 				Game::soundEngine->PlayLifeSound();
+				Game::teleportLeft = 4;
 			}
 
 			/*Code to finish level*/
@@ -817,7 +819,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
