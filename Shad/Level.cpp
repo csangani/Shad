@@ -47,6 +47,11 @@ float Level::getFallLimit() {
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
+	float *clear = new float[4];
+	clear[0] = .7;
+	clear[1] = .7;
+	clear[2] = .7;
+	clear[3] = .7;
 	/*
 	* While there are functions that return booleans to check the kind of platform,
 	*	I (Gavin) don't use them, and instead plug them into the corresponding vector
@@ -145,12 +150,15 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22));
 		pinTarget = (*platforms.rbegin())->platformMesh;
 
-		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
-		Cloak->AttachShader("assets\\shaders\\toon");
+		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.5f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
 		Cloak->EnableLighting();
+		Cloak->MaterialAmbient = clear;
+		Cloak->MaterialDiffuse = clear;
+		Cloak->MaterialSpecular = clear;
+		Cloak->MaterialShininess = clear;
 		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
+		cloth_image = bitmap_image("assets\\bmp\\Cloth1.bmp");
 		cloth_image.rgb_to_bgr();
 		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
