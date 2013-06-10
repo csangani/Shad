@@ -641,7 +641,7 @@ namespace Window
 			}
 
 			/* reset position on death */
-			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 250.0) {
+			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 150.0) {
 				btTransform id = Game::currentLevel->getStartPosition();
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 				// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
@@ -747,7 +747,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -913,41 +913,24 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setGravity(100.0f);
 
 	ParticleCloth *cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
-	cape_image = bitmap_image("assets\\bmp\\cape_texture.bmp");
+	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
 	cape_image.rgb_to_bgr();
 	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
-	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-13.2f, -22);
-	(new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22);
-	PolyMesh * pinTarget = (new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22)->platformMesh;
-
-	Cloth *Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.55f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0003f));
-	Cloak->AttachShader(TOON_SHADER);
-	Cloak->EnableLighting();
-	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
-	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-	//cloth_image.rgb_to_bgr();
-	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;
-	Cloak->MaterialSpecular = Specular;
 	cape->MaterialSpecular = CapeSpecular;
 
 	Game::Shad->MaterialDiffuse = Diffuse;
-	Cloak->MaterialDiffuse = Diffuse;
 	cape->MaterialDiffuse = CapeDiffuse;
 
 	Game::Shad->MaterialAmbient = Ambient;
-	Cloak->MaterialAmbient = Ambient;
 	cape->MaterialAmbient = CapeAmbient;
 
 	Game::Shad->MaterialShininess = Shininess;
-	Cloak->MaterialShininess = Shininess;
 	cape->MaterialShininess = CapeShininess;
 
 	// Apply Texture to Mesh
