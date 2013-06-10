@@ -12,6 +12,7 @@ public:
 	uint64_t AnimationTime;
 
 	Character();
+	~Character();
 
 	Character *GenerateCharacter();
 	

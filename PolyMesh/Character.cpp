@@ -36,6 +36,13 @@ Character *Character::GenerateCharacter() {
 	return this;
 }
 
+Character::~Character() {
+	Physics::DynamicsWorld->removeCollisionObject(RigidBody->getGhostObject());
+	Physics::DynamicsWorld->removeAction(RigidBody);
+	delete RigidBody->getGhostObject();
+	delete RigidBody;
+}
+
 Character *Character::SyncDummy() {
 	Dummy->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
 	Arms->RigidBody->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());

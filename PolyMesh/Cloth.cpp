@@ -222,6 +222,7 @@ void Cloth::SimulationStep() {
 }
 
 Cloth::~Cloth() {
+	PolyMesh::Meshes.remove(this);
 	for (std::list<btPoint2PointConstraint *>::iterator i = Constraints.begin(); i != Constraints.end(); i++) {
 		Physics::DynamicsWorld->removeConstraint(*i);
 	}
@@ -229,7 +230,7 @@ Cloth::~Cloth() {
 	Constraints.clear();
 
 	for (unsigned int i = 0; i < RigidBody.size(); i++) {
-		for(unsigned int j = 0; j < RigidBody.size(); j++) {
+		for(unsigned int j = 0; j < RigidBody[i].size(); j++) {
 			Physics::DynamicsWorld->removeRigidBody(RigidBody[i][j]);
 			delete RigidBody[i][j]->getCollisionShape();
 			delete (RigidBody[i][j]);

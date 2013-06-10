@@ -38,6 +38,17 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 	}
 }
 
+ParticleCloth::~ParticleCloth() {
+	PolyMesh::Meshes.remove(this);
+	for (unsigned int i = 0; i < RigidBody.size(); i++) {
+		for(unsigned int j = 0; j < RigidBody[i].size(); j++) {
+			Physics::DynamicsWorld->removeRigidBody(RigidBody[i][j]);
+			delete RigidBody[i][j]->getCollisionShape();
+			delete (RigidBody[i][j]);
+		}
+	}
+}
+
 void ParticleCloth::SimulationStep() {
 	elapsed += (uint64_t)FRAME_PERIOD;
 	if (elapsed > life) {

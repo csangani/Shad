@@ -433,16 +433,14 @@ namespace Window
 	}
 
 	void setUpCharacter() {
-		//Physics::DynamicsWorld->removeAction(Game::Shad->RigidBody);
-		//Physics::DynamicsWorld->removeCollisionObject(Game::Shad->RigidBody->getGhostObject());
-		//delete Game::cape;
-		//delete Game::Shad;
-		
-		
+		delete Game::Shad;
+		delete Game::cape;
+
 		// Load Mesh
 		Game::Shad = new Character();
 		Game::Shad->LoadObj(OBJECT);
 		Game::Shad->GenerateCharacter();
+		Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 		Game::Shad->AttachShader(TOON_SHADER);
 		Game::Shad->RigidBody->setJumpSpeed(20.0f);
 		Game::Shad->RigidBody->setGravity(100.0f);

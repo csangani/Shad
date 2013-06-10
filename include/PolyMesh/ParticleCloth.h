@@ -9,7 +9,7 @@ class ParticleCloth : public PolyMesh {
 public:
 	ParticleCloth (int length, int width, float segmentLength, BVEC3F& emitStart,
 		BVEC3F& emitEnd, BVEC3F& lengthVector, float gravity, uint64_t life, Character* reference);
-
+	~ParticleCloth();
 	void SimulationStep();
 
 private:
