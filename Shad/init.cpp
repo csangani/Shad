@@ -367,11 +367,11 @@ namespace Window
 				if (Game::gameState == Game::MenuState)
 				{
 					if (Game::gameMenuState == Game::QuitGameState) {
-						Game::gameMenuState = Game::StartGameState;
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
-						Game::gameMenuState = Game::QuitGameState;
+						Game::gameMenuState = Game::StartGameState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 				}
@@ -382,11 +382,11 @@ namespace Window
 				if (Game::gameState == Game::MenuState)
 				{
 					if (Game::gameMenuState == Game::StartGameState) {
-						Game::gameMenuState = Game::QuitGameState;
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
 						Game::soundEngine->PlayMenuToggle();
 					}
-					else if (Game::gameMenuState == Game::QuitGameState) {
-						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::QuitGameState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 				}
@@ -478,22 +478,22 @@ namespace Window
 
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) && Window::ContDpadUpPressed) {
 					if (Game::gameMenuState == Game::QuitGameState) {
-						Game::gameMenuState = Game::StartGameState;
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
-						Game::gameMenuState = Game::QuitGameState;
+						Game::gameMenuState = Game::StartGameState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 					Window::ContDpadUpPressed = false;
 				}
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) && Window::ContDpadDownPressed) {
 					if (Game::gameMenuState == Game::StartGameState) {
-						Game::gameMenuState = Game::QuitGameState;
+						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
 						Game::soundEngine->PlayMenuToggle();
 					}
-					else if (Game::gameMenuState == Game::QuitGameState) {
-						Game::gameMenuState = (Game::invertCameraY) ? Game::InvertYesState : Game::InvertNoState;
+					else if (Game::gameMenuState == Game::InvertNoState || Game::gameMenuState == Game::InvertYesState) {
+						Game::gameMenuState = Game::QuitGameState;
 						Game::soundEngine->PlayMenuToggle();
 					}
 					Window::ContDpadDownPressed = false;
@@ -582,7 +582,6 @@ namespace Window
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::PauseState;
-					Game::soundEngine->StopGameplayMusic();
 					Window::ContBackPressed = false;
 				}
 
@@ -702,13 +701,13 @@ namespace Window
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A) && Window::ContAPressed) {
 					Game::gameState = Game::PlayState;
 					Window::ContAPressed = false;
-					Game::soundEngine->PlayGameplayMusic();
 				}
 
 				/* back button controls */
 				if (!(Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK) && Window::ContBackPressed) {
 					Game::gameState = Game::MenuState;
 					Window::ContBackPressed = false;
+					Game::soundEngine->StopGameplayMusic();
 					Game::soundEngine->PlayMenuMusic();
 				}
 
