@@ -52,7 +52,7 @@ void Sound::InitSound() {
 
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, GameplayMusic, true, &GameplayMusicChannel));
 	ERRCHECK(GameplayMusicChannel->setMode(FMOD_LOOP_NORMAL));
-	GameplayMusicChannel->setVolume(0.2);
+	GameplayMusicChannel->setVolume(0.3);
 
 	ERRCHECK(result);
 }
@@ -108,7 +108,7 @@ void Sound::PlayLightningSound()
 {
 	FMOD::Channel *LightningChannel;
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Lightning, false, &LightningChannel));
-	LightningChannel->setVolume(0.1);
+	LightningChannel->setVolume(0.3);
 }
 
 void Sound::PlayDeathSound()

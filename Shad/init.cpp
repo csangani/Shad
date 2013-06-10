@@ -622,29 +622,42 @@ namespace Window
 				if (Game::Shad->AnimationTime > 100) {
 					Game::Shad->AnimationTime = 0;
 					Forward = !Forward;
-					btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-					Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+					btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+					Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform);
 				}
 			}
+			btTransform DeCenter, Center = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+			Center.setRotation(btQuaternion());
+			DeCenter.setIdentity();
+			DeCenter.setOrigin(Center.getOrigin());
+			Center.setOrigin(-Center.getOrigin());
 			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && Forward) {
-				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS((Game::Shad->AnimationTime*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+				btTransform newTransform;
+				newTransform.setIdentity();
+				newTransform.setRotation(btQuaternion(BVEC3F(0,1,0),RADIANS((Game::Shad->AnimationTime*60.0f)/50.0f)));
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && Forward) {
-				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+				btTransform newTransform;
+				newTransform.setIdentity();
+				newTransform.setRotation(btQuaternion(BVEC3F(0,1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && !Forward) {
-				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,-1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+				btTransform newTransform;
+				newTransform.setIdentity();
+				newTransform.setRotation(btQuaternion(BVEC3F(0,-1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && !Forward) {
-				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
-				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,-1,0),RADIANS(((Game::Shad->AnimationTime)*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
+				btTransform newTransform;
+				newTransform.setIdentity();
+				newTransform.setRotation(btQuaternion(BVEC3F(0,-1,0),RADIANS(((Game::Shad->AnimationTime)*60.0f)/50.0f)));
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 
 #ifdef USE_XBOX_CONTROLLER
@@ -841,7 +854,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);

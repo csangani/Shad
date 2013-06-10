@@ -88,6 +88,10 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Cloak->EnableLighting();
 		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+		Cloak->MaterialAmbient = clear;
+		Cloak->MaterialDiffuse = clear;
+		Cloak->MaterialSpecular = clear;
+		Cloak->MaterialShininess = clear;
 		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
 		cloth_image.rgb_to_bgr();
 		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());

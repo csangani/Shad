@@ -21,7 +21,7 @@ Character *Character::GenerateCharacter() {
 	GO->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 
 	RigidBody = new btKinematicCharacterController(GO, ConvexShape, 0.35);
-	Physics::DynamicsWorld->addCollisionObject(GO, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+	Physics::DynamicsWorld->addCollisionObject(GO, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::DebrisFilter | btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
 	Physics::DynamicsWorld->addAction(RigidBody);
 	
 	btVector3 localInertia(0.0f,0.0f,0.0f);
@@ -31,7 +31,7 @@ Character *Character::GenerateCharacter() {
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
 	Dummy = new btRigidBody(rbInfo);
 	Dummy->setContactProcessingThreshold(0.05f);
-	Physics::DynamicsWorld->addRigidBody(Dummy, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::DebrisFilter);
+	Physics::DynamicsWorld->addRigidBody(Dummy, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::DebrisFilter);
 	Dummy->setUserPointer(this);
 	return this;
 }
@@ -81,7 +81,7 @@ Character *Character::GenerateLimbs(std::string filePath) {
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(m,myMotionState,ConvexHull,localInertia);
 	Arms->RigidBody = new btRigidBody(rbInfo);
 	Arms->RigidBody->setContactProcessingThreshold(0.0f);
-	Physics::DynamicsWorld->addRigidBody(Arms->RigidBody, btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::CharacterFilter);
+	Physics::DynamicsWorld->addRigidBody(Arms->RigidBody, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::DebrisFilter);
 	Arms->RigidBody->setUserPointer(this);
 	return this;
 }
