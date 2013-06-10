@@ -240,8 +240,8 @@ namespace Window
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093f-r;
 			float EPSILON = 0.01;
-			
-			if ((diff < EPSILON)) {
+			bool onGround = Game::Shad->RigidBody->onGround();
+			if ((diff < EPSILON) && onGround) {
 				Game::teleportLeft = NUM_TELEPORT;
 			}
 			glViewport(0, 0, sceneRenderTargets[currBlurFrame]->width(), sceneRenderTargets[currBlurFrame]->height());

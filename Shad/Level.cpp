@@ -60,6 +60,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	moving one go into movingPlatforms
 	*	shrinking ones go into shrinkingPlatforms
 	*	collapsible ones go into collapsiblePlatforms
+	*  a collapsible platform always need to be set to collapsible after construction
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
@@ -504,7 +505,7 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 
 
-		for (signed int  i = 26; i < 100; i ++) {
+		for (signed int  i = 26; i < 50; i ++) {
 		platform = new Platform(cube);
 		platform->setCollapsible();
 		platform->Scale(1, 1, 1);
