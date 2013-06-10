@@ -617,6 +617,32 @@ namespace Window
 			if (Game::moveRight)
 				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
 
+			/* Animate Character */
+			if ((!WalkDirection.fuzzyZero() && Game::Shad->RigidBody->onGround()) || Game::Shad->AnimationTime > 0) {
+				Game::Shad->AnimationTime += (uint64_t)FRAME_PERIOD;
+				if (Game::Shad->AnimationTime > 1000)
+					Game::Shad->AnimationTime = 0;
+			}
+			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 250) {
+				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS((Game::Shad->AnimationTime*30.0f)/250.0f)));
+				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+			}
+			if (Game::Shad->AnimationTime > 250 && Game::Shad->AnimationTime <= 500) {
+				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((500-Game::Shad->AnimationTime)*30.0f)/250.0f)));
+				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+			}
+			if (Game::Shad->AnimationTime > 500 && Game::Shad->AnimationTime <= 750) {
+				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((500-Game::Shad->AnimationTime)*30.0f)/250.0f)));
+				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+			}
+			if (Game::Shad->AnimationTime > 750 && Game::Shad->AnimationTime <= 1000) {
+				btTransform transform = Game::Shad->RigidBody->getGhostObject()->getWorldTransform();
+				transform.setRotation(transform.getRotation() + btQuaternion(BVEC3F(0,1,0),RADIANS(((Game::Shad->AnimationTime-1000)*30.0f)/250.0f)));
+				Game::Shad->Arms->RigidBody->setWorldTransform(transform);
+			}
 
 #ifdef USE_XBOX_CONTROLLER
 			/* Poll Xbox controller */
@@ -669,9 +695,9 @@ namespace Window
 
 			if (Game::characterState != Game::TeleportingState)
 				((Character *)Game::Shad)->RigidBody->setWalkDirection(WalkDirection);
-			
+
 			/* check lightning collision */
-			
+
 			btVector3 characterPos = Game::Shad->GetPosition();
 			if (Game::currentLevel->lightningCollisionWithPoint(OpenMesh::Vec3f(characterPos.x(),characterPos.y(),characterPos.z()))) {
 				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
@@ -735,7 +761,7 @@ namespace Window
 			Game::currentLevel->deform(onGround, charX, charY, charZ);
 
 			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
-			
+
 			//Game::deltaPoint++;
 		}
 		else if (Game::gameState == Game::PauseState)
@@ -957,6 +983,7 @@ int main (int argc, char **argv)
 	Game::Shad->AttachShader(TOON_SHADER);
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
+	Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 
 	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 	cape_image = bitmap_image("assets\\bmp\\cape_texture.bmp");

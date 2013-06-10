@@ -195,7 +195,7 @@ void Platform::shrink(uint64_t deltaPoint) {
 	else {
 		platformMesh->Scale(OpenMesh::Vec3f(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Scale(1.0/shrinking[0], 1.0/shrinking[1], 1.0/shrinking[2]);
+			edges[i]->Scale(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2]);
 	}
 }
 

@@ -11,7 +11,7 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 			set_texcoord2D(Points[i][j],OpenMesh::Vec2f(1.0f/(length-1)*i,(1.0f/(width-1)*j)));
 			btScalar mass(0.1f);
 			btVector3 localInertia(0,0,0);
-			btCollisionShape *shape = new btSphereShape(0.001f);
+			btCollisionShape *shape = new btSphereShape(0.01f);
 			shape->calculateLocalInertia(mass, localInertia);
 			btTransform transform;
 			transform.setIdentity();
