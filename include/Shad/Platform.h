@@ -47,7 +47,7 @@ class Platform {
 
 		bool withInBounds(float charX, float charY, float charZ);
 
-		void collapse(bool onGround, float charX, float charY, float charZ, float limit);
+		void collapse(bool onGround, float charX, float charY, float charZ);
 		float * getColor();
 		void reset();
 
@@ -58,19 +58,21 @@ class Platform {
 
 	private:
 		void GenerateVertices();
+		bool resetBool;
 
 		void GenerateEdges();
 		void GenerateAllEdges();
 		bool moving;
 		bool shrinking;
 		float deltaX, deltaY, deltaZ;
-		float scaleX, scaleY, scaleZ;
+		float _scaleX, _scaleY, _scaleZ;
 		float initialX, initialY, initialZ;
+		float _angle, xaxis, yaxis, zaxis;
 		bool collapsible;
 		bool collapsing;
 		bool deformed;
 		float color[4];
-		
+		std::string mod;
 };
 
 #endif

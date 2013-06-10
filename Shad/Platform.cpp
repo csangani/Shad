@@ -9,7 +9,7 @@ struct bounds{
 
 Platform::Platform(std::string model) {
 	platformMesh = (new PolyMesh())->LoadObj(model)->GenerateRigidBody();
-	
+	mod = model;
 	//translucent red platform?
 	float *platformColor = new float[4];
 	platformColor[0] = 0.0;
@@ -24,7 +24,7 @@ Platform::Platform(std::string model) {
 	GenerateEdges();
 	collapsible = false;
 	moving = false;
-
+	resetBool = true;
 	collapsing = false;
 	deformed = false;
 
@@ -93,6 +93,11 @@ Platform *Platform::Scale(float scalex, float scaley, float scalez) {
 	for (unsigned int i = 0; i < edges.size(); i++) {
 		edges[i]->Scale(scalex,scaley,scalez);
 	}
+	if (collapsible) {
+		_scaleX = scalex;
+		_scaleY = scaley;
+		_scaleZ = scalez;
+	}
 	return this;
 }
 
@@ -114,6 +119,12 @@ Platform *Platform::Rotate(float angle, float x, float y, float z) {
 	platformMesh->Rotate(angle, x, y, z);
 	for (unsigned int i = 0; i < edges.size(); i++) {
 		edges[i]->Rotate(angle,x,y,z);
+	}
+	if (collapsible) {
+		_angle = angle;
+		xaxis = x;
+		yaxis = y;
+		zaxis = z;
 	}
 	return this;
 }
@@ -149,11 +160,11 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 }
 
 
-void Platform::setShrinking(bool state, float _scaleX, float _scaleY, float _scaleZ) {
+void Platform::setShrinking(bool state, float scaleX, float scaleY, float scaleZ) {
 	shrinking = state;
-	scaleX = _scaleX;
-	scaleY = _scaleY;
-	scaleZ = _scaleZ;
+	_scaleX = scaleX;
+	_scaleY = scaleY;
+	_scaleZ = scaleZ;
 	color[0] = 0.0f;
 	color[1] = 1.0f;
 	color[2] = 0.0f;
@@ -165,7 +176,7 @@ OpenMesh::Vec3f Platform::getDirection() {
 }
 
 OpenMesh::Vec3f Platform::getShrinking() {
-	return OpenMesh::Vec3f(scaleX, scaleY, scaleZ);
+	return OpenMesh::Vec3f(_scaleX, _scaleY, _scaleZ);
 }
 
 
@@ -346,36 +357,14 @@ bool Platform::checkIfGood(float limit) {
 	return true;
 }
 
-void Platform::collapse(bool onGround, float charX, float charY, float charZ, float limit) {
-
-	bool check = checkIfGood(limit);
-	if(!check) {
-		platformMesh->Translate(OpenMesh::Vec3f(100, 100, 100));
-		for (unsigned int i = 0; i < edges.size(); i++) {
-			edges[i]->Translate(100,100,100);
-		}
-		return;
-	}
-	if (collapsing) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -250, 0));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0, -250, 0);
-	}
-	else if (withInBounds(charX, charY, charZ) && onGround) {
-		platformMesh->Translate(OpenMesh::Vec3f(0, -250, 0));
-		collapsing = true;
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(0, -250, 0);
+void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
+	if (withInBounds(charX, charY, charZ) && onGround) {
+		platformMesh->Translate(OpenMesh::Vec3f(0, -0.08, 0));
 	}
 }
 
 void Platform::reset() {
-	collapsing = false;
 	platformMesh->SetOrigin(OpenMesh::Vec3f(initialX, initialY, initialZ));
-	for (unsigned int i = 0; i < edges.size(); i++)
-	{
-		edges[i]->Translate(initialX, initialY, initialZ);
-	}
 }
 
 bool Platform::isCollapsible() {
@@ -404,9 +393,8 @@ void Platform::GenerateAllEdges() {
 	}
 }
 
-
 void Platform::deform(bool onGround, float charX, float charY, float charZ) {
-	if (!deformed) {
+/*	if (!deformed) {
 		if (onGround) {
 			if (withInBounds(charX, charY, charZ)) {
 				for (unsigned int i = 0; i < vertices.size(); i++)
@@ -425,11 +413,11 @@ void Platform::deform(bool onGround, float charX, float charY, float charZ) {
 				deformed = true;
 			}
 		}	
-	}
+	}*/
 }
 
 void Platform::subdivide() {
-	platformMesh->LoopSubdivideP(100);
+/*	platformMesh->LoopSubdivideP(100);
 	collapsible = true;
 	color[0] = 1.0f;
 	color[1] = 0.0f;
@@ -439,6 +427,6 @@ void Platform::subdivide() {
 		edges[i]->Scale(0,0,0);
 	}
 	GenerateAllEdges();
-	GenerateVertices();
+	GenerateVertices();*/
 	
 }

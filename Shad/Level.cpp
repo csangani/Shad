@@ -131,10 +131,10 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platforms.push_back((new Platform(cube))->Rotate(35, 1, 0, 0)->Scale(8, 2, 2)->Translate(0,-15,-16));
 
 		platform = new Platform(cube);
+		platform->setCollapsible(0, -15, -18);
 		platform->Rotate(35, 1, 0, 0);
 		platform->Scale(6, 2, 2);
 		platform->Translate(0,-15,-18);
-		//platform->setCollapsible(0, -15, -18);
 		platforms.push_back(platform);
 		collapsiblePlatforms.push_back(platform);
 
@@ -142,7 +142,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		platforms.push_back((new Platform(cube))->Scale(2, 2, 2)->Translate(0,-15,-22));
 
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,0)));
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,-4)));
 		
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-13.2f, -22));
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22));
@@ -366,7 +366,7 @@ void Level::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (onGround) {
 		for (unsigned int i = 0; i < collapsiblePlatforms.size(); i++)
 		{
-			collapsiblePlatforms[i]->collapse(onGround, charX, charY, charZ, fallLimit);
+			collapsiblePlatforms[i]->collapse(onGround, charX, charY, charZ);
 		}
 	}
 }

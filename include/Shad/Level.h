@@ -65,7 +65,6 @@ private:
 	std::vector<Platform *> shrinkingPlatforms;
 	std::vector<Platform *> collapsiblePlatforms;
 	std::vector<Platform *> deformablePlatforms;
-
 	PolyMesh *pinTarget;
 	Cloth *Cloak;
 	bitmap_image cloth_image;

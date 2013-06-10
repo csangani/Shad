@@ -20,7 +20,7 @@
 #include <PolyMesh/Lightning.h>
 
 #include <ctime>
-
+#include <cstdlib>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
@@ -704,6 +704,25 @@ namespace Window
 			if (Game::currentLevel->lightningCollisionWithPoint(OpenMesh::Vec3f(characterPos.x(),characterPos.y(),characterPos.z()))) {
 				//WHAT DO WE WANT TO DO WHEN CHARACTER COLLIDES WITH LIGHTNING?
 				Game::soundEngine->PlayLightningSound();
+				float xjump = rand() % 3;
+				xjump -= 1;
+				xjump /= 2.0;
+				float yjump = rand() % 3;
+				float zjump = rand() % 3;
+				zjump -= 1;
+
+				btTransform transform = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
+				float charX = transform.getOrigin().getX();
+				float charY = transform.getOrigin().getY();
+				float charZ = transform.getOrigin().getZ();
+
+				OpenMesh::Vec3f delta = OpenMesh::Vec3f(xjump,yjump,zjump);
+
+				btTransform id;
+				id.setIdentity();
+				id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+				id.setRotation(((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
+				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 			}
 
 			/* freeze camera position and watch character fall to its inevitable death */
