@@ -68,6 +68,12 @@ private:
 	PolyMesh *pinTarget;
 	Cloth *Cloak;
 	bitmap_image cloth_image;
+
+	void Gavin();
+	void Chirag();
+	void Johan();
+	void Cassidy();
+	void Amit();
 };
 
 #endif
