@@ -980,7 +980,7 @@ int main (int argc, char **argv)
 	Game::Shad->GenerateCharacter();
 	Game::Shad->AttachShader(TOON_SHADER);
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
-	Game::Shad->RigidBody->setGravity(100.0f);
+	Game::Shad->RigidBody->setGravity(200.0f);
 	Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 
 	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);

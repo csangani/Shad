@@ -19,7 +19,7 @@ Level::Level(int level) {
 	deformablePlatforms = std::vector<Platform *>();
 	btTransform id;
 	id.setIdentity();
-	id.setOrigin(BVEC3F(0, 0, 0));
+	id.setOrigin(BVEC3F(0, -1, 0));
 	origin = id;
 	fallLimit = -40.0;
 }
@@ -115,10 +115,10 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
-		platform->subdivide();
+		//platform->subdivide();
 		platform->Scale(1,1,8);
 		platform->Translate(-3,-10,0);
-		deformablePlatforms.push_back(platform);
+		//deformablePlatforms.push_back(platform);
 
 
 		platforms.push_back(platform);
@@ -367,7 +367,7 @@ void Level::collapse(bool onGround, float charX, float charY, float charZ) {
 	if (onGround) {
 		for (unsigned int i = 0; i < collapsiblePlatforms.size(); i++)
 		{
-			collapsiblePlatforms[i]->collapse(onGround, charX, charY, charZ);
+			collapsiblePlatforms[i]->collapse(onGround, charX, charY, charZ, fallLimit);
 		}
 	}
 }
