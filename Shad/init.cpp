@@ -730,10 +730,14 @@ namespace Window
 				float charZ = transform.getOrigin().getZ();
 
 				OpenMesh::Vec3f delta = OpenMesh::Vec3f(xjump,yjump,zjump);
+				btVector3 displacement = Game::Direction;
+				displacement[0] = -displacement[0];
+				displacement[1] = -displacement[1];
+				displacement[2] = -displacement[2];
 
 				btTransform id;
 				id.setIdentity();
-				id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+				id.setOrigin(BVEC3F(displacement[0] + charX, displacement[1] + charY, displacement[2] + charZ));
 				id.setRotation(((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 			}
