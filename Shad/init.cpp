@@ -77,7 +77,7 @@ namespace Game
 
 
 	void Teleport() {
-		if (!((Character *)Shad)->RigidBody->canJump() && teleportLeft > 0) {
+		if (!((Character *)Shad)->RigidBody->canJump() && characterState != TeleportingState && teleportLeft > 0) {
 			Game::soundEngine->PlayTeleportSound();
 			characterState = TeleportingState;
 			((Character *)Shad)->RigidBody->setVelocityForTimeInterval(Direction*50.0f, (float)teleportDuration/8000.f);
@@ -122,6 +122,7 @@ namespace Window
 	bool ContDpadRightPressed = false;
 	bool ContBackPressed = false;
 	bool ContAPressed = false;
+	bool ContRTriggerPressed = false;
 
 	void Reshape(int width, int height)
 	{
@@ -675,8 +676,9 @@ namespace Window
 				}
 
 				/* right trigger controls */
-				if (Game::controller->GetState().Gamepad.bRightTrigger) {
+				if (Game::controller->GetState().Gamepad.bRightTrigger && Window::ContRTriggerPressed) {
 					Game::Teleport();
+					Window::ContRTriggerPressed = false;
 				}
 
 				/* left stick controls */
@@ -704,6 +706,8 @@ namespace Window
 				/* Control Back button poll events to only occur on button release */
 				if (Game::controller->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
 					Window::ContBackPressed = true;
+				if (Game::controller->GetState().Gamepad.bRightTrigger)
+					Window::ContRTriggerPressed = true;
 
 			}
 #endif
