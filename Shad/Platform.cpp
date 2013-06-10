@@ -12,9 +12,9 @@ Platform::Platform(std::string model) {
 	
 	//translucent red platform?
 	float *platformColor = new float[4];
-	platformColor[0] = 1.0;
-	platformColor[1] = 1.0;
-	platformColor[2] = 1.0;
+	platformColor[0] = 0.0;
+	platformColor[1] = 0.0;
+	platformColor[2] = 0.0;
 	platformColor[3] = 0.5;
 	platformMesh->Color = platformColor;
 

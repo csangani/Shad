@@ -85,11 +85,10 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		pinTarget = (*platforms.rbegin())->platformMesh;
 
 		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -11.05f, -11),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
-		Cloak->AttachShader("assets\\shaders\\toon");
 		Cloak->EnableLighting();
 		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
 		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-		cloth_image = bitmap_image("assets\\bmp\\Cloth3.bmp");
+		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
 		cloth_image.rgb_to_bgr();
 		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 
