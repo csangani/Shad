@@ -71,6 +71,7 @@ namespace Game
 	bool moveRight = false;
 
 	Character *Shad;
+	ParticleCloth *cape;
 
 	int teleportLeft;
 
@@ -88,7 +89,7 @@ namespace Game
 
 	int deltaPoint;
 }
-
+void setUpCharacter();
 namespace Window
 {
 	std::string Title = "Shad";
@@ -431,6 +432,51 @@ namespace Window
 	void Mouse(int button, int state, int x, int y) {
 	}
 
+	void setUpCharacter() {
+		//Physics::DynamicsWorld->removeAction(Game::Shad->RigidBody);
+		//Physics::DynamicsWorld->removeCollisionObject(Game::Shad->RigidBody->getGhostObject());
+		//delete Game::cape;
+		//delete Game::Shad;
+		
+		
+		// Load Mesh
+		Game::Shad = new Character();
+		Game::Shad->LoadObj(OBJECT);
+		Game::Shad->GenerateCharacter();
+		Game::Shad->AttachShader(TOON_SHADER);
+		Game::Shad->RigidBody->setJumpSpeed(20.0f);
+		Game::Shad->RigidBody->setGravity(100.0f);
+
+		btTransform id = Game::currentLevel->getStartPosition();
+		((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+		// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
+		((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(btVector3(0, 1000, 0), 0.1);
+
+		Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+		cape_image = bitmap_image("assets\\bmp\\Red.bmp");
+		cape_image.rgb_to_bgr();
+		Game::cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
+
+
+		// Set Mesh and Plane Material Parameters
+		Game::Shad->MaterialSpecular = Specular;
+		Game::cape->MaterialSpecular = CapeSpecular;
+
+		Game::Shad->MaterialDiffuse = Diffuse;
+		Game::cape->MaterialDiffuse = CapeDiffuse;
+
+		Game::Shad->MaterialAmbient = Ambient;
+		Game::cape->MaterialAmbient = CapeAmbient;
+
+		Game::Shad->MaterialShininess = Shininess;
+		Game::cape->MaterialShininess = CapeShininess;
+
+		// Apply Texture to Mesh
+		image = bitmap_image(TEXTURE);
+		image.rgb_to_bgr();
+		Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
+	}
+
 	void PassiveMotion(int x, int y)  {
 		if (x != Window::Width/2 && y != Window::Height/2 && Game::gameState == Game::PlayState) {
 			int DeltaX, DeltaY;
@@ -644,10 +690,8 @@ namespace Window
 
 			/* reset position on death */
 			if (transform.getOrigin().getY() < Game::currentLevel->getFallLimit() - 150.0) {
-				btTransform id = Game::currentLevel->getStartPosition();
-				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
-				// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
-				((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(btVector3(0, 1000, 0), 0.1);
+				
+				setUpCharacter();
 				Game::Direction = BVEC3F(0,0,-1);
 				Game::currentLevel->reset();
 				Window::freezeCamera = false;
@@ -914,26 +958,26 @@ int main (int argc, char **argv)
 	Game::Shad->RigidBody->setJumpSpeed(20.0f);
 	Game::Shad->RigidBody->setGravity(100.0f);
 
-	ParticleCloth *cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
+	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 	cape_image = bitmap_image("assets\\bmp\\Red.bmp");
 	cape_image.rgb_to_bgr();
-	cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
+	Game::cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
 	// Set Mesh and Plane Material Parameters
 	Game::Shad->MaterialSpecular = Specular;
-	cape->MaterialSpecular = CapeSpecular;
+	Game::cape->MaterialSpecular = CapeSpecular;
 
 	Game::Shad->MaterialDiffuse = Diffuse;
-	cape->MaterialDiffuse = CapeDiffuse;
+	Game::cape->MaterialDiffuse = CapeDiffuse;
 
 	Game::Shad->MaterialAmbient = Ambient;
-	cape->MaterialAmbient = CapeAmbient;
+	Game::cape->MaterialAmbient = CapeAmbient;
 
 	Game::Shad->MaterialShininess = Shininess;
-	cape->MaterialShininess = CapeShininess;
+	Game::cape->MaterialShininess = CapeShininess;
 
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);
