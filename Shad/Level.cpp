@@ -720,6 +720,12 @@ void Level::Gavin() {
 		movingPlatforms.push_back(platform);
 
 
+		platform = new Platform(cube);
+		platform->setMoving(100, 0.0f, 0.0f, -0.5f);
+		platform->Scale(6, 2, 5);
+		platform->Translate(15, -16, -50);
+		platforms.push_back(platform);
+
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
 
