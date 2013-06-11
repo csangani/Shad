@@ -1027,40 +1027,10 @@ int main (int argc, char **argv)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_no_image.width(), menu_invert_no_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_no_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Load Mesh
-	Game::Shad = new Character();
-	Game::Shad->LoadObj(OBJECT);
-	Game::Shad->GenerateCharacter();
-	Game::Shad->AttachShader(TOON_SHADER);
-	Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
-	Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
-	Game::Shad->GenerateArms(OBJECT_ARMS);
-
-	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
-	cape_image = bitmap_image("assets\\bmp\\cape_texture_2.bmp");
-	cape_image.rgb_to_bgr();
-	Game::cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
-
 	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
-	// Set Mesh and Plane Material Parameters
-	Game::Shad->MaterialSpecular = Specular;
-	Game::cape->MaterialSpecular = CapeSpecular;
-
-	Game::Shad->MaterialDiffuse = Diffuse;
-	Game::cape->MaterialDiffuse = CapeDiffuse;
-
-	Game::Shad->MaterialAmbient = Ambient;
-	Game::cape->MaterialAmbient = CapeAmbient;
-
-	Game::Shad->MaterialShininess = Shininess;
-	Game::cape->MaterialShininess = CapeShininess;
-
-	// Apply Texture to Mesh
-	image = bitmap_image(TEXTURE);
-	image.rgb_to_bgr();
-	//Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
+	Window::setUpCharacter();
 
 	// Setup Lights
 	GLfloat LightPosition[] = { 1.0f, 1.0f, 1.0f, 1.0f };

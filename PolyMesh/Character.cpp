@@ -21,7 +21,7 @@ Character *Character::GenerateCharacter() {
 	GO->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 
 	RigidBody = new btKinematicCharacterController(GO, ConvexShape, 0.35);
-	Physics::DynamicsWorld->addCollisionObject(GO, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::DebrisFilter | btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+	Physics::DynamicsWorld->addCollisionObject(GO, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
 	Physics::DynamicsWorld->addAction(RigidBody);
 	
 	btVector3 localInertia(0.0f,0.0f,0.0f);

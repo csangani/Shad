@@ -49,11 +49,7 @@ float Level::getFallLimit() {
 void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
-	float *clear = new float[4];
-	clear[0] = .5;
-	clear[1] = .5;
-	clear[2] = .5;
-	clear[3] = 1.0;
+
 	/*
 	* While there are functions that return booleans to check the kind of platform,
 	*	I (Gavin) don't use them, and instead plug them into the corresponding vector
@@ -77,7 +73,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 3: 
+	case 1: 
 
 		Amit(); 
 		break; 
@@ -98,28 +94,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platform->Translate(0,-13,-10);
 		platforms.push_back(platform);
 
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -11));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-11.7f, -11));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-10.95, -11));
-		pinTarget = (*platforms.rbegin())->platformMesh;
-
-		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -11.05f, -11),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
-		Cloak->EnableLighting();
-		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
-		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-		Cloak->MaterialAmbient = clear;
-		Cloak->MaterialDiffuse = clear;
-		Cloak->MaterialSpecular = clear;
-		Cloak->MaterialShininess = clear;
-		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-		cloth_image.rgb_to_bgr();
-		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
-		target = OpenMesh::Vec3f(0, -12, -11);
+		setTarget(0, -12, -11);
 		break;
 
 
-	case 1:
+	case 3:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -169,24 +148,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-10,0), OpenMesh::Vec3f(1,-5,-4)));
 		
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-13.2f, -22));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-13.2f, -22));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-12.45, -22));
-		pinTarget = (*platforms.rbegin())->platformMesh;
-
-		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -12.5f, -22),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0002f));
-		Cloak->EnableLighting();
-		Cloak->MaterialAmbient = clear;
-		Cloak->MaterialDiffuse = clear;
-		Cloak->MaterialSpecular = clear;
-		Cloak->MaterialShininess = clear;
-		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
-		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-		cloth_image.rgb_to_bgr();
-		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-
-		target = OpenMesh::Vec3f(0, -14, -22);
+		setTarget(0, -14, -22);
 		break;
 
 	case 5:
@@ -260,6 +222,29 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 	};
+
+	platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(target[0] - 0.7f, target[1] + 0.8f, target[2]));
+	platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(target[0] + 0.7f, target[1] + 0.8f, target[2]));
+	platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(target[0], target[1] + 1.55f, target[2]));
+	pinTarget = (*platforms.rbegin())->platformMesh;
+
+	float *clear = new float[4];
+	clear[0] = .5;
+	clear[1] = .5;
+	clear[2] = .5;
+	clear[3] = 1.0;
+
+	Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), target + OVEC3F(-0.6f, 1.5f, 0),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0002f));
+	Cloak->EnableLighting();
+	Cloak->MaterialAmbient = clear;
+	Cloak->MaterialDiffuse = clear;
+	Cloak->MaterialSpecular = clear;
+	Cloak->MaterialShininess = clear;
+	Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
+	Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+	cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
+	cloth_image.rgb_to_bgr();
+	Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 }
 
 void Level::reset() {
@@ -720,25 +705,6 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
-		/*
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -25));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-11.7f, -25));
-		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-10.95, -25));
-		pinTarget = (*platforms.rbegin())->platformMesh;
-
-		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -11.05f, -11),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
-		Cloak->EnableLighting();
-		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
-		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
-		Cloak->MaterialAmbient = clear;
-		Cloak->MaterialDiffuse = clear;
-		Cloak->MaterialSpecular = clear;
-		Cloak->MaterialShininess = clear;
-		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
-		cloth_image.rgb_to_bgr();
-		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
-		*/
-
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
 
@@ -761,97 +727,56 @@ void Level::Amit() {
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
 		
-
 	    // 1
 		platform = new Platform(cube);
-		platform->setMoving(2, 0, 0.2, 0);
+		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-4, -14, -8);
+		platform->Translate(-4, -10, -10);
 		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
- 
-        // shrinking has bugs
+		movingPlatforms.push_back(platform); 
 		
-		
-		platform = new Platform(cube);
-
-		platform->Scale(6, 1, 7);
-		platform->Translate(-8, -10, 2);
-		//platform->setShrinking(2, 1.0, 1.0, 0.98); 
-
-		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
-		
-
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
-
-
-		
-
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(6, 2, 2);
-		platform->Translate(0, -16, -8);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(6, 2, 2);
-		platform->Translate(0, -16, -10);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
-
-		platform->Translate(0, -30, -12);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
- 
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(2, 0, 0, 0.1);
-		platform->Scale(10, 1, 10);
+		platform->setMoving(100, 0.2, 0, 0);
+		platform->Scale(6, 1, 6);
 		platform->Translate(-6, -30, -20);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
+
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(2,-40,-20), OpenMesh::Vec3f(2,-20,-20)));
+	    lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(3,-40,-22), OpenMesh::Vec3f(3,-20,-22)));
  
 		// 3
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-15, -30, -30);
+		platform->Translate(-25, -30, -30);
+		platforms.push_back(platform);
+
+		//Transit 1
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 6);
+		platform->Translate(-35, -29, -40);
 		platforms.push_back(platform);
  
+		//Transit 2
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(6, 2, 6);
+		platform->Translate(-45, -28, -30);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+		
+		//Transit 3
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 6);
+		platform->Translate(-55, -27, -20);
+		platforms.push_back(platform);
+		
 		// 4
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-20, -25, -25);
+		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
-
-		// 5
-		platform = new Platform(cube);
-		platform->Scale(4, 1, 4);
-		platform->Translate(-25, -20, -25);
-		platforms.push_back(platform);
-		
-		// 6
-		platform = new Platform(cube);
-		platform->setMoving(2, 0.1, 0, 0);
-		platform->Scale(4, 1, 4);
-		platform->Translate(-20, -25, -25);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
-
-		// shrinking has bugs
-		
-		/*
-		platform = new Platform(cube);
-		platform->setShrinking(2, 1.0, 0.995, 1.0); 
-		platform->Scale(6, 1, 4);
-		platform->Translate(-8, -14, -18);
-		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
-		*/
-
-		//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
 
 		platform = new Platform(cube);
 		platform->Scale(6, 2, 5);
@@ -859,4 +784,62 @@ void Level::Amit() {
 		platforms.push_back(platform);
 
 		target = OpenMesh::Vec3f(0, 12, -25);
+}
+
+void Level::Chirag() {
+	std::string cube = "assets\\obj\\cube.obj";
+	Platform *platform;
+
+	setStartPosition(0,-8.0f,0);
+	setFallLimit(-50);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-10.0f,0);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-4.0f,0);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-10.0f,-6.0f);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-4.0f,-6.0f);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-10.0f,-12.0f);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(0,-4.0f,-12.0f);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(6.0f,-10.0f,-12.0f);
+	platforms.push_back(platform);
+
+	// start
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(6.0f,-4.0f,-12.0f);
+	platforms.push_back(platform);
+
+	setTarget(6.0f, -9.5f, -12.0f);
 }
