@@ -629,7 +629,7 @@ void Level::Gavin() {
 	platforms.push_back(platform);
 	collapsiblePlatforms.push_back(platform);
 
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-14,-6),OpenMesh::Vec3f(0,-10,-6)));
+	
 
 	platform = new Platform(cube);
 	platform->setCollapsible();
@@ -661,11 +661,14 @@ void Level::Gavin() {
 	platform->Scale(2, 15, 5);
 	platform->Translate(-2, -16, -16);
 	platforms.push_back(platform);
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(2,-8,-17),OpenMesh::Vec3f(2,-2,-17)));
 
 	platform = new Platform(cube);
 	platform->Scale(6, 2, 0.5);
 	platform->Translate(0, -10, -16);
 	platforms.push_back(platform);
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-2,-8,-17),OpenMesh::Vec3f(-2,-2,-17)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-8,-17),OpenMesh::Vec3f(0,-2,-17)));
 
 	platform = new Platform(cube);
 	platform->Scale(6, 2, 0.5);
@@ -679,7 +682,7 @@ void Level::Gavin() {
 
 
 
-	for (signed int  i = 26; i < 40; i ++) {
+	for (signed int  i = 35; i < 40; i ++) {
 
 		platform = new Platform(cube);
 		platform->setCollapsible();
@@ -717,6 +720,8 @@ void Level::Gavin() {
 		collapsiblePlatforms.push_back(platform);
 
 	}
+
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-16,-38),OpenMesh::Vec3f(0,-12,-38)));
 
 	platform = new Platform(cube);
 	platform->Scale(6, 2, 5);
@@ -770,10 +775,10 @@ void Level::Gavin() {
 
 	platform = new Platform(cube);
 	platform->Scale(2, 2, 2);
-	platform->Translate(20, -16, -75);
+	platform->Translate(19, -16, -75);
 	platforms.push_back(platform);
 
-	target = OpenMesh::Vec3f(20, -15, -75);
+	target = OpenMesh::Vec3f(19, -15, -75);
 }
 
 
