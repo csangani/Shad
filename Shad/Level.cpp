@@ -882,8 +882,8 @@ void Level::Amit() {
 
 		// Wall
 		platform = new Platform(cube);
-		platform->Scale(1, 15, 15);
-		platform->Translate(-90, -35, -28);
+		platform->Scale(2, 20, 20);
+		platform->Translate(-90, -40, -28);
 		platforms.push_back(platform);
 
 
@@ -903,7 +903,7 @@ void Level::Amit() {
 
 
 	}
-	target = OpenMesh::Vec3f(-105, -190, -28);
+	target = OpenMesh::Vec3f(-102, -195, -27);
 }
 
 void Level::Chirag() {
