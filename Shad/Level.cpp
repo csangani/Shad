@@ -715,15 +715,26 @@ void Level::Gavin() {
 
 	platform = new Platform(cube);
 	platform->Scale(6, 2, 5);
-	platform->Translate(0, -16, -50);
+	platform->Translate(0, -16, -55);
 	platforms.push_back(platform);
 
 	platform = new Platform(cube);
-	platform->Scale(6, 1, 5);
-	platform->Translate(6, -17, 0);
-	platform->setMoving(4, 0, 0.5, 0);
+	platform->Scale(2, 10, 10);
+	platform->Translate(-2, -16, -55);
 	platforms.push_back(platform);
-	movingPlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(2, 10, 10);
+	platform->Translate(2, -16, -55);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setShrinking(100, .95);
+	platform->Scale(5, 5, 2);
+	platform->Translate(0, -12, -40);
+	platforms.push_back(platform);
+	shrinkingPlatforms.push_back(platform);
+
 
 	target = OpenMesh::Vec3f(0, 12, -25);
 }
