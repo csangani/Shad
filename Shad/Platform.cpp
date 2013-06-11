@@ -153,8 +153,9 @@ bool Platform::isShrinking() {
 }
 
 
-void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ) {
-	moving = state;
+void Platform::setMoving(int _beat, float _deltaX, float _deltaY, float _deltaZ) {
+	beats = _beat;
+	moving = true;
 	deltaX = _deltaX;
 	deltaY = _deltaY;
 	deltaZ = _deltaZ;
@@ -164,6 +165,9 @@ void Platform::setMoving(bool state, float _deltaX, float _deltaY, float _deltaZ
 	color[3] = 1.0f;
 }
 
+int Platform::getBeat() {
+	return beats;
+}
 
 void Platform::setShrinking(bool state, float scaleX, float scaleY, float scaleZ) {
 	shrinking = state;
@@ -186,8 +190,9 @@ OpenMesh::Vec3f Platform::getShrinking() {
 
 
 void Platform::move(uint64_t deltaPoint) {
+	deltaPoint%=beats;
 	OpenMesh::Vec3f direction = getDirection();
-	if (deltaPoint < 5) {
+	if (deltaPoint < beats/2) {
 		platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->Translate(direction[0], direction[1], direction[2]);
@@ -332,14 +337,13 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 		yBounds.high = yBounds.low;
 		yBounds.low = temp;
 	}
-	xBounds.low -=0.1;
-	xBounds.high +=0.1;
-	zBounds.low -=0.1;
-	zBounds.low +=0.1;
+	xBounds.low -=0.15;
+	xBounds.high +=0.15;
+	zBounds.low -=0.15;
+	zBounds.low +=0.15;
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			std::cout << (charY - yBounds.high) << std::endl;
 			if (charY - yBounds.high < 0.54) {
 				return true;
 			}
@@ -352,9 +356,9 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 void Platform::setCollapsible() {
 	collapsible = true;
 
-	color[0] = 0.0f;
-	color[1] = 1.0f;
-	color[2] = 0.0f;
+	color[0] = 170.0f/255.0;
+	color[1] = 250.0f/255.0;
+	color[2] = 141.0f/255.0;
 	color[3] = 1.0f;
 
 }

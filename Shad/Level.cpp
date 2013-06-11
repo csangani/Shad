@@ -112,7 +112,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
-		platform->setMoving(true, 0, 0, 0.01);
+		platform->setMoving(10, 0, 0, 0.01);
 		movingPlatforms.push_back(platform);
 
 		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -391,7 +391,8 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
-					if (deltaPoint < 5) {
+					int beat = movingPlatforms[i]->getBeat();
+					if (deltaPoint < beat) {
 					}
 					else {
 						delta = -delta;
@@ -456,7 +457,7 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 		collapsiblePlatforms.push_back(platform);
 		
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-10,-6), OpenMesh::Vec3f(0,-14,-6)));
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-14,-6),OpenMesh::Vec3f(0,-10,-6)));
 
 		platform = new Platform(cube);
 		platform->setCollapsible();
@@ -506,42 +507,55 @@ void Level::Gavin() {
 
 
 		for (signed int  i = 26; i < 50; i ++) {
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1, 1);
-		platform->Translate(0, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(0, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 		
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1, 1);
-		platform->Translate(1, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(1, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1, 1);
-		platform->Translate(-1, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(-1, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1,1);
-		platform->Translate(2, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1,1);
+			platform->Translate(2, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1, 1);
-		platform->Translate(-2, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(-2, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
 
 		}
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 5);
+		platform->Translate(0, -16, -50);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 5);
+		platform->Translate(4, -14, -50);
+		platform->setMoving(4, 0, 1, 0);
+		platforms.push_back(platform);
+		movingPlatforms.push_back(platform);
+
 
 		/*
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -25));

@@ -23,7 +23,7 @@ class Platform {
 		std::vector<Vertex *> vertices;
 		PolyMesh *platformMesh;
 
-		void setMoving(bool state, float deltaX, float deltaY, float deltaZ);
+		void setMoving(int beats, float deltaX, float deltaY, float deltaZ);
 		
 		void setShrinking(bool state, float deltaX, float deltaY, float deltaZ);
 		
@@ -32,7 +32,7 @@ class Platform {
 
 		void setCollapsible();
 		bool isCollapsible();
-
+		int getBeat();
 
 		void move(uint64_t deltaPoint);
 		
@@ -74,6 +74,7 @@ class Platform {
 		bool deformed;
 		float color[4];
 		std::string mod;
+		int beats;
 };
 
 #endif
