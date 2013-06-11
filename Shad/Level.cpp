@@ -817,7 +817,7 @@ void Level::Amit() {
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-5,-35,-20), OpenMesh::Vec3f(-5,-5,-20)));
 	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-22), OpenMesh::Vec3f(0,-5,-22)));
 
 	// 3
@@ -903,7 +903,7 @@ void Level::Amit() {
 
 
 	}
-	target = OpenMesh::Vec3f(-105, -200, -28);
+	target = OpenMesh::Vec3f(-105, -190, -28);
 }
 
 void Level::Chirag() {
