@@ -69,12 +69,10 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 2:
-		Johan();
-	break;
-	
 	case 1:
-
+		Johan();
+		break;
+	case 10: 
 		Amit(); 
 		break; 
 
@@ -98,7 +96,9 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
+
 	case 3:
+
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -508,18 +508,7 @@ void Level::Johan()
 {
 	Platform *platform;
 	std::string cube = "assets\\obj\\cube.obj";
-	
-	platform = new Platform(cube);
-	platform->setShrinking(2,0.98); 
-	platform->Scale(3, 1, 3);
-	platform->Translate(5, -10, -10);
-	platforms.push_back(platform);
-	shrinkingPlatforms.push_back(platform);
-	
-	platform = new Platform(cube);
-	platform->Scale(3, 1, 1);
-	platform->Translate(5, -10, -2);
-	platforms.push_back(platform);
+	setFallLimit(-100.0);
 
 	//1st
 	platform = new Platform(cube);
@@ -534,8 +523,8 @@ void Level::Johan()
 	platforms.push_back(platform);
 
 	//Lightning between 1st and 2nd
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-5), OpenMesh::Vec3f(0,-5,-5)));
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-15), OpenMesh::Vec3f(0,-5,-15)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-20,-5), OpenMesh::Vec3f(1,-5,-5)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-20,-15), OpenMesh::Vec3f(1,-5,-15)));
 
 	//3rd
 	platform = new Platform(cube);
@@ -567,9 +556,6 @@ void Level::Johan()
 	platform->Translate(55,-25,-25);
 	platforms.push_back(platform);
 
-	//Lightning between 5th and 6th --> why does this one look bad?!?
-	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(40,-30,-25), OpenMesh::Vec3f(45,-20,-25)));
-
 	//Stairs
 	for (int i = 0; i < 10; i++) {
 		platform = new Platform(cube);
@@ -578,7 +564,41 @@ void Level::Johan()
 		platforms.push_back(platform);
 	}
 
-	target = OpenMesh::Vec3f(0, 12, -25);
+	//Elevator
+	platform = new Platform(cube);
+	platform->setElevator(0.0f, 0.1f, 0.0f, 0.0f, 15.0f, 0.0f);
+	platform->Scale(3, 1, 3);
+	platform->Translate(55,-15,-39);
+	platforms.push_back(platform);
+	elevatablePlatforms.push_back(platform);
+
+	//Wall
+	platform = new Platform(cube);
+	platform->Scale(1,10,5);
+	platform->Translate(50,0,-39);
+	platforms.push_back(platform);
+
+	//7th
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(40,0,-39);
+	platform->setShrinking(100,0.98);
+	platforms.push_back(platform);
+	shrinkingPlatforms.push_back(platform);
+
+	//8th
+	platform = new Platform(cube);
+	platform->Scale(3,1,3);
+	platform->Translate(20,0,-39);
+	platforms.push_back(platform);
+
+	//Target platform
+	platform = new Platform(cube);
+	platform->Scale(3,1,5);
+	platform->Translate(20,-50,-59);
+	platforms.push_back(platform);
+
+	target = OpenMesh::Vec3f(20, -50+0.5, -60);
 }
 
 void Level::Gavin() {
