@@ -73,7 +73,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 3: 
+	case 1: 
 
 		Amit(); 
 		break; 
@@ -98,7 +98,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 1:
+	case 3:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -726,7 +726,7 @@ void Level::Amit() {
 		
 	    // 1
 		platform = new Platform(cube);
-		platform->setMoving(2, 0, 0.2, 0);
+		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
 		platform->Translate(-4, -10, -10);
 		platforms.push_back(platform);
@@ -734,7 +734,7 @@ void Level::Amit() {
 		
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(2, 0.2, 0, 0);
+		platform->setMoving(100, 0.2, 0, 0);
 		platform->Scale(6, 1, 6);
 		platform->Translate(-6, -30, -20);
 		platforms.push_back(platform);
@@ -775,37 +775,6 @@ void Level::Amit() {
 		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
 
-		/*
-		// 5
-		platform = new Platform(cube);
-		platform->setCollapsible(); 
-		platform->Scale(4, 1, 4);
-		platform->Translate(-25, -20, -25);
-		platforms.push_back(platform);
-		
-		// 6
-		platform = new Platform(cube);
-		platform->setMoving(2, 0.1, 0, 0);
-		platform->Scale(4, 1, 4);
-		platform->Translate(-30, -10, -40);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
-
-		*/
-
-		// shrinking has bugs
-		
-		/*
-		platform = new Platform(cube);
-		platform->setShrinking(2, 1.0, 0.995, 1.0); 
-		platform->Scale(6, 1, 4);
-		platform->Translate(-8, -14, -18);
-		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
-		*/
-
-		//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
-
 		platform = new Platform(cube);
 		platform->Scale(6, 2, 5);
 		platform->Translate(0, -16, -50);
@@ -813,6 +782,7 @@ void Level::Amit() {
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
+
 void Level::Chirag() {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
