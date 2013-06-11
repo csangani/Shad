@@ -504,7 +504,7 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 
 
-		for (signed int  i = 26; i < 100; i ++) {
+		for (signed int  i = 26; i < 40; i ++) {
 		platform = new Platform(cube);
 		platform->setCollapsible();
 		platform->Scale(1, 1, 1);

@@ -159,7 +159,9 @@ void Lightning::GenerateGeometry()
     }
 }
 
-#define COLLISION_THRESHOLD (0.7);
+#define COLLISION_THRESHOLD (0.7)
+#define MAX(a,b) ((a >= b) ? a : b)
+#define MIN(a,b) ((a <= b) ? a : b)
 
 bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 {
@@ -168,7 +170,14 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	OpenMesh::Vec3f projectedPoint = (convertedPoint[0] * lightningLineDirection[0] + convertedPoint[1] * lightningLineDirection[1] + convertedPoint[2] * lightningLineDirection[2])*lightningLineDirection;
 	OpenMesh::Vec3f finalProjectedPoint = projectedPoint + originalStartPoint;
 
-	return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
+	// Check if projected point belongs to the line segment
+	if (finalProjectedPoint[0] >= MIN(originalStartPoint[0],originalEndPoint[0]) && finalProjectedPoint[0] <= MAX(originalStartPoint[0],originalEndPoint[0])  
+		&& finalProjectedPoint[1] >= MIN(originalStartPoint[1],originalEndPoint[1]) && finalProjectedPoint[1] <= MAX(originalStartPoint[1],originalEndPoint[1])
+		&& finalProjectedPoint[2] >= MIN(originalStartPoint[2],originalEndPoint[2]) && finalProjectedPoint[2] <= MAX(originalStartPoint[2],originalEndPoint[2])) {
+		return (point - finalProjectedPoint).length() < COLLISION_THRESHOLD;
+	} else {
+		return false;
+	}
 }
 
 #define RADIUS (0.015f)

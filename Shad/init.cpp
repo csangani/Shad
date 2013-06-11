@@ -862,7 +862,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);
@@ -1029,7 +1029,7 @@ int main (int argc, char **argv)
 	Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
 
 	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
-	cape_image = bitmap_image("assets\\bmp\\cape_texture.bmp");
+	cape_image = bitmap_image("assets\\bmp\\cape_texture_2.bmp");
 	cape_image.rgb_to_bgr();
 	Game::cape->EnableLighting()->ApplyTexture(cape_image.data(),cape_image.width(), cape_image.height());
 

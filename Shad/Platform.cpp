@@ -352,9 +352,9 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 void Platform::setCollapsible() {
 	collapsible = true;
 
-	color[0] = 0.0f;
-	color[1] = 1.0f;
-	color[2] = 0.0f;
+	color[0] = 170.0f/255.0f;
+	color[1] = 240.0f/255.0f;
+	color[2] = 141.0f/255.0f;
 	color[3] = 1.0f;
 
 }
