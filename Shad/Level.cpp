@@ -22,6 +22,7 @@ Level::Level(int level) {
 	id.setOrigin(BVEC3F(0, -1, 0));
 	origin = id;
 	fallLimit = -40.0;
+	target = OpenMesh::Vec3f(10,10,10);
 }
 
 void Level::setStartPosition(float startX, float startY, float startZ) {
