@@ -58,7 +58,7 @@ void Boost(float *array, int size, float delta)
 
 // Character Stuff
 
-#define SHAD_JUMP_SPEED 25.0f
+#define SHAD_JUMP_SPEED 100.0f
 #define SHAD_GRAVITY 100.0f
 
 float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };

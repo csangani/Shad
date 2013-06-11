@@ -9,6 +9,7 @@
 #include <PolyMesh/Lightning.h>
 
 #include <PolyMesh/Cloth.h>
+#include <PolyMesh/ParticleCloth.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
@@ -32,7 +33,7 @@ public:
 	void applyLightningAnimationStep();
 	bool lightningCollisionWithPoint(OpenMesh::Vec3f point);
 
-	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad);
+	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
 
 	void shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad);
 
