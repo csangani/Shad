@@ -745,7 +745,7 @@ void Level::Amit() {
 		clear[2] = .5;
 		clear[3] = 1.0;
 		
-		setFallLimit(-50);
+		setFallLimit(-200);
 
 		// start
 		platform = new Platform(cube);
@@ -763,9 +763,9 @@ void Level::Amit() {
 		
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(100, 0, 0.2, 0);
+		platform->setMoving(100, 0.15, 0, 0);
 		platform->Scale(8, 1, 8);
-		platform->Translate(-6, -30, -15);
+		platform->Translate(0, -30, -15);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
@@ -825,7 +825,7 @@ void Level::Amit() {
 		// Shrinks
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-80, -50, -28);
+		platform->Translate(-85, -50, -28);
 		platforms.push_back(platform);
 		platform->setShrinking(100, 0.01); 
 		shrinkingPlatforms.push_back(platform); 
@@ -849,7 +849,7 @@ void Level::Amit() {
 		// Done
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-100, -200, -28);
+		platform->Translate(-105, -200, -28);
 		platforms.push_back(platform);
 
 
