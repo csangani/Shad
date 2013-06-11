@@ -62,27 +62,23 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
-<<<<<<< HEAD
 	//Gavin level
 	case 1:
 
 		Gavin();
 		break;
 	
-	case 6:
-		Johan();
-=======
 		//Gavin level
 	case 6:
 
-		Gavin();
+		Johan();
 		break;
 
 
-	case 1:
+	case 2:
 		Chirag();
 		//Johan();
->>>>>>> 74a153cbc738a19333e74ad7d0b1ca10ef9342cb
+
 		break;
 	case 2: 
 		Amit(); 
