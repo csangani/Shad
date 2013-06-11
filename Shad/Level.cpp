@@ -63,33 +63,34 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 6:
+	case 4:
 
 		Gavin();
 		break;
 	
 		//Gavin level
-	case 2:
+	case 1:
+	case 6:
 
 		Johan();
 		break;
 
 
-	case 7:
+	case 3:
 		Cassidy();
 		break;
 
 
-	case 3:
+	case 2:
 		Chirag();
 		//Johan();
 
 		break;
-	case 1: 
+	case 5: 
 		Amit(); 
 		break; 
 
-	case 4:
+	case 10:
 		platform = new Platform(cube);
 		platform->Scale(3,1,3);
 		platform->Translate(0,-10,0);
@@ -164,7 +165,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		setTarget(0, -14, -22);
 		break;
 
-	case 5:
+	case 11:
 		platform = new Platform(cube);
 		platform->Scale(3, 1, 3);
 		platform->Translate(0, -5, 0);
@@ -247,7 +248,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	clear[2] = .5;
 	clear[3] = 1.0;
 
-	Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), target + OVEC3F(-0.6f, 1.5f, 0),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0002f));
+	Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), target + OVEC3F(-0.6f, 1.5f, 0),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
 	Cloak->EnableLighting();
 	Cloak->MaterialAmbient = clear;
 	Cloak->MaterialDiffuse = clear;

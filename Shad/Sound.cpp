@@ -118,7 +118,7 @@ void Sound::PlayDeathSound()
 	float whichSoundToPlay = (float)rand()/(float)RAND_MAX;
 	FMOD::Sound *deathSound = (whichSoundToPlay > 0.5) ? Death1 : Death2;
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, deathSound, false, &DeathChannel));
-	DeathChannel->setVolume(0.7);
+	DeathChannel->setVolume(0.9);
 }
 
 void Sound::PlayLifeSound()

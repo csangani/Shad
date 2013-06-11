@@ -240,7 +240,6 @@ namespace Window
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			//float diff = 0.202093f-r;
 			float diff = 0.4 - r;
-			std::cout << diff << std::endl;
 			float EPSILON = 0.2;
 			bool onGround = Game::Shad->RigidBody->onGround();
 			if ((diff < EPSILON) && onGround) {
@@ -609,13 +608,13 @@ namespace Window
 			BVEC3F WalkDirection(0,0,0);
 			/* Character Controls */
 			if (Game::moveForward)
-				WalkDirection += Game::Direction*0.1f;
+				WalkDirection += Game::Direction*0.2f;
 			if (Game::moveBackward)
-				WalkDirection -= Game::Direction*0.1f;
+				WalkDirection -= Game::Direction*0.2f;
 			if (Game::moveLeft)
-				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
+				WalkDirection += Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.2f;
 			if (Game::moveRight)
-				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.1f;
+				WalkDirection -= Game::Direction.rotate(BVEC3F(0,1,0),RADIANS(90))*0.2f;
 
 			static bool Forward;
 			/* Animate Character */
@@ -791,7 +790,7 @@ namespace Window
 
 				btTransform id;
 				id.setIdentity();
-				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+				((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(Game::currentLevel->getStartPosition());
 
 			}
 
