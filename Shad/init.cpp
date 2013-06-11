@@ -777,6 +777,7 @@ namespace Window
 			float distance = xD*xD + yD*yD + zD*zD;
 			distance = sqrt(distance);
 			if (distance < 1.0) {
+				Game::soundEngine->PlayEndLevel();
 				Game::currentLevel->destroyPlatforms();
 				Game::currentLevel->changeUp();
 				Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
