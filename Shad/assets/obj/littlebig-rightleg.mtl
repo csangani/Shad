@@ -1,0 +1,14 @@
+# Blender MTL File: 'littlebig.blend'
+# Material Count: 1
+newmtl ggreen
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.614521 0.273532 0.296990
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd /Users/cassidysaenz/Documents/Stanford/Grad/Spring/CS-248/Assignments/Final Project/Model Stuff/Materials/3446225050_aec0e07e4f.jpg
+map_Bump /Users/cassidysaenz/Documents/Stanford/Grad/Spring/CS-248/Assignments/Final Project/Model Stuff/Materials/3446225050_aec0e07e4f.jpg
+
+
