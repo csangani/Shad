@@ -171,9 +171,9 @@ int Platform::getBeat() {
 
 void Platform::setShrinking(bool state, float scaleX, float scaleY, float scaleZ) {
 	shrinking = state;
-	_scaleX = scaleX;
-	_scaleY = scaleY;
-	_scaleZ = scaleZ;
+	_shrinkX = scaleX;
+	_shrinkY = scaleY;
+	_shrinkZ = scaleZ;
 	color[0] = 0.0f;
 	color[1] = 1.0f;
 	color[2] = 0.0f;
@@ -185,7 +185,7 @@ OpenMesh::Vec3f Platform::getDirection() {
 }
 
 OpenMesh::Vec3f Platform::getShrinking() {
-	return OpenMesh::Vec3f(_scaleX, _scaleY, _scaleZ);
+	return OpenMesh::Vec3f(_shrinkX, _shrinkY, _shrinkZ);
 }
 
 

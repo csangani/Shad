@@ -3,6 +3,7 @@
 #include <Shad/Level.h>
 
 #include <PolyMesh/Cloth.h>
+#include <PolyMesh/ParticleCloth.h>
 
 #include <GL\glew.h>
 #include <GL\glut.h>
@@ -384,7 +385,7 @@ void Level::collapse(bool onGround, float charX, float charY, float charZ) {
 	}
 }
 
-void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad) {
+void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
@@ -408,7 +409,10 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
 					((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					
 
+			
+					//cape->SetOrigin(OpenMesh::Vec3f());
 				}
 			}
 			else {
