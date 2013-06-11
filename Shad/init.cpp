@@ -238,9 +238,10 @@ namespace Window
 			Game::currentLevel->drawLightningBolts();
 			btVector3 characterPos = Game::Shad->GetPosition();
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
-			float diff = 0.202093f-r;
+			//float diff = 0.202093f-r;
+			float diff = 0.4 - r;
 			std::cout << diff << std::endl;
-			float EPSILON = -0.07;
+			float EPSILON = 0.2;
 			bool onGround = Game::Shad->RigidBody->onGround();
 			if ((diff < EPSILON) && onGround) {
 				Game::teleportLeft = NUM_TELEPORT;
