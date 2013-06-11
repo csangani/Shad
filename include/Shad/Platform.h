@@ -38,7 +38,8 @@ class Platform {
 		int getBeat();
 
 		void move(uint64_t deltaPoint);
-		
+		void UpdateCounter();
+
 		void shrink(uint64_t deltaPoint);
 
 

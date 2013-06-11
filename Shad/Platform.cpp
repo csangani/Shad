@@ -207,7 +207,6 @@ void Platform::move(uint64_t deltaPoint) {
 	if (counter == beats) {
 		counter = 0;
 	}
-	counter++;
 	OpenMesh::Vec3f direction = getDirection();
 	if (counter < beats/2) {
 	//	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ) {
@@ -230,8 +229,11 @@ void Platform::move(uint64_t deltaPoint) {
 			runningTotalZ -= direction[2];
 	//	}
 	}
+	counter++;
+}
 
-
+void Platform::UpdateCounter() {
+	counter++;
 }
 
 void Platform::shrink(uint64_t deltaPoint) {
