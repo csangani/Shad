@@ -63,13 +63,13 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 3:
+	case 6:
 
 		Gavin();
 		break;
 	
 		//Gavin level
-	case 1:
+	case 2:
 
 		Johan();
 		break;
@@ -80,12 +80,12 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 2:
+	case 3:
 		Chirag();
 		//Johan();
 
 		break;
-	case 10: 
+	case 1: 
 		Amit(); 
 		break; 
 
@@ -1101,7 +1101,7 @@ void Level::Chirag() {
 
 	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3.1f)));
 
-	setTarget(6.0f, -9.5f, -12.0f);
+	setTarget(-24.0f, 0.5f, -18.0f);
 }
 
 

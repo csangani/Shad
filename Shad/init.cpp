@@ -239,7 +239,8 @@ namespace Window
 			btVector3 characterPos = Game::Shad->GetPosition();
 			float r = Game::currentLevel->drawCharacterShadow(characterPos.x(), characterPos.y(), characterPos.z());
 			float diff = 0.202093f-r;
-			float EPSILON = 0.1;
+			std::cout << diff << std::endl;
+			float EPSILON = -0.07;
 			bool onGround = Game::Shad->RigidBody->onGround();
 			if ((diff < EPSILON) && onGround) {
 				Game::teleportLeft = NUM_TELEPORT;
@@ -796,7 +797,7 @@ namespace Window
 			/*Code to move platforms*/
 			uint64_t time= PolyMesh::Time;
 			time /= 500;
-			
+
 			bool onGround = Game::Shad->RigidBody->onGround();
 			((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();
 			float charX = transform.getOrigin().getX();
@@ -1027,7 +1028,7 @@ int main (int argc, char **argv)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_no_image.width(), menu_invert_no_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_no_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	Game::currentLevel = new Level(7);
+	Game::currentLevel = new Level(1);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
 	Window::setUpCharacter();
