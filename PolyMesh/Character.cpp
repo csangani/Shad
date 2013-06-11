@@ -52,7 +52,13 @@ Character::~Character() {
 
 Character *Character::SyncDummy() {
 	Dummy->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
-	Arms->RigidBody->setWorldTransform(RigidBody->getGhostObject()->getWorldTransform());
+	btTransform armTranslation;
+	armTranslation.setIdentity();
+	armTranslation.setOrigin(btVector3(0,-0.08f,0));
+	btTransform armRotation;
+	armRotation.setIdentity();
+	armRotation.setRotation(btQuaternion(BVEC3F(0,1,0),RADIANS(180)));
+	Arms->RigidBody->setWorldTransform(armTranslation * RigidBody->getGhostObject()->getWorldTransform() * armRotation);
 	return this;
 }
 
@@ -60,8 +66,8 @@ btVector3 Character::GetPosition() {
 	return RigidBody->getGhostObject()->getWorldTransform().getOrigin();
 }
 
-Character *Character::GenerateLimbs(std::string filePath) {
-	Arms = (new PolyMesh())->LoadObj(filePath);
+Character *Character::GenerateArms(std::string filePath) {
+	Arms = (new PolyMesh())->LoadObj(filePath)->GenerateRigidBody()->Scale(OpenMesh::Vec3f(0.7f, 0.7f, 0.7f));
 
 		/* Enable physics */
 	btConvexHullShape *ConvexShape = new btConvexHullShape();

@@ -204,7 +204,7 @@ OpenMesh::Vec3f Platform::getShrinking() {
 void Platform::move(uint64_t deltaPoint) {
 	deltaPoint%=beats;
 	OpenMesh::Vec3f direction = getDirection();
-	if (deltaPoint < beats/2) {
+	if (counter < beats/2) {
 	//	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ) {
 			platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
 			for (unsigned int i = 0; i < edges.size(); i++)
@@ -225,6 +225,10 @@ void Platform::move(uint64_t deltaPoint) {
 			runningTotalZ -= direction[2];
 	//	}
 	}
+	counter++;
+	if (counter == beats) {
+		counter = 0;
+	}
 
 }
 
@@ -232,9 +236,8 @@ void Platform::shrink(uint64_t deltaPoint) {
 	deltaPoint%=scaleBeat; 
 	OpenMesh::Vec3f shrinking = getShrinking();
 	btVector3 centerOfMass = platformMesh->RigidBody->getCenterOfMassPosition();
-	std::cout << centerOfMass.x() << " " << centerOfMass.y() << " " << centerOfMass.z() << std::endl;
 
-	if (deltaPoint < scaleBeat/2) {
+	if (counter < scaleBeat/2) {
 		platformMesh->Scale(shrinking);
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->SpecialScale(shrinking[0], shrinking[1], shrinking[2],OpenMesh::Vec3f(centerOfMass.x(),centerOfMass.y(),centerOfMass.z()));
@@ -245,11 +248,15 @@ void Platform::shrink(uint64_t deltaPoint) {
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->SpecialScale(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2],OpenMesh::Vec3f(centerOfMass.x(),centerOfMass.y(),centerOfMass.z()));
 	}
+	counter++;
+	if (counter == scaleBeat) {
+		counter = 0;
+	}
 }
 
 
 bool Platform::carry(bool onGround, float charX, float charY, float charZ) {
-	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ < limitZ)
+	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ)
 		collapse(onGround, charX, charY, charZ);
 	else
 		finish = true;
@@ -468,11 +475,9 @@ void Platform::deform(bool onGround, float charX, float charY, float charZ) {
 				{
 					OpenMesh::Vec3f coord = vertices[i]->getCoordinates();
 					OpenMesh::VertexHandle vh = vertices[i]->getVH();
-					std::cout << "The old y " << coord[1] << std::endl;
 					coord[0] = -1;
 					coord[1] = -1;
 					coord[2] = -1;
-					std::cout << "The new y " << coord[1] << std::endl;
 					platformMesh->set_point(vh, coord);
 					if (i >2)
 						break;

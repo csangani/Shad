@@ -67,17 +67,18 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 3:
+	case 6:
 
 		Gavin();
 		break;
 
 
-	case 1:
+	case 2:
 		Johan();
 	break;
 	
-	case 2: 
+	case 3: 
+
 		Amit(); 
 		break; 
 
@@ -118,25 +119,24 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 6:
+	case 1:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
-		platform->setMoving(10, 0, 0.1, 0.0);
+		platform->setMoving(100, 0, 0.1, 0.0);
 		movingPlatforms.push_back(platform);
 
 		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
 
 		platform = new Platform(cube);
-		platform->setElevator(0.1f, 0.0f, 0.1f, 3.0f, 0.0f, 3.0f);
+		platform->setElevator(0.0f, 0.1f, 1.0f, 0.0f, 20.0f, 20.0f);
 		platform->Scale(1, 1, 5);
-		platform->Translate(2,-10,0);
+		platform->Translate(2,-10,-10);
 		platforms.push_back(platform);
 		elevatablePlatforms.push_back(platform);
 
-		shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
 		//platform->subdivide();
