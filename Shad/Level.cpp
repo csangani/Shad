@@ -998,11 +998,11 @@ void Level::Chirag() {
 	platform->Translate(-24, 0, -17);
 	platforms.push_back(platform);
 
-	lightningBolts.push_back(new Lightning(OVEC3F(-9.0f, 0, -3), OVEC3F(-9.0f, 5, -3)));
+	lightningBolts.push_back(new Lightning(OVEC3F(-9.0f, 0, -3), OVEC3F(-9.0f, 5, -3.1f)));
 
 	lightningBolts.push_back(new Lightning(OVEC3F(-4.5f, 0, 3), OVEC3F(-4.5f, 5, 3)));
 
-	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3)));
+	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3.1f)));
 
 
 	setTarget(-24.0f, 0.5f, -18.0f);
