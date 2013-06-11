@@ -792,7 +792,7 @@ void Level::Amit() {
 	clear[2] = .5;
 	clear[3] = 1.0;
 
-	setFallLimit(-200);
+	setFallLimit(-800);
 
 	// start
 	platform = new Platform(cube);
@@ -876,7 +876,7 @@ void Level::Amit() {
 		platform->Scale(4, 1, 4);
 		platform->Translate(-85, -50, -28);
 		platforms.push_back(platform);
-		platform->setShrinking(100, 0.01); 
+		platform->setShrinking(100, 0.96); 
 		shrinkingPlatforms.push_back(platform); 
 
 
