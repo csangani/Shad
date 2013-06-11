@@ -19,7 +19,7 @@ ParticleCloth::ParticleCloth (int length, int width, float segmentLength, BVEC3F
 			btDefaultMotionState *state = new btDefaultMotionState(transform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, state, shape, localInertia);
 			RigidBody[i].push_back(new btRigidBody(rbInfo));
-			Physics::DynamicsWorld->addRigidBody(RigidBody[i][j], btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter);
+			Physics::DynamicsWorld->addRigidBody(RigidBody[i][j], btBroadphaseProxy::DebrisFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::CharacterFilter);
 			RigidBody[i][j]->setGravity(BVEC3F(0,-gravity,0));
 			RigidBody[i][j]->setActivationState(DISABLE_DEACTIVATION);
 			RigidBody[i][j]->setUserPointer(this);
