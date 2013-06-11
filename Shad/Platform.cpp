@@ -36,7 +36,6 @@ Platform::Platform(std::string model) {
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
-
 }
 
 Platform::~Platform() {
@@ -169,8 +168,8 @@ int Platform::getBeat() {
 	return beats;
 }
 
-void Platform::setShrinking(bool state, float scaleX, float scaleY, float scaleZ) {
-	shrinking = state;
+void Platform::setShrinking(float scaleX, float scaleY, float scaleZ) {
+	shrinking = true;
 	_shrinkX = scaleX;
 	_shrinkY = scaleY;
 	_shrinkZ = scaleZ;
