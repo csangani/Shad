@@ -333,7 +333,7 @@ float Level::drawCharacterShadow(float characterX, float characterY, float chara
 	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		r = 0.3f/(characterY - maxY + platformYScale);
+		r = 0.2f/sqrt(characterY - maxY - platformYScale);
 		int num_segments = 20;
 		glColor4f(1.f, 1.f, 1.f, 1.0f);
 		glBegin(GL_POLYGON); 
