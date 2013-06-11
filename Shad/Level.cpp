@@ -80,7 +80,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		//Johan();
 
 		break;
-	case 2: 
+	case 3: 
 		Amit(); 
 		break; 
 
@@ -105,7 +105,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 
 
-	case 3:
+	case 8:
 
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
@@ -596,23 +596,6 @@ void Level::Johan()
 
 void Level::Gavin() {
 
-<<<<<<< HEAD
-		std::string cube = "assets\\obj\\cube.obj";
-		Platform *platform;
-		float *clear = new float[4];
-		clear[0] = .5;
-		clear[1] = .5;
-		clear[2] = .5;
-		clear[3] = 1.0;
-		
-		setFallLimit(-50);
-		setStartPosition(0, -10, 0);
-		platform = new Platform(cube);
-		platform->Scale(5,1,5);
-		platform->Translate(0,-10,0);
-		platforms.push_back(platform);
-		
-=======
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
 	float *clear = new float[4];
@@ -692,7 +675,7 @@ void Level::Gavin() {
 
 
 	for (signed int  i = 26; i < 40; i ++) {
->>>>>>> 74a153cbc738a19333e74ad7d0b1ca10ef9342cb
+
 		platform = new Platform(cube);
 		platform->setCollapsible();
 		platform->Scale(1, 1, 1);
@@ -756,38 +739,6 @@ void Level::Amit() {
 	clear[2] = .5;
 	clear[3] = 1.0;
 
-<<<<<<< HEAD
-		for (signed int  i = 26; i < 35; i ++) {
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(1, 1, 1);
-		platform->Translate(0, -16, -i);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->setCollapsible();
-			platform->Scale(1, 1, 1);
-			platform->Translate(1, -16, -i);
-			platforms.push_back(platform);
-			collapsiblePlatforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->setCollapsible();
-			platform->Scale(1, 1, 1);
-			platform->Translate(-1, -16, -i);
-			platforms.push_back(platform);
-			collapsiblePlatforms.push_back(platform);
-
-			platform = new Platform(cube);
-			platform->setCollapsible();
-			platform->Scale(1, 1,1);
-			platform->Translate(2, -16, -i);
-			platforms.push_back(platform);
-			collapsiblePlatforms.push_back(platform);
-
-		}
-=======
 	setFallLimit(-200);
 
 	// start
@@ -803,7 +754,7 @@ void Level::Amit() {
 	platform->Translate(0, -20, -10);
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform); 
->>>>>>> 74a153cbc738a19333e74ad7d0b1ca10ef9342cb
+
 
 	// 2
 	platform = new Platform(cube);
@@ -813,45 +764,6 @@ void Level::Amit() {
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
-<<<<<<< HEAD
-		platform = new Platform(cube);
-		platform->setMoving(100, 0.0f, 0.1f, 0.0f);
-		platform->Scale(6, 2, 5);
-		platform->Translate(10, -16, -50);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->setMoving(100, 0.0f, 0.0f, -0.2f);
-		platform->Scale(6, 2, 5);
-		platform->Translate(15, -16, -60);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
-
-
-		platform = new Platform(cube);
-		platform->Scale(6, 2, 5);
-		platform->Translate(14, -16, -90);
-		platforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->Scale(2, 10, 10);
-		platform->Translate(21, -18, -120);
-		platforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->Scale(2, 10, 10);
-		platform->Translate(11, -18, -120);
-		platforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->Scale(10, 10, 2);
-		platform->Translate(15, -18, -120);
-		platforms.push_back(platform);
-
-		target = OpenMesh::Vec3f(0, 12, -25);
-}
-=======
 	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
 	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-22), OpenMesh::Vec3f(0,-5,-22)));
 
@@ -860,7 +772,7 @@ void Level::Amit() {
 	platform->Scale(4, 1, 4);
 	platform->Translate(-25, -30, -30);
 	platforms.push_back(platform);
->>>>>>> 74a153cbc738a19333e74ad7d0b1ca10ef9342cb
+
 
 	//Transit 1
 	platform = new Platform(cube);
