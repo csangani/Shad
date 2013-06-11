@@ -67,16 +67,16 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 2:
+	case 3:
 
 		Gavin();
 		break;
 	
-	case 1: 
+	case 2: 
 		Amit(); 
 		break; 
 
-	case 3:
+	case 4:
 		platform = new Platform(cube);
 		platform->Scale(3,1,3);
 		platform->Translate(0,-10,0);
@@ -113,7 +113,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 4:
+	case 1:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
