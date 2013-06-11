@@ -392,12 +392,13 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
 			if (!platformFound) {
 				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
+				int counter = movingPlatforms[i]->getCounter();
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
 					int beat = movingPlatforms[i]->getBeat();
 					deltaPoint %= beat;
 
-					if (deltaPoint < beat/2) {
+					if (counter < beat/2) {
 					}
 					else {
 						delta[0] = -delta[0];
@@ -412,6 +413,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
+					std::cout << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
@@ -452,6 +454,8 @@ bool Level::elevate(bool onGround, float charX, float charY, float charZ, Charac
 			if (!platformFound) {
 
 				platformFound = elevatablePlatforms[i]->carry(onGround, charX, charY, charZ);
+				int counter = elevatablePlatforms[i]->getCounter();
+
 				if (platformFound && elevatablePlatforms[i]->stopped() == false) {
 
 					OpenMesh::Vec3f delta = elevatablePlatforms[i]->getDirection();
@@ -741,7 +745,7 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(100, 0.2, 0, 0);
 		platform->Scale(8, 1, 8);
-		platform->Translate(-6, -30, -30);
+		platform->Translate(-6, -30, -15);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
