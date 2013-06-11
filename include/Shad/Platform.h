@@ -77,6 +77,7 @@ class Platform {
 		float initialX, initialY, initialZ;
 		float _angle, xaxis, yaxis, zaxis;
 		float runningTotalX, runningTotalY, runningTotalZ;
+		float carryCheckX, carryCheckY, carryCheckZ;
 		float limitX, limitY, limitZ;
 		bool collapsible;
 		bool collapsing;

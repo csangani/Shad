@@ -69,7 +69,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 	
 		//Gavin level
-	case 6:
+	case 1:
 
 		Johan();
 		break;
@@ -85,7 +85,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		//Johan();
 
 		break;
-	case 1: 
+	case 10: 
 		Amit(); 
 		break; 
 
@@ -507,6 +507,42 @@ void Level::Johan()
 	Platform *platform;
 	std::string cube = "assets\\obj\\cube.obj";
 	setFallLimit(-100.0);
+	setStartPosition(0,5,10);
+
+	//Intro
+	platform = new Platform(cube);
+	platform->Scale(3,1,1);
+	platform->Translate(0,0,10);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setElevator(0.0f, -0.2f, 0.1f, 0.0f, -50.0f, -14.0f);
+	platform->Scale(1, 1, 1);
+	platform->Translate(0,0,11);
+	platforms.push_back(platform);
+	elevatablePlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(1,1,1);
+	platform->Translate(-1.5,0,9);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(1,1,1);
+	platform->Translate(1.5,0,9);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(1,1,1);
+	platform->Translate(0,0,9);
+	platform->setCollapsible();
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(3,1,1);
+	platform->Translate(0,0,8);
+	platforms.push_back(platform);
 
 	//1st
 	platform = new Platform(cube);
@@ -572,7 +608,7 @@ void Level::Johan()
 
 	//Wall
 	platform = new Platform(cube);
-	platform->Scale(1,10,5);
+	platform->Scale(1,10,7);
 	platform->Translate(50,0,-39);
 	platforms.push_back(platform);
 
@@ -589,6 +625,14 @@ void Level::Johan()
 	platform->Scale(3,1,3);
 	platform->Translate(20,0,-39);
 	platforms.push_back(platform);
+
+	//Fake elevator
+	platform = new Platform(cube);
+	platform->setElevator(0.0f, -0.2f, 0.1f, 0.0f, -50.0f, -14.0f);
+	platform->Scale(1, 1, 1);
+	platform->Translate(20,0,-37);
+	platforms.push_back(platform);
+	elevatablePlatforms.push_back(platform);
 
 	//Target platform
 	platform = new Platform(cube);

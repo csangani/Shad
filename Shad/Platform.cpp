@@ -260,7 +260,7 @@ void Platform::shrink(uint64_t deltaPoint) {
 
 
 bool Platform::carry(bool onGround, float charX, float charY, float charZ) {
-	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ)
+	if (carryCheckX <= limitX && carryCheckY <= limitY && carryCheckZ <= limitZ)
 		collapse(onGround, charX, charY, charZ);
 	else
 		finish = true;
@@ -414,12 +414,15 @@ void Platform::setElevator(float xMove, float yMove, float zMove, float stopX, f
 	deltaX = xMove;
 	deltaY = yMove;
 	deltaZ = zMove;
-	limitX = stopX;
-	limitY = stopY;
-	limitZ = stopZ;
+	limitX = abs(stopX);
+	limitY = abs(stopY);
+	limitZ = abs(stopZ);
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
+	carryCheckX = 0;
+	carryCheckY = 0;
+	carryCheckZ = 0;
 
 	color[0] = 130.0f/255.0f;
 	color[1] = 2230.0f/255.0f;
@@ -458,6 +461,9 @@ void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 		runningTotalX += deltaX;
 		runningTotalY += deltaY;
 		runningTotalZ += deltaZ;
+		carryCheckX += abs(deltaX);
+		carryCheckY += abs(deltaY);
+		carryCheckZ += abs(deltaZ);
 	}
 }
 
@@ -467,6 +473,9 @@ void Platform::reset() {
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
+	carryCheckX = 0;
+	carryCheckY = 0;
+	carryCheckZ = 0;
 	finish = false;
 }
 
