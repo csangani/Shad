@@ -393,6 +393,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 			if (!platformFound) {
 				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
 				int counter = movingPlatforms[i]->getCounter();
+				
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
 					int beat = movingPlatforms[i]->getBeat();
@@ -870,53 +871,39 @@ void Level::Chirag() {
 	platform->Translate(0,-10.0f,0);
 	platforms.push_back(platform);
 
-	// start
-	platform = new Platform(cube);
-	platform->setCollapsible();
-	platform->Scale(5,1,1);
-	platform->Translate(0,-10.0f,-3);
-	platforms.push_back(platform);
-	collapsiblePlatforms.push_back(platform);
-
+	
 	lightningBolts.push_back(new Lightning(OVEC3F(-10.0f,-6,-2.5f), OVEC3F(10,-6, -2.5f)));
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-0.0f,0);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-10.0f,-6.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-0.0f,-6.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-10.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-0.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(6.0f,-10.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(6.0f,-0.0f,-12.0f);
@@ -928,6 +915,14 @@ void Level::Chirag() {
 	platform->setMoving(200, 0, 0.1f, 0);
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(1,1,5);
+	platform->Translate(9, 0.0f,-12);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
 
 	setTarget(6.0f, -9.5f, -12.0f);
 }
