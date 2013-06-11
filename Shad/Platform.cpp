@@ -27,6 +27,7 @@ Platform::Platform(std::string model) {
 	resetBool = true;
 	collapsing = false;
 	deformed = false;
+	elevator = false;
 
 	color[0] = 1.0f;
 	color[1] = 1.0f;
@@ -228,6 +229,19 @@ void Platform::shrink(uint64_t deltaPoint) {
 }
 
 
+bool Platform::carry(bool onGround, float charX, float charY, float charZ) {
+	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ < limitZ)
+		collapse(onGround, charX, charY, charZ);
+	else
+		finish = true;
+	return withInBounds(charX, charY, charZ);
+
+}
+
+bool Platform::stopped() {
+	return finish;
+}
+
 bool Platform::moveWChar(uint64_t deltaPoint, float charX, float charY, float charZ) {
 	move(deltaPoint);
 	return withInBounds(charX, charY, charZ);
@@ -352,17 +366,39 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
 			if (abs(charY - yBounds.high) < 1 && charY > yBounds.high) {
-				std::cout << "IN BOUNDS" << std::endl;
 				return true;
 			}
 		}
 	}
-	std::cout << "NOT IN BOUNDS" << std::endl;
 	return false;
 }
 
+void Platform::setElevator(float xMove, float yMove, float zMove, float stopX, float stopY, float stopZ) {
+	collapsible = true;
+	elevator = true;
+	finish = false;
+	deltaX = xMove;
+	deltaY = yMove;
+	deltaZ = zMove;
+	limitX = stopX;
+	limitY = stopY;
+	limitZ = stopZ;
+	runningTotalX = 0;
+	runningTotalY = 0;
+	runningTotalZ = 0;
+
+	color[0] = 130.0f/255.0f;
+	color[1] = 2230.0f/255.0f;
+	color[2] = 231.0f/255.0f;
+	color[3] = 1.0f;
+}
+
+
 void Platform::setCollapsible() {
 	collapsible = true;
+	deltaX = 0.0f;
+	deltaY = -0.2f;
+	deltaZ = 0.0f;
 	color[0] = 170.0f/255.0f;
 	color[1] = 240.0f/255.0f;
 	color[2] = 141.0f/255.0f;
@@ -382,10 +418,10 @@ bool Platform::checkIfGood(float limit) {
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
 
 	if (withInBounds(charX, charY, charZ) && onGround) {
-		Translate(0, -0.2, 0);
-		runningTotalX += 0;
-		runningTotalY -= 0.2;
-		runningTotalZ += 0;
+		Translate(deltaX, deltaY, deltaZ);
+		runningTotalX += deltaX;
+		runningTotalY += deltaY;
+		runningTotalZ += deltaZ;
 	}
 }
 
@@ -395,6 +431,7 @@ void Platform::reset() {
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
+	finish = false;
 }
 
 bool Platform::isCollapsible() {

@@ -17,7 +17,7 @@ Level::Level(int level) {
 	movingPlatforms = std::vector<Platform *>();
 	shrinkingPlatforms = std::vector<Platform *>(); 
 	collapsiblePlatforms = std::vector<Platform *>();
-	deformablePlatforms = std::vector<Platform *>();
+	elevatablePlatforms = std::vector<Platform *>();
 	btTransform id;
 	id.setIdentity();
 	id.setOrigin(BVEC3F(0, -1, 0));
@@ -77,7 +77,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 1: 
+	case 6: 
 		Amit(); 
 		break; 
 
@@ -118,7 +118,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 6:
+	case 1:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -130,12 +130,14 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 
 		platform = new Platform(cube);
+		platform->setElevator(0.1f, 0.0f, 0.1f, 3.0f, 0.0f, 3.0f);
 		platform->Scale(1, 1, 5);
 		platform->Translate(2,-10,0);
 		platforms.push_back(platform);
+		elevatablePlatforms.push_back(platform);
 
-		platform->setShrinking(2, 1.0, 1.0, 0.9);
-		shrinkingPlatforms.push_back(platform);
+		//platform->setShrinking(2, 1.0, 1.0, 0.9);
+		//shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
 		//platform->subdivide();
@@ -266,6 +268,10 @@ void Level::reset() {
 	{
 		collapsiblePlatforms[i]->reset();
 	}
+	for (unsigned int i = 0; i < elevatablePlatforms.size(); i++)
+	{
+		elevatablePlatforms[i]->reset();
+	}
 }
 
 void Level::changeUp() {
@@ -370,7 +376,7 @@ void Level::destroyPlatforms() {
 	movingPlatforms.clear();
 	collapsiblePlatforms.clear();
 	shrinkingPlatforms.clear();
-	deformablePlatforms.clear();
+	elevatablePlatforms.clear();
 	//delete placeholder;
 }
 
@@ -379,12 +385,12 @@ void Level::setTarget(float x, float y, float z) {
 }
 
 void Level::deform(bool onGround, float charX, float charY, float charZ) {
-	if (onGround) {
+/*	if (onGround) {
 		for (unsigned int i = 0; i < deformablePlatforms.size(); i++)
 		{
 			deformablePlatforms[i]->deform(onGround, charX, charY, charZ);
 		}
-	}
+	}*/
 }
 
 void Level::collapse(bool onGround, float charX, float charY, float charZ) {
@@ -427,7 +433,6 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
-					std::cout << delta[0] << " " << delta[1] <<" "<< delta[2] << std::endl;
 					if (delta[1] > 0) { 
 						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
 					}
@@ -441,7 +446,6 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 				}
 			}
 			else {
-				std::cout << "Not in bounds" << std::endl;
 				movingPlatforms[i]->move(deltaPoint);
 			}
 		}
@@ -449,6 +453,46 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 	else {
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
 			movingPlatforms[i]->move(deltaPoint);
+		}
+	}
+}
+
+void Level::elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
+	if (onGround == true) {
+		bool platformFound = false;
+		for(unsigned int i = 0; i < elevatablePlatforms.size(); i++) {
+			if (!platformFound) {
+
+				platformFound = elevatablePlatforms[i]->carry(onGround, charX, charY, charZ);
+				if (platformFound && elevatablePlatforms[i]->stopped() == false) {
+
+					OpenMesh::Vec3f delta = elevatablePlatforms[i]->getDirection();
+
+					btTransform id;
+					id.setIdentity();
+					if (delta[1] > 0 ){
+						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					}
+					else {
+						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					}
+					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+					btTransform armMovement;
+					armMovement.setIdentity();
+					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
+					if (delta[1] > 0) { 
+						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					}
+					else {
+						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					}
+					
+					break;
+			
+					//cape->SetOrigin(OpenMesh::Vec3f());
+				}
+			}
 		}
 	}
 }

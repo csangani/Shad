@@ -34,7 +34,7 @@ public:
 	bool lightningCollisionWithPoint(OpenMesh::Vec3f point);
 
 	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
-
+	void elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
 	void shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad);
 
 	void reset();
@@ -65,7 +65,7 @@ private:
 	std::vector<Platform *> movingPlatforms;
 	std::vector<Platform *> shrinkingPlatforms;
 	std::vector<Platform *> collapsiblePlatforms;
-	std::vector<Platform *> deformablePlatforms;
+	std::vector<Platform *> elevatablePlatforms;
 	PolyMesh *pinTarget;
 	Cloth *Cloak;
 	bitmap_image cloth_image;

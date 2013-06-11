@@ -30,6 +30,9 @@ class Platform {
 		bool isMoving();
 		bool isShrinking();
 
+
+		void setElevator(float xMove, float yMove, float zMove, float stopX, float stopY, float stopZ);
+
 		void setCollapsible();
 		bool isCollapsible();
 		int getBeat();
@@ -48,6 +51,8 @@ class Platform {
 		bool withInBounds(float charX, float charY, float charZ);
 
 		void collapse(bool onGround, float charX, float charY, float charZ);
+		bool carry(bool onGround, float charX, float charY, float charZ);
+
 		float * getColor();
 		void reset();
 
@@ -55,7 +60,7 @@ class Platform {
 
 		void deform(bool onGround, float charX, float charY, float charZ);
 
-
+		bool stopped();
 	private:
 		void GenerateVertices();
 		bool resetBool;
@@ -70,6 +75,7 @@ class Platform {
 		float initialX, initialY, initialZ;
 		float _angle, xaxis, yaxis, zaxis;
 		float runningTotalX, runningTotalY, runningTotalZ;
+		float limitX, limitY, limitZ;
 		bool collapsible;
 		bool collapsing;
 		bool deformed;
@@ -77,6 +83,9 @@ class Platform {
 		std::string mod;
 		int beats;
 		int scaleBeat;
+		bool elevator;
+		bool finish;
+
 };
 
 #endif
