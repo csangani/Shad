@@ -724,73 +724,61 @@ void Level::Amit() {
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
 		
-
 	    // 1
 		platform = new Platform(cube);
 		platform->setMoving(2, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-4, -14, -8);
+		platform->Translate(-4, -10, -10);
 		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
- 
-        // shrinking has bugs
+		movingPlatforms.push_back(platform); 
 		
-		
-		platform = new Platform(cube);
-
-		platform->Scale(6, 1, 7);
-		platform->Translate(-8, -10, 2);
-		//platform->setShrinking(2, 1.0, 1.0, 0.98); 
-
-		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
-		
-
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
-
-
-		
-
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(6, 2, 2);
-		platform->Translate(0, -16, -8);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
-
-		platform = new Platform(cube);
-		platform->setCollapsible();
-		platform->Scale(6, 2, 2);
-		platform->Translate(0, -16, -10);
-		platforms.push_back(platform);
-		collapsiblePlatforms.push_back(platform);
-
-		platform->Translate(0, -30, -12);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
- 
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(2, 0, 0, 0.1);
-		platform->Scale(10, 1, 10);
+		platform->setMoving(2, 0.2, 0, 0);
+		platform->Scale(6, 1, 6);
 		platform->Translate(-6, -30, -20);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
+
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(2,-40,-20), OpenMesh::Vec3f(2,-20,-20)));
+	    lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(3,-40,-22), OpenMesh::Vec3f(3,-20,-22)));
  
 		// 3
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-15, -30, -30);
+		platform->Translate(-25, -30, -30);
+		platforms.push_back(platform);
+
+		//Transit 1
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 6);
+		platform->Translate(-35, -29, -40);
 		platforms.push_back(platform);
  
+		//Transit 2
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(6, 2, 6);
+		platform->Translate(-45, -28, -30);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+		
+		//Transit 3
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 6);
+		platform->Translate(-55, -27, -20);
+		platforms.push_back(platform);
+		
 		// 4
 		platform = new Platform(cube);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-20, -25, -25);
+		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
 
+		/*
 		// 5
 		platform = new Platform(cube);
+		platform->setCollapsible(); 
 		platform->Scale(4, 1, 4);
 		platform->Translate(-25, -20, -25);
 		platforms.push_back(platform);
@@ -799,9 +787,11 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(2, 0.1, 0, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-20, -25, -25);
+		platform->Translate(-30, -10, -40);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
+
+		*/
 
 		// shrinking has bugs
 		
@@ -823,7 +813,6 @@ void Level::Amit() {
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
-
 void Level::Chirag() {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;
