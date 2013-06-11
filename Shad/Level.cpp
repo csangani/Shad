@@ -63,7 +63,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 1:
+	case 3:
 
 		Gavin();
 		break;
@@ -85,7 +85,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		//Johan();
 
 		break;
-	case 3: 
+	case 1: 
 		Amit(); 
 		break; 
 
@@ -792,7 +792,7 @@ void Level::Amit() {
 	clear[2] = .5;
 	clear[3] = 1.0;
 
-	setFallLimit(-800);
+	setFallLimit(-300);
 
 	// start
 	platform = new Platform(cube);
@@ -811,13 +811,13 @@ void Level::Amit() {
 
 	// 2
 	platform = new Platform(cube);
-	platform->setMoving(100, 0.15, 0, 0);
+	platform->setMoving(100, 0.2, 0, 0);
 	platform->Scale(8, 1, 8);
-	platform->Translate(0, -30, -15);
+	platform->Translate(-10, -30, -20);
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
-	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
 	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-22), OpenMesh::Vec3f(0,-5,-22)));
 
 	// 3
@@ -876,14 +876,14 @@ void Level::Amit() {
 		platform->Scale(4, 1, 4);
 		platform->Translate(-85, -50, -28);
 		platforms.push_back(platform);
-		platform->setShrinking(100, 0.96); 
+		platform->setShrinking(100, 0.98); 
 		shrinkingPlatforms.push_back(platform); 
 
 
 		// Wall
 		platform = new Platform(cube);
 		platform->Scale(1, 15, 15);
-		platform->Translate(-90, -50, -28);
+		platform->Translate(-90, -35, -28);
 		platforms.push_back(platform);
 
 
