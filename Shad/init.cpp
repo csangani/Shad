@@ -646,7 +646,7 @@ namespace Window
 				btTransform newTransform;
 				newTransform.setIdentity();
 				newTransform.setRotation(btQuaternion(BVEC3F(0,1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform)
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && !Forward) {
 				// animate arms
