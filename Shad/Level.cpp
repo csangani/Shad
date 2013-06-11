@@ -62,18 +62,25 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
-		//Gavin level
-	case 6:
+	//Gavin level
+	case 1:
 
 		Gavin();
 		break;
+	
+		//Gavin level
+	case 6:
+
+		Johan();
+		break;
 
 
-	case 1:
+	case 2:
 		Chirag();
 		//Johan();
+
 		break;
-	case 2: 
+	case 3: 
 		Amit(); 
 		break; 
 
@@ -98,7 +105,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 
 
-	case 3:
+	case 8:
 
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
@@ -415,7 +422,6 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
-					std::cout << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
@@ -669,6 +675,7 @@ void Level::Gavin() {
 
 
 	for (signed int  i = 26; i < 40; i ++) {
+
 		platform = new Platform(cube);
 		platform->setCollapsible();
 		platform->Scale(1, 1, 1);
@@ -748,6 +755,7 @@ void Level::Amit() {
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform); 
 
+
 	// 2
 	platform = new Platform(cube);
 	platform->setMoving(100, 0.15, 0, 0);
@@ -764,6 +772,7 @@ void Level::Amit() {
 	platform->Scale(4, 1, 4);
 	platform->Translate(-25, -30, -30);
 	platforms.push_back(platform);
+
 
 	//Transit 1
 	platform = new Platform(cube);
