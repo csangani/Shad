@@ -63,7 +63,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 6:
+	case 1:
 
 		Gavin();
 		break;
@@ -71,9 +71,9 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 	case 2:
 		Johan();
-	break;
+		break;
 	
-	case 1:
+	case 6:
 
 		Amit(); 
 		break; 
@@ -592,6 +592,7 @@ void Level::Gavin() {
 		clear[3] = 1.0;
 		
 		setFallLimit(-50);
+		setStartPosition(0, -10, 0);
 		platform = new Platform(cube);
 		platform->Scale(5,1,5);
 		platform->Translate(0,-10,0);
@@ -705,11 +706,19 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 
 		platform = new Platform(cube);
-		platform->Scale(6, 1, 5);
-		platform->Translate(6, -17, 0);
-		platform->setMoving(4, 0, 0.5, 0);
+		platform->setMoving(100, 0.0f, 0.1f, 0.0f);
+		platform->Scale(6, 2, 5);
+		platform->Translate(10, -16, -50);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->setMoving(100, 0.0f, 0.0f, -0.5f);
+		platform->Scale(6, 2, 5);
+		platform->Translate(15, -16, -50);
+		platforms.push_back(platform);
+		movingPlatforms.push_back(platform);
+
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
