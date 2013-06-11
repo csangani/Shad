@@ -733,20 +733,20 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-4, -10, -10);
+		platform->Translate(0, -20, -20);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform); 
 		
         // 2
 		platform = new Platform(cube);
 		platform->setMoving(100, 0.2, 0, 0);
-		platform->Scale(6, 1, 6);
-		platform->Translate(-6, -30, -20);
+		platform->Scale(8, 1, 8);
+		platform->Translate(-6, -30, -30);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(2,-40,-20), OpenMesh::Vec3f(2,-20,-20)));
-	    lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(3,-40,-22), OpenMesh::Vec3f(3,-20,-22)));
+		//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
+	    //lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-22), OpenMesh::Vec3f(0,-5,-22)));
  
 		// 3
 		platform = new Platform(cube);
@@ -780,10 +780,22 @@ void Level::Amit() {
 		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
 
+		// 5
 		platform = new Platform(cube);
-		platform->Scale(6, 2, 5);
-		platform->Translate(0, -16, -50);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
+
+		// Downward slopes
+	    
+		for (int i = 0; i < 10; i++) {
+		platform = new Platform(cube);
+		platform->Scale(3,2,1);
+		platform->Translate(-55-i,-45-i,-28);
+		platforms.push_back(platform);
+	}
+
+	target = OpenMesh::Vec3f(0, 12, -25);
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
