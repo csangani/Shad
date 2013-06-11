@@ -67,7 +67,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 3:
+	case 1:
 
 		Gavin();
 		break;
@@ -77,7 +77,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 1: 
+	case 3: 
 		Amit(); 
 		break; 
 
