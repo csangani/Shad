@@ -730,7 +730,7 @@ void Level::Gavin() {
 
 	platform = new Platform(cube);
 	platform->Scale(2, 10, 10);
-	platform->Translate(2, -16, -55);
+	platform->Translate(2, -16, -57);
 	platforms.push_back(platform);
 
 	platform = new Platform(cube);
@@ -740,8 +740,40 @@ void Level::Gavin() {
 	platforms.push_back(platform);
 	shrinkingPlatforms.push_back(platform);
 
+	platform = new Platform(cube);
+	platform->setShrinking(50, .95);
+	platform->Scale(7, 5, 2);
+	platform->Translate(0, -12, -42);
+	platforms.push_back(platform);
+	shrinkingPlatforms.push_back(platform);
 
-	target = OpenMesh::Vec3f(0, 12, -25);
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(2, 2, 2);
+	platform->Translate(0, -16, -70);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(2, 2, 2);
+	platform->Translate(10, -16, -70);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setMoving(100, 0.1f, 0.0f, 0.0f);
+	platform->Scale(2, 2, 2);
+	platform->Translate(10, -16, -75);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(2, 2, 2);
+	platform->Translate(20, -16, -75);
+	platforms.push_back(platform);
+
+	target = OpenMesh::Vec3f(20, -15, -75);
 }
 
 
