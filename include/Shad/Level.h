@@ -34,7 +34,7 @@ public:
 	bool lightningCollisionWithPoint(OpenMesh::Vec3f point);
 
 	void move(uint64_t deltaPoint, bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
-	void elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
+	bool elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape);
 	void shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad);
 
 	void reset();

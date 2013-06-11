@@ -458,7 +458,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 	}
 }
 
-void Level::elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
+bool Level::elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < elevatablePlatforms.size(); i++) {
@@ -477,10 +477,13 @@ void Level::elevate(bool onGround, float charX, float charY, float charZ, Charac
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
+
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
-					((Character *)Shad)->RigidBody->warp(id.getOrigin());
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					((Character *)Shad)->SyncDummy();
+
+
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
@@ -490,14 +493,14 @@ void Level::elevate(bool onGround, float charX, float charY, float charZ, Charac
 					else {
 					//	((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
-					
-					break;
+					return true;
 			
 					//cape->SetOrigin(OpenMesh::Vec3f());
 				}
 			}
 		}
 	}
+	return false;
 }
 
 void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad) {
