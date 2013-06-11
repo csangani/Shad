@@ -173,8 +173,8 @@ void Platform::setShrinking(float scaleX, float scaleY, float scaleZ) {
 	_shrinkX = scaleX;
 	_shrinkY = scaleY;
 	_shrinkZ = scaleZ;
-	color[0] = 0.0f;
-	color[1] = 1.0f;
+	color[0] = 1.0f;
+	color[1] = 0.0f;
 	color[2] = 0.0f;
 	color[3] = 1.0f;
 }

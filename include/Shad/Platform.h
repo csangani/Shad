@@ -76,6 +76,7 @@ class Platform {
 		float color[4];
 		std::string mod;
 		int beats;
+		int scaleBeat;
 };
 
 #endif
