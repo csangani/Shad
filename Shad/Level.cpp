@@ -67,13 +67,13 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 1:
+	case 2:
 
 		Gavin();
 	
 		break;
 
-	case 2:
+	case 3:
 		platform = new Platform(cube);
 		platform->Scale(3,1,3);
 		platform->Translate(0,-10,0);
@@ -108,7 +108,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		target = OpenMesh::Vec3f(0, -12, -11);
 		break;
-	case 3:
+	case 1:
 
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
@@ -401,14 +401,23 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					}
 					btTransform id;
 					id.setIdentity();
-					id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
-	
+					if (delta[1] > 0 ){
+						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					}
+					else {
+						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					}
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
-					((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					if (delta[1] > 0) { 
+						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					}
+					else {
+						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					}
 					
 
 			
