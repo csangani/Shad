@@ -11,6 +11,8 @@ class PlatformEdge {
 		PlatformEdge(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint);
 		void Draw();
 		void Scale(float scalex, float scaley, float scalez);
+		void SpecialScale(float scalex, float scaley, float scalez);
+
 		void Translate(float tx, float ty, float tz);
 		void Rotate(float angle, float x, float y, float z);
 		void Draw(float * color);

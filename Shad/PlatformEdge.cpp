@@ -20,6 +20,12 @@ void PlatformEdge::Scale(float scalex, float scaley, float scalez)
 	endPoint_ = OpenMesh::Vec3f(endPoint_[0]*scalex, endPoint_[1]*scaley, endPoint_[2]*scalez);
 }
 
+void PlatformEdge::SpecialScale(float scalex, float scaley, float scalez)
+{
+	startPoint_ = OpenMesh::Vec3f(startPoint_[0]*scalex, startPoint_[1]*scaley, startPoint_[2]*scalez);
+	endPoint_ = OpenMesh::Vec3f(endPoint_[0]*scalex, endPoint_[1]*scaley, endPoint_[2]*scalez);
+}
+
 void PlatformEdge::Translate(float tx, float ty, float tz)
 {
 	startPoint_ = OpenMesh::Vec3f(startPoint_[0]+tx, startPoint_[1]+ty, startPoint_[2]+tz);

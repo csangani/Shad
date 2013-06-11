@@ -133,7 +133,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platform->Scale(1, 1, 5);
 		platform->Translate(2,-10,0);
 		platforms.push_back(platform);
-		platform->setShrinking(10, 1.0, 1.0, 0.985);
+
+		platform->setShrinking(2, 1.0, 1.0, 0.9);
 		shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
@@ -675,28 +676,37 @@ void Level::Amit() {
 		clear[3] = 1.0;
 		
 		setFallLimit(-50);
+
+		// start
 		platform = new Platform(cube);
 		platform->Scale(5,1,5);
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
 		
+
+	    // 1
 		platform = new Platform(cube);
 		platform->setMoving(2, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(0, -20, -12);
-		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
-
-	
+		platform->Translate(-4, -10, -12);
+	//	platforms.push_back(platform);
+	//	movingPlatforms.push_back(platform);
+ 
+        // shrinking has bugs
+		
+		
 		platform = new Platform(cube);
-		platform->Scale(6, 1, 4);
-		platform->Translate(-8, -10, -5);
-		platform->setShrinking(10, 0.9, 1.0, 1.0); 
+
+		platform->Scale(6, 1, 7);
+		platform->Translate(-8, -10, 2);
+		platform->setShrinking(2, 1.0, 1.0, 0.98); 
 
 		platforms.push_back(platform);
 		shrinkingPlatforms.push_back(platform);
 		
+
 		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
+
 
 		/*
 

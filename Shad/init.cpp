@@ -801,8 +801,6 @@ namespace Window
 
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad, Game::cape);
 			Game::currentLevel->collapse(onGround, charX, charY, charZ);
-			Game::currentLevel->deform(onGround, charX, charY, charZ);
-
 			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
 
 			//Game::deltaPoint++;
