@@ -73,7 +73,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 1: 
+	case 1:
 
 		Amit(); 
 		break; 
@@ -416,6 +416,8 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					((Character *)Shad)->SyncDummy();
+
+
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
