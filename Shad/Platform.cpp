@@ -274,6 +274,10 @@ bool Platform::moveWChar(uint64_t deltaPoint, float charX, float charY, float ch
 
 }
 
+int Platform::getCounter() {
+	return counter;
+}
+
 bool Platform::withInBounds(float charX, float charY, float charZ) {
 	struct bounds xBounds;
 	xBounds.set = false;

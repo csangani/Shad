@@ -73,7 +73,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 3: 
+	case 1:
 
 		Amit(); 
 		break; 
@@ -98,7 +98,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 1:
+	case 3:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -392,12 +392,13 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 		for(unsigned int i = 0; i < movingPlatforms.size(); i++) {
 			if (!platformFound) {
 				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
+				int counter = movingPlatforms[i]->getCounter();
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
 					int beat = movingPlatforms[i]->getBeat();
 					deltaPoint %= beat;
 
-					if (deltaPoint < beat/2) {
+					if (counter < beat/2) {
 					}
 					else {
 						delta[0] = -delta[0];
@@ -412,10 +413,13 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
+					std::cout << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
-					((Character *)Shad)->RigidBody->warp(id.getOrigin());
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					((Character *)Shad)->SyncDummy();
+
+
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
@@ -443,13 +447,15 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 	}
 }
 
-void Level::elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
+bool Level::elevate(bool onGround, float charX, float charY, float charZ, Character * Shad, ParticleCloth * cape) {
 	if (onGround == true) {
 		bool platformFound = false;
 		for(unsigned int i = 0; i < elevatablePlatforms.size(); i++) {
 			if (!platformFound) {
 
 				platformFound = elevatablePlatforms[i]->carry(onGround, charX, charY, charZ);
+				int counter = elevatablePlatforms[i]->getCounter();
+
 				if (platformFound && elevatablePlatforms[i]->stopped() == false) {
 
 					OpenMesh::Vec3f delta = elevatablePlatforms[i]->getDirection();
@@ -462,10 +468,13 @@ void Level::elevate(bool onGround, float charX, float charY, float charZ, Charac
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
+
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
-					((Character *)Shad)->RigidBody->warp(id.getOrigin());
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					((Character *)Shad)->SyncDummy();
+
+
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
@@ -475,14 +484,14 @@ void Level::elevate(bool onGround, float charX, float charY, float charZ, Charac
 					else {
 					//	((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
-					
-					break;
+					return true;
 			
 					//cape->SetOrigin(OpenMesh::Vec3f());
 				}
 			}
 		}
 	}
+	return false;
 }
 
 void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, Character * Shad) {
@@ -726,22 +735,22 @@ void Level::Amit() {
 		
 	    // 1
 		platform = new Platform(cube);
-		platform->setMoving(2, 0, 0.2, 0);
+		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-4, -10, -10);
+		platform->Translate(0, -20, -10);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform); 
 		
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(2, 0.2, 0, 0);
-		platform->Scale(6, 1, 6);
-		platform->Translate(-6, -30, -20);
+		platform->setMoving(100, 0, 0.2, 0);
+		platform->Scale(8, 1, 8);
+		platform->Translate(-6, -30, -15);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
-		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(2,-40,-20), OpenMesh::Vec3f(2,-20,-20)));
-	    lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(3,-40,-22), OpenMesh::Vec3f(3,-20,-22)));
+		//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-20), OpenMesh::Vec3f(0,-5,-20)));
+	    //lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-25,-22), OpenMesh::Vec3f(0,-5,-22)));
  
 		// 3
 		platform = new Platform(cube);
@@ -775,44 +784,26 @@ void Level::Amit() {
 		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
 
-		/*
 		// 5
 		platform = new Platform(cube);
-		platform->setCollapsible(); 
 		platform->Scale(4, 1, 4);
-		platform->Translate(-25, -20, -25);
+		platform->Translate(-35, -26, -10);
 		platforms.push_back(platform);
-		
-		// 6
+
+		// Downward slopes
+	    
+		for (int i = 0; i < 10; i++) {
 		platform = new Platform(cube);
-		platform->setMoving(2, 0.1, 0, 0);
-		platform->Scale(4, 1, 4);
-		platform->Translate(-30, -10, -40);
+		platform->Scale(3,2,1);
+		platform->Translate(-55-i,-45-i,-28);
 		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
+	}
 
-		*/
-
-		// shrinking has bugs
-		
-		/*
-		platform = new Platform(cube);
-		platform->setShrinking(2, 1.0, 0.995, 1.0); 
-		platform->Scale(6, 1, 4);
-		platform->Translate(-8, -14, -18);
-		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
-		*/
-
-		//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
-
-		platform = new Platform(cube);
-		platform->Scale(6, 2, 5);
-		platform->Translate(0, -16, -50);
-		platforms.push_back(platform);
+	target = OpenMesh::Vec3f(0, 12, -25);
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
+
 void Level::Chirag() {
 	std::string cube = "assets\\obj\\cube.obj";
 	Platform *platform;

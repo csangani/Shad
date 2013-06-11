@@ -803,8 +803,12 @@ namespace Window
 
 			Game::currentLevel->move(time, onGround, charX, charY, charZ, Game::Shad, Game::cape);
 			Game::currentLevel->collapse(onGround, charX, charY, charZ);
-			Game::currentLevel->elevate(onGround, charX, charY, charZ, Game::Shad, Game::cape);
+			bool elevated = Game::currentLevel->elevate(onGround, charX, charY, charZ, Game::Shad, Game::cape);
+			if (elevated) {
 
+				//btQuaternion bt = ((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation();
+				//Game::Direction = BVEC3F(0,0,-1).rotate(bt.getAxis(), bt.getAngle());
+			}
 			Game::currentLevel->shrink(time, charX, charY, charZ, Game::Shad);
 
 			//Game::deltaPoint++;
@@ -864,7 +868,7 @@ int main (int argc, char **argv)
 	glutCreateWindow(Window::Title.c_str());
 
 	// Go fullscreen
-	//glutFullScreen();
+	glutFullScreen();
 
 	Window::Width = glutGet(GLUT_WINDOW_WIDTH);
 	Window::Height = glutGet(GLUT_WINDOW_HEIGHT);

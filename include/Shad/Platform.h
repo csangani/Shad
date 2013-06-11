@@ -57,6 +57,7 @@ class Platform {
 		void reset();
 
 		void subdivide();
+		int getCounter();
 
 		void deform(bool onGround, float charX, float charY, float charZ);
 
