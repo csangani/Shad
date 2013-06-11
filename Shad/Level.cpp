@@ -414,7 +414,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					}
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
-					((Character *)Shad)->RigidBody->warp(id.getOrigin());
+					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
 					((Character *)Shad)->SyncDummy();
 					btTransform armMovement;
 					armMovement.setIdentity();
