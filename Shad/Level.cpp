@@ -131,11 +131,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 
 		platform = new Platform(cube);
-		platform->setShrinking(200, 1.002);
+		platform->setElevator(0.0f, 0.1f, 1.0f, 0.0f, 20.0f, 20.0f);
 		platform->Scale(1, 1, 5);
 		platform->Translate(2,-10,-10);
 		platforms.push_back(platform);
-		shrinkingPlatforms.push_back(platform);
+		elevatablePlatforms.push_back(platform);
 
 
 		platform = new Platform(cube);

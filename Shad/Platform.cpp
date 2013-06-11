@@ -257,7 +257,7 @@ void Platform::shrink(uint64_t deltaPoint) {
 
 
 bool Platform::carry(bool onGround, float charX, float charY, float charZ) {
-	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ < limitZ)
+	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ)
 		collapse(onGround, charX, charY, charZ);
 	else
 		finish = true;
