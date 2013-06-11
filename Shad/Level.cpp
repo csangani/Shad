@@ -737,13 +737,13 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(0, -20, -20);
+		platform->Translate(0, -20, -10);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform); 
 		
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(100, 0.2, 0, 0);
+		platform->setMoving(100, 0, 0.2, 0);
 		platform->Scale(8, 1, 8);
 		platform->Translate(-6, -30, -15);
 		platforms.push_back(platform);
