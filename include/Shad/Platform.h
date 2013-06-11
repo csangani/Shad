@@ -25,7 +25,7 @@ class Platform {
 
 		void setMoving(int beats, float deltaX, float deltaY, float deltaZ);
 		
-		void setShrinking(float deltaX, float deltaY, float deltaZ);
+		void setShrinking(int beats, float deltaX, float deltaY, float deltaZ);
 		
 		bool isMoving();
 		bool isShrinking();

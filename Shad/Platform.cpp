@@ -168,7 +168,8 @@ int Platform::getBeat() {
 	return beats;
 }
 
-void Platform::setShrinking(float scaleX, float scaleY, float scaleZ) {
+void Platform::setShrinking(int _beat, float scaleX, float scaleY, float scaleZ) {
+	beats = _beat;
 	shrinking = true;
 	_shrinkX = scaleX;
 	_shrinkY = scaleY;
@@ -205,9 +206,11 @@ void Platform::move(uint64_t deltaPoint) {
 
 void Platform::shrink(uint64_t deltaPoint) {
 
+	deltaPoint%=beats; 
+
 	OpenMesh::Vec3f shrinking = getShrinking();
 
-	if (deltaPoint < 5) {
+	if (deltaPoint < beats/2) {
 		platformMesh->Scale(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
 		for (unsigned int i = 0; i < edges.size(); i++)
 			edges[i]->Scale(shrinking[0], shrinking[1], shrinking[2]);
