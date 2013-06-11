@@ -77,7 +77,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		Johan();
 	break;
 	
-	case 6: 
+	case 1: 
 		Amit(); 
 		break; 
 
@@ -118,12 +118,12 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 1:
+	case 6:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
-		platform->setMoving(10, 0, 0, 0.01);
+		platform->setMoving(10, 0, 0.1, 0.0);
 		movingPlatforms.push_back(platform);
 
 		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
@@ -423,21 +423,23 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					btTransform id;
 					id.setIdentity();
 					if (delta[1] > 0 ){
-						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
-					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+
+					((Character *)Shad)->RigidBody->warp(id.getOrigin());
+					((Character *)Shad)->SyncDummy();
 					btTransform armMovement;
 					armMovement.setIdentity();
 					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
 					if (delta[1] > 0) { 
-						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+					//	((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
 					}
 					else {
-						((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					//	((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
 					
 					break;
@@ -738,9 +740,9 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(2, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(-4, -10, -12);
-	//	platforms.push_back(platform);
-	//	movingPlatforms.push_back(platform);
+		platform->Translate(-4, -14, -8);
+		platforms.push_back(platform);
+		movingPlatforms.push_back(platform);
  
         // shrinking has bugs
 		

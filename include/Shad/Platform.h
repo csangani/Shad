@@ -85,6 +85,7 @@ class Platform {
 		int scaleBeat;
 		bool elevator;
 		bool finish;
+		int counter;
 
 };
 

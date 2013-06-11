@@ -37,6 +37,8 @@ Platform::Platform(std::string model) {
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
+
+	counter = 0;
 }
 
 Platform::~Platform() {
@@ -163,6 +165,13 @@ void Platform::setMoving(int _beat, float _deltaX, float _deltaY, float _deltaZ)
 	color[1] = 1.0f;
 	color[2] = 0.0f;
 	color[3] = 1.0f;
+	int l = _beat/=2;
+	limitX = _deltaX*l;
+	limitY = _deltaY*l;
+	limitZ = _deltaZ*l;
+	runningTotalX = 0;
+	runningTotalY = 0;
+	runningTotalZ = 0;
 }
 
 int Platform::getBeat() {
@@ -195,15 +204,27 @@ void Platform::move(uint64_t deltaPoint) {
 	deltaPoint%=beats;
 	OpenMesh::Vec3f direction = getDirection();
 	if (deltaPoint < beats/2) {
-		platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(direction[0], direction[1], direction[2]);
+	//	if (runningTotalX <= limitX && runningTotalY <= limitY && runningTotalZ <= limitZ) {
+			platformMesh->Translate(OpenMesh::Vec3f(direction[0], direction[1], direction[2]));
+			for (unsigned int i = 0; i < edges.size(); i++)
+				edges[i]->Translate(direction[0], direction[1], direction[2]);
+			runningTotalX += direction[0];
+			runningTotalY += direction[1];
+			runningTotalZ += direction[2];
+	//	}
 	}
 	else {
-		platformMesh->Translate(OpenMesh::Vec3f(-direction[0], -direction[1], -direction[2]));
-		for (unsigned int i = 0; i < edges.size(); i++)
-			edges[i]->Translate(-direction[0], -direction[1], -direction[2]);
+	//	if (runningTotalX >= limitX && runningTotalY >= limitY && runningTotalZ >= limitZ) {
+
+			platformMesh->Translate(OpenMesh::Vec3f(-direction[0], -direction[1], -direction[2]));
+			for (unsigned int i = 0; i < edges.size(); i++)
+				edges[i]->Translate(-direction[0], -direction[1], -direction[2]);
+			runningTotalX -= direction[0];
+			runningTotalY -= direction[1];
+			runningTotalZ -= direction[2];
+	//	}
 	}
+
 }
 
 void Platform::shrink(uint64_t deltaPoint) {
