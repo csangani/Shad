@@ -909,7 +909,7 @@ void Level::Chirag() {
 	platform = new Platform(cube);
 	platform->Scale(5, 1, 5);
 	platform->Translate(12.0f, -20.0f, -12.0f);
-	platform->setMoving(400, 0, 0.1f, 0);
+	platform->setMoving(200, 0, 0.2f, 0);
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
@@ -950,12 +950,64 @@ void Level::Chirag() {
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24, 0, 0);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24.0f, -2.0f, -4.0f);
+	platform->setMoving(20, 0, 1.0, 0);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+	
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24, 0, -8);
+	platforms.push_back(platform);
+	
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -10);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -11);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -12);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -13);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -14);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 5);
+	platform->Translate(-24, 0, -17);
+	platforms.push_back(platform);
+
 	lightningBolts.push_back(new Lightning(OVEC3F(-9.0f, 0, -3), OVEC3F(-9.0f, 5, -3)));
 
 	lightningBolts.push_back(new Lightning(OVEC3F(-4.5f, 0, 3), OVEC3F(-4.5f, 5, 3)));
 
 	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3)));
-
 
 	setTarget(6.0f, -9.5f, -12.0f);
 }
