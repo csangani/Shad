@@ -448,8 +448,6 @@ namespace Window
 
 		btTransform id = Game::currentLevel->getStartPosition();
 		((Character *)Game::Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
-		// THIS LINE IS NEEDED TO PREVENT INFINITE DEATH
-		((Character *)Game::Shad)->RigidBody->setVelocityForTimeInterval(btVector3(0, 1000, 0), 0.1);
 
 		Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 		cape_image = bitmap_image("assets\\bmp\\cape_texture_2.bmp");
