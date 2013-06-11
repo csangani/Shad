@@ -65,12 +65,15 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*	deformable ones go into deformablePlatforms
 	*/
 	switch(_level) {
-	//Gavin level
-	case 1:
 
+	//Gavin level
+	case 4:
 		Gavin();
-	
 		break;
+	
+	case 3: 
+		Amit(); 
+		break; 
 
 	case 2:
 		platform = new Platform(cube);
@@ -107,8 +110,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		target = OpenMesh::Vec3f(0, -12, -11);
 		break;
-	case 3:
 
+	case 1:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -176,7 +179,8 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		target = OpenMesh::Vec3f(0, -14, -22);
 		break;
-	case 4:
+
+	case 5:
 		platform = new Platform(cube);
 		platform->Scale(3, 1, 3);
 		platform->Translate(0, -5, 0);
@@ -520,7 +524,7 @@ void Level::Gavin() {
 		platform->Translate(0, -16, -i);
 		platforms.push_back(platform);
 		collapsiblePlatforms.push_back(platform);
-		
+
 			platform = new Platform(cube);
 			platform->setCollapsible();
 			platform->Scale(1, 1, 1);
@@ -563,7 +567,6 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
-
 		/*
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -25));
 		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-11.7f, -25));
@@ -583,8 +586,164 @@ void Level::Gavin() {
 		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
 		*/
 
+		target = OpenMesh::Vec3f(0, 12, -25);
+}
 
 
+void Level::Amit() {
+
+		std::string cube = "assets\\obj\\cube.obj";
+		Platform *platform;
+		float *clear = new float[4];
+		clear[0] = .5;
+		clear[1] = .5;
+		clear[2] = .5;
+		clear[3] = 1.0;
+		
+		setFallLimit(-50);
+		platform = new Platform(cube);
+		platform->Scale(5,1,5);
+		platform->Translate(0,-10,0);
+		platforms.push_back(platform);
+		
+		platform = new Platform(cube);
+		platform->setMoving(2, 0, 0.2, 0);
+		platform->Scale(4, 1, 4);
+		platform->Translate(0, -20, -12);
+		platforms.push_back(platform);
+		movingPlatforms.push_back(platform);
+
+	
+		platform = new Platform(cube);
+		platform->Scale(6, 1, 4);
+		platform->Translate(-8, -14, -18);
+		platforms.push_back(platform);
+		platform->setShrinking(true, 1.0, 1.0, 0.985); 
+		shrinkingPlatforms.push_back(platform);
+		
+		lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-10,-6,-6),OpenMesh::Vec3f(-10,-2,-6)));
+
+		/*
+
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(6, 2, 2);
+		platform->Translate(0, -16, -8);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(6, 2, 2);
+		platform->Translate(0, -16, -10);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(6, 2, 2);
+		platform->Translate(0, -16, -12);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(2, 15, 5);
+		platform->Translate(2, -16, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(2, 15, 5);
+		platform->Translate(-2, -16, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 0.5);
+		platform->Translate(0, -10, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 0.5);
+		platform->Translate(0, -16, -16);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 5);
+		platform->Translate(0, -16, -22);
+		platforms.push_back(platform);
+
+		*/
+
+		for (signed int  i = 26; i < 40; i ++) {
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(1, 1, 1);
+		platform->Translate(0, -16, -i);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+		
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(1, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(-1, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1,1);
+			platform->Translate(2, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
+
+			platform = new Platform(cube);
+			platform->setCollapsible();
+			platform->Scale(1, 1, 1);
+			platform->Translate(-2, -16, -i);
+			platforms.push_back(platform);
+			collapsiblePlatforms.push_back(platform);
+
+		}
+
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 5);
+		platform->Translate(0, -16, -50);
+		platforms.push_back(platform);
+
+		/*
+		platform = new Platform(cube);
+		platform->Scale(6, 2, 5);
+		platform->Translate(4, -14, -50);
+		platform->setMoving(4, 0, 1, 0);
+		platforms.push_back(platform);
+		movingPlatforms.push_back(platform);
+		*/
+
+
+		/*
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(-0.7f,-11.7f, -25));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(0.1f,1.4f,0.1f)->Translate(0.7f,-11.7f, -25));
+		platforms.push_back((new Platform("assets\\obj\\cube.obj"))->Scale(1.5f,0.1f,0.1f)->Translate(0,-10.95, -25));
+		pinTarget = (*platforms.rbegin())->platformMesh;
+
+		Cloak = new Cloth(0.001f, 0.0005f, 0.0005f, OVEC3F(0,-1,0), OVEC3F(1,0,0), OVEC3F(-0.6f, -11.05f, -11),12,12,1.2f,0.1f,0.1f, BVEC3F(0,0,0.0006f));
+		Cloak->EnableLighting();
+		Cloak->Pin(0,0,pinTarget->RigidBody, new BVEC3F(-0.5f,-0.1f,0));
+		Cloak->Pin(0,11,pinTarget->RigidBody, new BVEC3F(0.5f,-0.1f,0));
+		Cloak->MaterialAmbient = clear;
+		Cloak->MaterialDiffuse = clear;
+		Cloak->MaterialSpecular = clear;
+		Cloak->MaterialShininess = clear;
+		cloth_image = bitmap_image("assets\\bmp\\flag_texture.bmp");
+		cloth_image.rgb_to_bgr();
+		Cloak->ApplyTexture(cloth_image.data(), cloth_image.width(), cloth_image.height());
+		*/
 
 		target = OpenMesh::Vec3f(0, 12, -25);
 }

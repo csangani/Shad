@@ -36,7 +36,6 @@ Platform::Platform(std::string model) {
 	runningTotalX = 0;
 	runningTotalY = 0;
 	runningTotalZ = 0;
-
 }
 
 Platform::~Platform() {
