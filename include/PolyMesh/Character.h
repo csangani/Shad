@@ -19,7 +19,7 @@ public:
 	btVector3 GetPosition();
 	
 	Character *SyncDummy();
-	Character *GenerateLimbs(std::string);
+	Character *GenerateArms(std::string);
 };
 
 #endif

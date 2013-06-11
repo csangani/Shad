@@ -441,7 +441,7 @@ namespace Window
 		Game::Shad = new Character();
 		Game::Shad->LoadObj(OBJECT);
 		Game::Shad->GenerateCharacter();
-		Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
+		Game::Shad->GenerateArms(OBJECT_ARMS);
 		Game::Shad->AttachShader(TOON_SHADER);
 		Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
 		Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
@@ -633,6 +633,7 @@ namespace Window
 			DeCenter.setOrigin(Center.getOrigin());
 			Center.setOrigin(-Center.getOrigin());
 			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && Forward) {
+				// animate arms
 				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
 				btTransform newTransform;
 				newTransform.setIdentity();
@@ -640,13 +641,15 @@ namespace Window
 				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && Forward) {
+				// animate arms
 				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
 				btTransform newTransform;
 				newTransform.setIdentity();
 				newTransform.setRotation(btQuaternion(BVEC3F(0,1,0),RADIANS(((100-Game::Shad->AnimationTime)*60.0f)/50.0f)));
-				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
+				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform)
 			}
 			if (Game::Shad->AnimationTime > 50 && Game::Shad->AnimationTime <= 100 && !Forward) {
+				// animate arms
 				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
 				btTransform newTransform;
 				newTransform.setIdentity();
@@ -654,6 +657,7 @@ namespace Window
 				Game::Shad->Arms->RigidBody->setCenterOfMassTransform(transform * newTransform);
 			}
 			if (Game::Shad->AnimationTime > 0 && Game::Shad->AnimationTime <= 50 && !Forward) {
+				// animate arms
 				btTransform transform = Game::Shad->Arms->RigidBody->getCenterOfMassTransform();
 				btTransform newTransform;
 				newTransform.setIdentity();
@@ -1026,7 +1030,7 @@ int main (int argc, char **argv)
 	Game::Shad->AttachShader(TOON_SHADER);
 	Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
 	Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
-	Game::Shad->GenerateLimbs("assets\\obj\\littlebig-arms.obj");
+	Game::Shad->GenerateArms(OBJECT_ARMS);
 
 	Game::cape = new ParticleCloth(25,10,0.025, BVEC3F(-0.11f, 0.15f, 0.15f), BVEC3F(0.29f, 0.15f, 0.15f), BVEC3F(0,1,0), 0.1f, 1, Game::Shad);
 	cape_image = bitmap_image("assets\\bmp\\cape_texture_2.bmp");
@@ -1052,7 +1056,7 @@ int main (int argc, char **argv)
 	// Apply Texture to Mesh
 	image = bitmap_image(TEXTURE);
 	image.rgb_to_bgr();
-	Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
+	//Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
 
 	// Setup Lights
 	GLfloat LightPosition[] = { 1.0f, 1.0f, 1.0f, 1.0f };
