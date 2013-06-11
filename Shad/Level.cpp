@@ -704,11 +704,22 @@ void Level::Amit() {
 		platform->Scale(4, 1, 4);
 		platform->Translate(-15, -30, -30);
 		platforms.push_back(platform);
-		movingPlatforms.push_back(platform);
  
-		
 		// 4
 		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-20, -25, -25);
+		platforms.push_back(platform);
+
+		// 5
+		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-25, -20, -25);
+		platforms.push_back(platform);
+		
+		// 6
+		platform = new Platform(cube);
+		platform->setMoving(2, 0.1, 0, 0);
 		platform->Scale(4, 1, 4);
 		platform->Translate(-20, -25, -25);
 		platforms.push_back(platform);
