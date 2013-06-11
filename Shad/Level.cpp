@@ -819,8 +819,18 @@ void Level::Chirag() {
 
 	// start
 	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(5,1,1);
+	platform->Translate(0,-10.0f,-3);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	lightningBolts.push_back(new Lightning(OVEC3F(-10.0f,-6,-2.5f), OVEC3F(10,-6, -2.5f)));
+
+	// start
+	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,0);
+	platform->Translate(0,-0.0f,0);
 	platforms.push_back(platform);
 
 	// start
@@ -832,7 +842,7 @@ void Level::Chirag() {
 	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,-6.0f);
+	platform->Translate(0,-0.0f,-6.0f);
 	platforms.push_back(platform);
 
 	// start
@@ -844,7 +854,7 @@ void Level::Chirag() {
 	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,-12.0f);
+	platform->Translate(0,-0.0f,-12.0f);
 	platforms.push_back(platform);
 
 	// start
@@ -856,8 +866,15 @@ void Level::Chirag() {
 	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(6.0f,-4.0f,-12.0f);
+	platform->Translate(6.0f,-0.0f,-12.0f);
 	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(5, 1, 5);
+	platform->Translate(12.0f, -10.0f, -12.0f);
+	platform->setMoving(200, 0, 0.1f, 0);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
 
 	setTarget(6.0f, -9.5f, -12.0f);
 }
