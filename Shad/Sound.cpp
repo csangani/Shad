@@ -37,13 +37,14 @@ void Sound::InitSound() {
 	ERRCHECK(Sound::system->createSound("assets/mp3/menu.mp3", FMOD_HARDWARE, 0, &MainMenuMusic));
 	ERRCHECK(Sound::system->createSound("assets/mp3/menu_toggle.mp3", FMOD_HARDWARE, 0, &MenuToggle));
 	ERRCHECK(Sound::system->createSound("assets/mp3/menu_selection.mp3", FMOD_HARDWARE, 0, &MenuSelection));
-	ERRCHECK(Sound::system->createSound("assets/mp3/gameplay.mp3", FMOD_HARDWARE, 0, &GameplayMusic));
+	ERRCHECK(Sound::system->createSound("assets/mp3/gameplay_long.mp3", FMOD_HARDWARE, 0, &GameplayMusic));
 	ERRCHECK(Sound::system->createSound("assets/mp3/teleport.mp3", FMOD_HARDWARE, 0, &Teleport));
 	ERRCHECK(Sound::system->createSound("assets/mp3/jump.mp3", FMOD_HARDWARE, 0, &Jump));
 	ERRCHECK(Sound::system->createSound("assets/mp3/lightning.mp3", FMOD_HARDWARE, 0, &Lightning));
 	ERRCHECK(Sound::system->createSound("assets/mp3/death1.mp3", FMOD_HARDWARE, 0, &Death1));
 	ERRCHECK(Sound::system->createSound("assets/mp3/death2.mp3", FMOD_HARDWARE, 0, &Death2));
 	ERRCHECK(Sound::system->createSound("assets/mp3/new_life.mp3", FMOD_HARDWARE, 0, &Life));
+	ERRCHECK(Sound::system->createSound("assets/mp3/level_end.mp3", FMOD_HARDWARE, 0, &EndLevel));
 	
 	// Create channels
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, MainMenuMusic, true, &MainMusicChannel));
@@ -125,4 +126,11 @@ void Sound::PlayLifeSound()
 	FMOD::Channel *LifeChannel;
 	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, Life, false, &LifeChannel));
 	LifeChannel->setVolume(0.5);
+}
+
+void Sound::PlayEndLevel()
+{
+	FMOD::Channel *EndLevelChannel;
+	ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, EndLevel, false, &EndLevelChannel));
+	EndLevelChannel->setVolume(0.5);
 }

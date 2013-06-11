@@ -21,6 +21,7 @@ public:
 	void PlayLightningSound();
 	void PlayDeathSound();
 	void PlayLifeSound();
+	void PlayEndLevel();
 
 private:
 	FMOD::System *system;
@@ -34,6 +35,7 @@ private:
 	FMOD::Sound *Death1;
 	FMOD::Sound *Death2;
 	FMOD::Sound *Life;
+	FMOD::Sound *EndLevel;
 	
 	FMOD::Channel *MainMusicChannel;
 	FMOD::Channel *GameplayMusicChannel;

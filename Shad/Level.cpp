@@ -71,7 +71,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	case 6:
 		Johan();
 		break;
-	case 10: 
+	case 2: 
 		Amit(); 
 		break; 
 
