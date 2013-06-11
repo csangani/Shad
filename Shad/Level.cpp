@@ -780,10 +780,12 @@ void Level::Amit() {
 
 		//Transit 1
 		platform = new Platform(cube);
+		platform->setCollapsible();
 		platform->Scale(6, 2, 6);
 		platform->Translate(-35, -29, -40);
 		platforms.push_back(platform);
- 
+        collapsiblePlatforms.push_back(platform);
+		
 		//Transit 2
 		platform = new Platform(cube);
 		platform->setCollapsible();
@@ -794,9 +796,11 @@ void Level::Amit() {
 		
 		//Transit 3
 		platform = new Platform(cube);
+		platform->setCollapsible();
 		platform->Scale(6, 2, 6);
 		platform->Translate(-55, -27, -20);
 		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
 		
 		// 4
 		platform = new Platform(cube);
@@ -814,14 +818,43 @@ void Level::Amit() {
 	    
 		for (int i = 0; i < 10; i++) {
 		platform = new Platform(cube);
-		platform->Scale(3,2,1);
-		platform->Translate(-55-i,-45-i,-28);
+		platform->Scale(5,1,3);
+		platform->Translate(-55-(2*i),-45-i,-28);
 		platforms.push_back(platform);
+
+		// Shrinks
+		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-80, -50, -28);
+		platforms.push_back(platform);
+		platform->setShrinking(100, 0.01); 
+		shrinkingPlatforms.push_back(platform); 
+
+
+		// Wall
+		platform = new Platform(cube);
+		platform->Scale(1, 15, 15);
+		platform->Translate(-90, -50, -28);
+		platforms.push_back(platform);
+	    
+
+	    // Fall
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(4, 1, 4);
+		platform->Translate(-95, -50, -28);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+		
+		// Done
+		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-100, -200, -28);
+		platforms.push_back(platform);
+
+
 	}
-
-	target = OpenMesh::Vec3f(0, 12, -25);
-
-		target = OpenMesh::Vec3f(0, 12, -25);
+		target = OpenMesh::Vec3f(-100, -200, -28);
 }
 
 void Level::Chirag() {
