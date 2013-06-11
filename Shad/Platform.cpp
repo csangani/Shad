@@ -236,7 +236,6 @@ void Platform::shrink(uint64_t deltaPoint) {
 	deltaPoint%=scaleBeat; 
 	OpenMesh::Vec3f shrinking = getShrinking();
 	btVector3 centerOfMass = platformMesh->RigidBody->getCenterOfMassPosition();
-	std::cout << centerOfMass.x() << " " << centerOfMass.y() << " " << centerOfMass.z() << std::endl;
 
 	if (counter < scaleBeat/2) {
 		platformMesh->Scale(shrinking);
@@ -476,11 +475,9 @@ void Platform::deform(bool onGround, float charX, float charY, float charZ) {
 				{
 					OpenMesh::Vec3f coord = vertices[i]->getCoordinates();
 					OpenMesh::VertexHandle vh = vertices[i]->getVH();
-					std::cout << "The old y " << coord[1] << std::endl;
 					coord[0] = -1;
 					coord[1] = -1;
 					coord[2] = -1;
-					std::cout << "The new y " << coord[1] << std::endl;
 					platformMesh->set_point(vh, coord);
 					if (i >2)
 						break;
