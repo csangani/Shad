@@ -75,6 +75,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
+	case 7:
+		Cassidy();
+		break;
+
+
 	case 2:
 		Chirag();
 		//Johan();
@@ -328,7 +333,7 @@ float Level::drawCharacterShadow(float characterX, float characterY, float chara
 	if (foundPlatform != NULL) {
 		float platformYScale = foundPlatform->platformMesh->max[1];
 		float shadowOffset = 0.01f;
-		r = 0.2f/(characterY - maxY);
+		r = 0.3f/(characterY - maxY + platformYScale);
 		int num_segments = 20;
 		glColor4f(1.f, 1.f, 1.f, 1.0f);
 		glBegin(GL_POLYGON); 
@@ -915,7 +920,7 @@ void Level::Chirag() {
 	platform = new Platform(cube);
 	platform->Scale(5, 1, 5);
 	platform->Translate(12.0f, -20.0f, -12.0f);
-	platform->setMoving(400, 0, 0.1f, 0);
+	platform->setMoving(200, 0, 0.2f, 0);
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
@@ -956,12 +961,133 @@ void Level::Chirag() {
 	platforms.push_back(platform);
 	movingPlatforms.push_back(platform);
 
-	lightningBolts.push_back(new Lightning(OVEC3F(-9.0f, 0, -3), OVEC3F(-9.0f, 5, -3)));
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24, 0, 0);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24.0f, -2.0f, -4.0f);
+	platform->setMoving(20, 0, 1.0, 0);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+	
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 3);
+	platform->Translate(-24, 0, -8);
+	platforms.push_back(platform);
+	
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -10);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -11);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -12);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -13);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1, 1, 1);
+	platform->Translate(-24, 0, -14);
+	platform->setCollapsible();
+	collapsiblePlatforms.push_back(platform);
+	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 5);
+	platform->Translate(-24, 0, -17);
+	platforms.push_back(platform);
+
+	lightningBolts.push_back(new Lightning(OVEC3F(-9.0f, 0, -3), OVEC3F(-9.0f, 5, -3.1f)));
 
 	lightningBolts.push_back(new Lightning(OVEC3F(-4.5f, 0, 3), OVEC3F(-4.5f, 5, 3)));
 
-	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3)));
-
+	lightningBolts.push_back(new Lightning(OVEC3F(-13.5f, 0, -3), OVEC3F(-13.5f, 5, -3.1f)));
 
 	setTarget(6.0f, -9.5f, -12.0f);
+}
+
+void Level::Cassidy()
+{
+	Platform *platform;
+	std::string cube = "assets\\obj\\cube.obj";
+
+	setFallLimit(-100.f);
+
+	// start platform
+	platform = new Platform(cube);
+	platform->Scale(5,1,30);
+	platform->Translate(0,-10,-10);
+	platforms.push_back(platform);
+	// start platform walls
+	platform = new Platform(cube);
+	platform->Scale(1,20,30);
+	platform->Translate(-3,-0.5,-10);
+	platforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->Scale(1,20,30);
+	platform->Translate(3,-0.5,-10);
+	platforms.push_back(platform);
+	// random things on walls
+	for (int i = 0; i < 20; i++) {
+		platform = new Platform(cube);
+		platform->Scale(2,1,1);
+		float rando = (float)rand()/(float)RAND_MAX - 0.5f;	// between -0.5 and 0.5
+		float tx = (rando > 0.f) ? -2 : 2;
+		rando = (float)rand()/(float)RAND_MAX - 0.5f;
+		float ty = (int)(10.f*rando - 5.f) % 10;						// between -10 and 0
+		rando = (float)rand()/(float)RAND_MAX - 0.5f;
+		float tz = (int)(30.f*rando - 10.f) % 30;					// between -30 and 0
+		platform->Translate(tx, ty, tz);
+		platforms.push_back(platform);
+	}
+	// lightning at wall ends
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-3,-7,-25), OpenMesh::Vec3f(-2,-9,-40)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(3,-7,-25), OpenMesh::Vec3f(2,-6,-40)));
+
+	// main path start
+	for (int i = 0; i < 4; i++) {
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(5,1,4);
+		platform->Translate(0,-10,-27-4*i);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+	}
+
+	// secret path start
+	platform = new Platform(cube);
+	platform->setMoving(300, 0.f, 0.1f, 0.05f);
+	platform->Scale(3,1,3);
+	platform->Translate(0,-28,-5);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+	platform = new Platform(cube);
+	platform->setMoving(300, -0.1f, 0.f, 0.f);
+	platform->Scale(3,1,3);
+	platform->Translate(0,-28,-10);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+
+	// random scenery
+	platform = new Platform(cube);
+	platform->Scale(10, 5, 200);
+	platform->Translate(-100, -50, 0);
+	platforms.push_back(platform);
 }
