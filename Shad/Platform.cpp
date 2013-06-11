@@ -344,7 +344,7 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			if (charY - yBounds.high < 0.54) {
+			if (charY - yBounds.high < 0.54 && charY > yBounds.high) {
 				return true;
 			}
 		}
