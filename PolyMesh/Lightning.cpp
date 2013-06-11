@@ -5,7 +5,7 @@
 
 
 #define NUM_GENERATIONS (5)
-#define INITIAL_OFFSET_AMOUNT (1)
+#define INITIAL_OFFSET_AMOUNT (1.5)
 #define MAX_ANGLE (2.5f)  
 #define LENGTH_SCALE (1)
 
@@ -30,23 +30,26 @@ bool Lightning::isOff()
 	return color_[3] <= 0.0f;
 }
 
-#define OPACITY_STEP_SIZE (0.05f)
+#define OPACITY_STEP_SIZE (0.025f)
 #define	COLOR_STEP_DIVIDER (1.1f)
 
 void Lightning::Dim()
 {
 	float Random = sinf((float)rand());
-	color_[0] /= COLOR_STEP_DIVIDER;
-	color_[1] /= COLOR_STEP_DIVIDER;
-	color_[2] /= COLOR_STEP_DIVIDER;
-	color_[3] -= (OPACITY_STEP_SIZE * (1.0f + Random));
+	//color_[0] /= COLOR_STEP_DIVIDER;
+	//color_[1] /= COLOR_STEP_DIVIDER;
+	//color_[2] /= COLOR_STEP_DIVIDER;
+	color_[0] -= OPACITY_STEP_SIZE;
+	color_[1] -= OPACITY_STEP_SIZE;
+	color_[2] -= OPACITY_STEP_SIZE;
+	color_[3] -= OPACITY_STEP_SIZE;
 }
 
 void Lightning::Brighten()
 {
-	color_[0] *= COLOR_STEP_DIVIDER;
-	color_[1] *= COLOR_STEP_DIVIDER;
-	color_[2] *= COLOR_STEP_DIVIDER;
+	//color_[0] *= COLOR_STEP_DIVIDER;
+	//color_[1] *= COLOR_STEP_DIVIDER;
+	//color_[2] *= COLOR_STEP_DIVIDER;
 	color_[3] += OPACITY_STEP_SIZE;
 }
 
@@ -64,9 +67,9 @@ void Lightning::Regenerate()
 
 void Lightning::ResetColor()
 {
-	color_[0] = 102.0/255;
-	color_[1] = 163.0/255;
-	color_[2] = 210.0/255;
+	color_[0] = 1.0;//102.0/255;
+	color_[1] = 1.0;//163.0/255;
+	color_[2] = 1.0;//210.0/255;
 	color_[3] = 1.0;
 }
 
@@ -180,7 +183,7 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	}
 }
 
-#define RADIUS (0.03f)
+#define RADIUS (0.1f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 
