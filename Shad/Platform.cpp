@@ -108,6 +108,7 @@ Platform *Platform::Scale(float scalex, float scaley, float scalez) {
 }
 
 Platform *Platform::Translate(float tx, float ty, float tz) {
+
 	platformMesh->Translate(OpenMesh::Vec3f(tx, ty, tz));
 	for (unsigned int i = 0; i < edges.size(); i++) {
 		edges[i]->Translate(tx,ty,tz);
@@ -179,12 +180,12 @@ int Platform::getBeat() {
 }
 
 
-void Platform::setShrinking(int _beat, float scaleX, float scaleY, float scaleZ) {
+void Platform::setShrinking(int _beat, float scale) {
 	scaleBeat = _beat;
 	shrinking = true;
-	_shrinkX = scaleX;
-	_shrinkY = scaleY;
-	_shrinkZ = scaleZ;
+	_shrinkX = scale;
+	_shrinkY = scale;
+	_shrinkZ = scale;
 	color[0] = 1.0f;
 	color[1] = 0.0f;
 	color[2] = 0.0f;
@@ -228,24 +229,21 @@ void Platform::move(uint64_t deltaPoint) {
 }
 
 void Platform::shrink(uint64_t deltaPoint) {
-
 	deltaPoint%=scaleBeat; 
-
 	OpenMesh::Vec3f shrinking = getShrinking();
-	//std::cout << shrinking[0] << " " << shrinking[1] << " " << shrinking[2] << std::endl;
+	btVector3 centerOfMass = platformMesh->RigidBody->getCenterOfMassPosition();
+	std::cout << centerOfMass.x() << " " << centerOfMass.y() << " " << centerOfMass.z() << std::endl;
+
 	if (deltaPoint < scaleBeat/2) {
-	//	std::cout << "GROW" << std::endl;
-		Scale(shrinking[0],shrinking[1],shrinking[2]);
-		//platformMesh->Scale(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
-		//for (unsigned int i = 0; i < edges.size(); i++)
-		//	edges[i]->Scale(shrinking[0], shrinking[1], shrinking[2]);
+		platformMesh->Scale(shrinking);
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->SpecialScale(shrinking[0], shrinking[1], shrinking[2],OpenMesh::Vec3f(centerOfMass.x(),centerOfMass.y(),centerOfMass.z()));
 	}
 	else {
-	//	std::cout << "SHRINK" << std::endl;
-		Scale(1.0f/shrinking[0],1.0f/shrinking[1],1.0f/shrinking[2]);
-		//platformMesh->Scale(OpenMesh::Vec3f(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2]));
-		//for (unsigned int i = 0; i < edges.size(); i++)
-		//	edges[i]->Scale(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2]);
+		OpenMesh::Vec3f shrink(1.0f/shrinking[0],1.0f/shrinking[1],1.0f/shrinking[2]);
+		platformMesh->Scale(shrink);
+		for (unsigned int i = 0; i < edges.size(); i++)
+			edges[i]->SpecialScale(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2],OpenMesh::Vec3f(centerOfMass.x(),centerOfMass.y(),centerOfMass.z()));
 	}
 }
 
@@ -417,14 +415,16 @@ void Platform::setElevator(float xMove, float yMove, float zMove, float stopX, f
 
 void Platform::setCollapsible() {
 	collapsible = true;
+
 	deltaX = 0.0f;
 	deltaY = -0.2f;
 	deltaZ = 0.0f;
-	color[0] = 170.0f/255.0f;
-	color[1] = 240.0f/255.0f;
-	color[2] = 141.0f/255.0f;
-	color[3] = 1.0f;
 
+	color[0] = 0.0;
+	color[1] = 1.0;
+	color[2] = 0.0;
+
+	color[3] = 1.0f;
 }
 
 bool Platform::checkIfGood(float limit) {
@@ -459,27 +459,6 @@ bool Platform::isCollapsible() {
 	return collapsible;
 }
 
-void Platform::GenerateAllEdges() {
-	for (PolyMesh::EdgeIter e_it = platformMesh->edges_begin(); e_it != platformMesh->edges_end(); ++e_it)
-	{
-		// Obtain half edges
-		PolyMesh::HalfedgeHandle heHandle = platformMesh->halfedge_handle(e_it.handle(), 0);
-
-		// Obtain vertices bounding the edge
-		PolyMesh::VertexHandle v1 = platformMesh->to_vertex_handle(heHandle);
-		PolyMesh::VertexHandle v2 = platformMesh->from_vertex_handle(heHandle);
-
-		OpenMesh::Vec3f startPoint = platformMesh->point(v1);
-		OpenMesh::Vec3f endPoint = platformMesh->point(v2);
-		
-		float edgeLength = (endPoint - startPoint).length();
-	
-
-		PlatformEdge *edge = new PlatformEdge(startPoint, endPoint);
-		edges.push_back(edge);
-
-	}
-}
 
 void Platform::deform(bool onGround, float charX, float charY, float charZ) {
 /*	if (!deformed) {

@@ -690,7 +690,7 @@ namespace Window
 				/* right stick controls */
 				if (Game::controller->RightStickMoved()) {
 					if (Game::gameState == Game::PlayState) {
-						float cameraSensitivityX = 0.1;
+						float cameraSensitivityX = 0.08;
 						float cameraSensitivityY = 0.03;
 						int xCameraCoef = Game::controller->GetXCameraCoefficient();
 						int yCameraCoef = Game::controller->GetYCameraCoefficient();

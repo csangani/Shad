@@ -10,8 +10,7 @@ PlatformEdge::PlatformEdge(OpenMesh::Vec3f startPoint, OpenMesh::Vec3f endPoint)
 {
 	startPoint_ = startPoint;
 	endPoint_ = endPoint;
-	quadric = gluNewQuadric();
-	
+	quadric = gluNewQuadric();	
 }
 
 void PlatformEdge::Scale(float scalex, float scaley, float scalez)
@@ -20,10 +19,11 @@ void PlatformEdge::Scale(float scalex, float scaley, float scalez)
 	endPoint_ = OpenMesh::Vec3f(endPoint_[0]*scalex, endPoint_[1]*scaley, endPoint_[2]*scalez);
 }
 
-void PlatformEdge::SpecialScale(float scalex, float scaley, float scalez)
+void PlatformEdge::SpecialScale(float scalex, float scaley, float scalez, OpenMesh::Vec3f parentCenterOfMass)
 {
-	startPoint_ = OpenMesh::Vec3f(startPoint_[0]*scalex, startPoint_[1]*scaley, startPoint_[2]*scalez);
-	endPoint_ = OpenMesh::Vec3f(endPoint_[0]*scalex, endPoint_[1]*scaley, endPoint_[2]*scalez);
+	Translate(-parentCenterOfMass[0],-parentCenterOfMass[1],-parentCenterOfMass[2]);
+	Scale(scalex,scaley,scalez);
+	Translate(parentCenterOfMass[0],parentCenterOfMass[1],parentCenterOfMass[2]);
 }
 
 void PlatformEdge::Translate(float tx, float ty, float tz)
