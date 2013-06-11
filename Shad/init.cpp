@@ -442,7 +442,7 @@ namespace Window
 		Game::Shad->LoadObj(OBJECT);
 		Game::Shad->GenerateCharacter();
 		Game::Shad->GenerateArms(OBJECT_ARMS);
-		Game::Shad->AttachShader(TOON_SHADER);
+		//Game::Shad->AttachShader(TOON_SHADER);
 		Game::Shad->RigidBody->setJumpSpeed(SHAD_JUMP_SPEED);
 		Game::Shad->RigidBody->setGravity(SHAD_GRAVITY);
 
@@ -472,6 +472,7 @@ namespace Window
 		image = bitmap_image(TEXTURE);
 		image.rgb_to_bgr();
 		Game::Shad->ApplyTexture(image.data(), image.width(), image.height());
+		Game::Shad->Arms->ApplyTexture(image.data(), image.width(), image.height());
 	}
 
 	void PassiveMotion(int x, int y)  {
@@ -1026,7 +1027,7 @@ int main (int argc, char **argv)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, menu_invert_no_image.width(), menu_invert_no_image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, menu_invert_no_image.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	Game::currentLevel = new Level(1);
+	Game::currentLevel = new Level(7);
 	Game::currentLevel->generateBlocks(TOON_SHADER, space_image);
 
 	Window::setUpCharacter();

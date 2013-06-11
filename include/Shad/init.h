@@ -17,7 +17,7 @@
 #define OBJECT_ARMS "assets\\obj\\littlebig-arms.obj"
 #define OBJECT_LEFT_LEG "assets\\obj\\littlebig-leftleg.obj"
 #define OBJECT_RIGHT_LEG "assets\\obj\\littlebig-rightleg.obj"
-#define TEXTURE "assets\\bmp\\alien-mothership-green.bmp"
+#define TEXTURE "assets\\bmp\\character_texture.bmp"
 #define DEFAULT_SHADER "assets\\shaders\\default"
 #define NORMAL_SHADER "assets\\shaders\\normal"
 #define PHONG_SHADER "assets\\shaders\\phong"
