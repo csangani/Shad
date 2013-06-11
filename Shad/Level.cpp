@@ -413,7 +413,6 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					else {
 						id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
-					std::cout << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
@@ -662,7 +661,7 @@ void Level::Gavin() {
 
 
 
-		for (signed int  i = 26; i < 40; i ++) {
+		for (signed int  i = 26; i < 35; i ++) {
 		platform = new Platform(cube);
 		platform->setCollapsible();
 		platform->Scale(1, 1, 1);
@@ -691,13 +690,6 @@ void Level::Gavin() {
 			platforms.push_back(platform);
 			collapsiblePlatforms.push_back(platform);
 
-			platform = new Platform(cube);
-			platform->setCollapsible();
-			platform->Scale(1, 1, 1);
-			platform->Translate(-2, -16, -i);
-			platforms.push_back(platform);
-			collapsiblePlatforms.push_back(platform);
-
 		}
 
 		platform = new Platform(cube);
@@ -713,17 +705,16 @@ void Level::Gavin() {
 		movingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
-		platform->setMoving(100, 0.0f, 0.0f, -0.5f);
+		platform->setMoving(100, 0.0f, 0.0f, -0.2f);
 		platform->Scale(6, 2, 5);
-		platform->Translate(15, -16, -50);
+		platform->Translate(15, -16, -60);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
 
 		platform = new Platform(cube);
-		platform->setMoving(100, 0.0f, 0.0f, -0.5f);
 		platform->Scale(6, 2, 5);
-		platform->Translate(15, -16, -50);
+		platform->Translate(14, -16, -90);
 		platforms.push_back(platform);
 
 		target = OpenMesh::Vec3f(0, 12, -25);
