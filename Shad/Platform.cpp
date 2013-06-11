@@ -210,16 +210,16 @@ void Platform::shrink(uint64_t deltaPoint) {
 	deltaPoint%=scaleBeat; 
 
 	OpenMesh::Vec3f shrinking = getShrinking();
-	std::cout << shrinking[0] << " " << shrinking[1] << " " << shrinking[2] << std::endl;
+	//std::cout << shrinking[0] << " " << shrinking[1] << " " << shrinking[2] << std::endl;
 	if (deltaPoint < scaleBeat/2) {
-		std::cout << "GROW" << std::endl;
+	//	std::cout << "GROW" << std::endl;
 		Scale(shrinking[0],shrinking[1],shrinking[2]);
 		//platformMesh->Scale(OpenMesh::Vec3f(shrinking[0], shrinking[1], shrinking[2]));
 		//for (unsigned int i = 0; i < edges.size(); i++)
 		//	edges[i]->Scale(shrinking[0], shrinking[1], shrinking[2]);
 	}
 	else {
-		std::cout << "SHRINK" << std::endl;
+	//	std::cout << "SHRINK" << std::endl;
 		Scale(1.0f/shrinking[0],1.0f/shrinking[1],1.0f/shrinking[2]);
 		//platformMesh->Scale(OpenMesh::Vec3f(1.0f/shrinking[0], 1.0f/shrinking[1], 1.0f/shrinking[2]));
 		//for (unsigned int i = 0; i < edges.size(); i++)
@@ -344,26 +344,25 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 		yBounds.high = yBounds.low;
 		yBounds.low = temp;
 	}
-	xBounds.low -=0.15;
-	xBounds.high +=0.15;
-	zBounds.low -=0.15;
-	zBounds.low +=0.15;
+	xBounds.low -=0.2;
+	xBounds.high +=0.2;
+	zBounds.low -=0.2;
+	zBounds.low +=0.2;
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			if (charY - yBounds.high < 0.65 && charY > yBounds.high) {
+			if (abs(charY - yBounds.high) < 1 && charY > yBounds.high) {
+				std::cout << "IN BOUNDS" << std::endl;
 				return true;
 			}
 		}
 	}
-
+	std::cout << "NOT IN BOUNDS" << std::endl;
 	return false;
 }
 
 void Platform::setCollapsible() {
 	collapsible = true;
-
-
 	color[0] = 170.0f/255.0f;
 	color[1] = 240.0f/255.0f;
 	color[2] = 141.0f/255.0f;
