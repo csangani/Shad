@@ -343,7 +343,7 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			if (charY - yBounds.high < 0.54 && charY > yBounds.high) {
+			if (charY - yBounds.high < 0.65 && charY > yBounds.high) {
 				return true;
 			}
 		}
@@ -373,6 +373,7 @@ bool Platform::checkIfGood(float limit) {
 }
 
 void Platform::collapse(bool onGround, float charX, float charY, float charZ) {
+
 	if (withInBounds(charX, charY, charZ) && onGround) {
 		Translate(0, -0.2, 0);
 		runningTotalX += 0;

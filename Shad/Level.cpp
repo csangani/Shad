@@ -71,6 +71,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		Gavin();
 		break;
+
+
+	case 1:
+		Johan();
+	break;
 	
 	case 2: 
 		Amit(); 
@@ -113,7 +118,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 1:
+	case 6:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -449,6 +454,61 @@ void Level::shrink(uint64_t deltaPoint, float charX, float charY, float charZ, C
 
 OpenMesh::Vec3f Level::getTarget() {
 	return target;
+}
+
+void Level::Johan()
+{
+	Platform *platform;
+	std::string cube = "assets\\obj\\cube.obj";
+	
+	//1st
+	platform = new Platform(cube);
+	platform->Scale(3,1,3);
+	platform->Translate(0,-10,0);
+	platforms.push_back(platform);
+
+	//2nd
+	platform = new Platform(cube);
+	platform->Scale(3,1,3);
+	platform->Translate(0,-15,-20);
+	platforms.push_back(platform);
+
+	//Lightning between 1st and 2nd
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-5), OpenMesh::Vec3f(0,-5,-5)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-15), OpenMesh::Vec3f(0,-5,-15)));
+
+	//3rd
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(3, 1, 3);
+	platform->Translate(20, -17, -15);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+	
+	//4th
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(3, 1, 3);
+	platform->Translate(40, -19, -20);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	//5th
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(3, 1, -15);
+	platform->Translate(60, -21, -15);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
+	//6th
+	platform = new Platform(cube);
+	platform->Scale(3,1,3);
+	platform->Translate(65,-20,-15);
+	platforms.push_back(platform);
+
+
+	target = OpenMesh::Vec3f(0, 12, -25);
 }
 
 void Level::Gavin() {

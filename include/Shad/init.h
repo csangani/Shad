@@ -7,7 +7,7 @@
 
 //#define USE_XBOX_CONTROLLER
 
-#define NUM_TELEPORT 4
+#define NUM_TELEPORT 3
 
 #define NUM_THREADS 8
 
@@ -58,7 +58,8 @@ void Boost(float *array, int size, float delta)
 
 // Character Stuff
 
-#define SHAD_JUMP_SPEED 25.0f
+
+#define SHAD_JUMP_SPEED 30.0f
 #define SHAD_GRAVITY 100.0f
 
 float Specular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
