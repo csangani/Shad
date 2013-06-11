@@ -791,7 +791,7 @@ namespace Window
 
 			/*Code to move platforms*/
 			uint64_t time= PolyMesh::Time;
-			time /= 1000;
+			time /= 500;
 			
 			bool onGround = Game::Shad->RigidBody->onGround();
 			((Character *)Game::Shad)->RigidBody->getGhostObject()->getWorldTransform();

@@ -442,7 +442,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 					//	((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
 					}
 					
-					break;
+					
 			
 					//cape->SetOrigin(OpenMesh::Vec3f());
 				}
