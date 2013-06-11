@@ -346,7 +346,7 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 
 	if (xBounds.low < charX && xBounds.high > charX) {
 		if (zBounds.low < charZ && zBounds.high > charZ) {
-			if (charY - yBounds.high < 0.65 && charY > yBounds.high) {
+			if (abs(charY - yBounds.high) < 1 && charY > yBounds.high) {
 				return true;
 			}
 		}
@@ -357,8 +357,6 @@ bool Platform::withInBounds(float charX, float charY, float charZ) {
 
 void Platform::setCollapsible() {
 	collapsible = true;
-
-
 	color[0] = 170.0f/255.0f;
 	color[1] = 240.0f/255.0f;
 	color[2] = 141.0f/255.0f;
