@@ -67,14 +67,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 
 		Gavin();
 		break;
-
-
-	case 2:
-		Johan();
-		break;
 	
 	case 6:
-
+		Johan();
+		break;
+	case 10: 
 		Amit(); 
 		break; 
 
@@ -98,7 +95,9 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
+
 	case 3:
+
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
@@ -393,6 +392,7 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 			if (!platformFound) {
 				platformFound = movingPlatforms[i]->moveWChar(deltaPoint, charX, charY, charZ);
 				int counter = movingPlatforms[i]->getCounter();
+				
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
 					int beat = movingPlatforms[i]->getBeat();
@@ -507,18 +507,7 @@ void Level::Johan()
 {
 	Platform *platform;
 	std::string cube = "assets\\obj\\cube.obj";
-	
-	platform = new Platform(cube);
-	platform->setShrinking(2,0.98); 
-	platform->Scale(3, 1, 3);
-	platform->Translate(5, -10, -10);
-	platforms.push_back(platform);
-	shrinkingPlatforms.push_back(platform);
-	
-	platform = new Platform(cube);
-	platform->Scale(3, 1, 1);
-	platform->Translate(5, -10, -2);
-	platforms.push_back(platform);
+	setFallLimit(-100.0);
 
 	//1st
 	platform = new Platform(cube);
@@ -533,8 +522,8 @@ void Level::Johan()
 	platforms.push_back(platform);
 
 	//Lightning between 1st and 2nd
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-5), OpenMesh::Vec3f(0,-5,-5)));
-	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(0,-20,-15), OpenMesh::Vec3f(0,-5,-15)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-20,-5), OpenMesh::Vec3f(1,-5,-5)));
+	lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(-1,-20,-15), OpenMesh::Vec3f(1,-5,-15)));
 
 	//3rd
 	platform = new Platform(cube);
@@ -566,9 +555,6 @@ void Level::Johan()
 	platform->Translate(55,-25,-25);
 	platforms.push_back(platform);
 
-	//Lightning between 5th and 6th --> why does this one look bad?!?
-	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(40,-30,-25), OpenMesh::Vec3f(45,-20,-25)));
-
 	//Stairs
 	for (int i = 0; i < 10; i++) {
 		platform = new Platform(cube);
@@ -577,7 +563,41 @@ void Level::Johan()
 		platforms.push_back(platform);
 	}
 
-	target = OpenMesh::Vec3f(0, 12, -25);
+	//Elevator
+	platform = new Platform(cube);
+	platform->setElevator(0.0f, 0.1f, 0.0f, 0.0f, 15.0f, 0.0f);
+	platform->Scale(3, 1, 3);
+	platform->Translate(55,-15,-39);
+	platforms.push_back(platform);
+	elevatablePlatforms.push_back(platform);
+
+	//Wall
+	platform = new Platform(cube);
+	platform->Scale(1,10,5);
+	platform->Translate(50,0,-39);
+	platforms.push_back(platform);
+
+	//7th
+	platform = new Platform(cube);
+	platform->Scale(5,1,5);
+	platform->Translate(40,0,-39);
+	platform->setShrinking(100,0.98);
+	platforms.push_back(platform);
+	shrinkingPlatforms.push_back(platform);
+
+	//8th
+	platform = new Platform(cube);
+	platform->Scale(3,1,3);
+	platform->Translate(20,0,-39);
+	platforms.push_back(platform);
+
+	//Target platform
+	platform = new Platform(cube);
+	platform->Scale(3,1,5);
+	platform->Translate(20,-50,-59);
+	platforms.push_back(platform);
+
+	target = OpenMesh::Vec3f(20, -50+0.5, -60);
 }
 
 void Level::Gavin() {
@@ -717,6 +737,21 @@ void Level::Gavin() {
 		platform->Translate(14, -16, -90);
 		platforms.push_back(platform);
 
+		platform = new Platform(cube);
+		platform->Scale(2, 10, 10);
+		platform->Translate(21, -18, -120);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(2, 10, 10);
+		platform->Translate(11, -18, -120);
+		platforms.push_back(platform);
+
+		platform = new Platform(cube);
+		platform->Scale(10, 10, 2);
+		platform->Translate(15, -18, -120);
+		platforms.push_back(platform);
+
 		target = OpenMesh::Vec3f(0, 12, -25);
 }
 
@@ -731,7 +766,7 @@ void Level::Amit() {
 		clear[2] = .5;
 		clear[3] = 1.0;
 		
-		setFallLimit(-50);
+		setFallLimit(-200);
 
 		// start
 		platform = new Platform(cube);
@@ -743,15 +778,15 @@ void Level::Amit() {
 		platform = new Platform(cube);
 		platform->setMoving(200, 0, 0.2, 0);
 		platform->Scale(4, 1, 4);
-		platform->Translate(0, -20, -20);
+		platform->Translate(0, -20, -10);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform); 
 		
         // 2
 		platform = new Platform(cube);
-		platform->setMoving(100, 0.2, 0, 0);
+		platform->setMoving(100, 0.15, 0, 0);
 		platform->Scale(8, 1, 8);
-		platform->Translate(-6, -30, -15);
+		platform->Translate(0, -30, -15);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 
@@ -766,10 +801,12 @@ void Level::Amit() {
 
 		//Transit 1
 		platform = new Platform(cube);
+		platform->setCollapsible();
 		platform->Scale(6, 2, 6);
 		platform->Translate(-35, -29, -40);
 		platforms.push_back(platform);
- 
+        collapsiblePlatforms.push_back(platform);
+		
 		//Transit 2
 		platform = new Platform(cube);
 		platform->setCollapsible();
@@ -780,9 +817,11 @@ void Level::Amit() {
 		
 		//Transit 3
 		platform = new Platform(cube);
+		platform->setCollapsible();
 		platform->Scale(6, 2, 6);
 		platform->Translate(-55, -27, -20);
 		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
 		
 		// 4
 		platform = new Platform(cube);
@@ -800,14 +839,43 @@ void Level::Amit() {
 	    
 		for (int i = 0; i < 10; i++) {
 		platform = new Platform(cube);
-		platform->Scale(3,2,1);
-		platform->Translate(-55-i,-45-i,-28);
+		platform->Scale(5,1,3);
+		platform->Translate(-55-(2*i),-45-i,-28);
 		platforms.push_back(platform);
+
+		// Shrinks
+		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-85, -50, -28);
+		platforms.push_back(platform);
+		platform->setShrinking(100, 0.01); 
+		shrinkingPlatforms.push_back(platform); 
+
+
+		// Wall
+		platform = new Platform(cube);
+		platform->Scale(1, 15, 15);
+		platform->Translate(-90, -50, -28);
+		platforms.push_back(platform);
+	    
+
+	    // Fall
+		platform = new Platform(cube);
+		platform->setCollapsible();
+		platform->Scale(4, 1, 4);
+		platform->Translate(-95, -50, -28);
+		platforms.push_back(platform);
+		collapsiblePlatforms.push_back(platform);
+		
+		// Done
+		platform = new Platform(cube);
+		platform->Scale(4, 1, 4);
+		platform->Translate(-105, -200, -28);
+		platforms.push_back(platform);
+
+
 	}
-
-	target = OpenMesh::Vec3f(0, 12, -25);
-
-		target = OpenMesh::Vec3f(0, 12, -25);
+		target = OpenMesh::Vec3f(-100, -200, -28);
 }
 
 void Level::Chirag() {
@@ -823,47 +891,58 @@ void Level::Chirag() {
 	platform->Translate(0,-10.0f,0);
 	platforms.push_back(platform);
 
-	// start
+	
+	lightningBolts.push_back(new Lightning(OVEC3F(-10.0f,-6,-2.5f), OVEC3F(10,-6, -2.5f)));
+
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,0);
+	platform->Translate(0,-0.0f,0);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-10.0f,-6.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,-6.0f);
+	platform->Translate(0,-0.0f,-6.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(0,-10.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(0,-4.0f,-12.0f);
+	platform->Translate(0,-0.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
 	platform->Translate(6.0f,-10.0f,-12.0f);
 	platforms.push_back(platform);
 
-	// start
 	platform = new Platform(cube);
 	platform->Scale(5,1,5);
-	platform->Translate(6.0f,-4.0f,-12.0f);
+	platform->Translate(6.0f,-0.0f,-12.0f);
 	platforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->Scale(5, 1, 5);
+	platform->Translate(12.0f, -10.0f, -12.0f);
+	platform->setMoving(200, 0, 0.1f, 0);
+	platforms.push_back(platform);
+	movingPlatforms.push_back(platform);
+
+	platform = new Platform(cube);
+	platform->setCollapsible();
+	platform->Scale(1,1,5);
+	platform->Translate(9, 0.0f,-12);
+	platforms.push_back(platform);
+	collapsiblePlatforms.push_back(platform);
+
 
 	setTarget(6.0f, -9.5f, -12.0f);
 }

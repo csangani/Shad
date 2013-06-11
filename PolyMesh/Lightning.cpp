@@ -39,10 +39,10 @@ void Lightning::Dim()
 	//color_[0] /= COLOR_STEP_DIVIDER;
 	//color_[1] /= COLOR_STEP_DIVIDER;
 	//color_[2] /= COLOR_STEP_DIVIDER;
-	color_[0] -= OPACITY_STEP_SIZE;
-	color_[1] -= OPACITY_STEP_SIZE;
-	color_[2] -= OPACITY_STEP_SIZE;
-	color_[3] -= OPACITY_STEP_SIZE;
+	color_[0] -= OPACITY_STEP_SIZE* (1 + 0.9f * Random);
+	color_[1] -= OPACITY_STEP_SIZE* (1 + 0.9f * Random);
+	color_[2] -= OPACITY_STEP_SIZE* (1 + 0.9f * Random);
+	color_[3] -= OPACITY_STEP_SIZE * (1 + 0.9f * Random);
 }
 
 void Lightning::Brighten()
@@ -183,7 +183,7 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	}
 }
 
-#define RADIUS (0.1f)
+#define RADIUS (0.025f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 
