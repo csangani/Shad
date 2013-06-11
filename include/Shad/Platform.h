@@ -25,7 +25,7 @@ class Platform {
 
 		void setMoving(int beats, float deltaX, float deltaY, float deltaZ);
 		
-		void setShrinking(int _beat, float deltaX, float deltaY, float deltaZ);
+		void setShrinking(int _beat, float scale);
 
 		bool isMoving();
 		bool isShrinking();
@@ -71,7 +71,7 @@ class Platform {
 		bool shrinking;
 		float deltaX, deltaY, deltaZ;
 		float _scaleX, _scaleY, _scaleZ;
-		float _shrinkX, _shrinkY, _shrinkZ;
+		float _shrinkX, _shrinkY, _shrinkZ, _shrinkScale;
 		float initialX, initialY, initialZ;
 		float _angle, xaxis, yaxis, zaxis;
 		float runningTotalX, runningTotalY, runningTotalZ;

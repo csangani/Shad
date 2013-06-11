@@ -67,7 +67,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	*/
 	switch(_level) {
 	//Gavin level
-	case 1:
+	case 6:
 
 		Gavin();
 		break;
@@ -78,6 +78,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 	break;
 	
 	case 3: 
+
 		Amit(); 
 		break; 
 
@@ -118,26 +119,24 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 6:
+	case 1:
 		platform = new Platform(cube);
 		platform->Scale(1,1,10);
 		platform->Translate(0,-10,0);
 		platforms.push_back(platform);
-		platform->setMoving(10, 0, 0.1, 0.0);
+		platform->setMoving(100, 0, 0.1, 0.0);
 		movingPlatforms.push_back(platform);
 
 		platforms.push_back((new Platform(cube))->Scale(1, 5, 1)->Translate(0,-13,-6));
 
 
 		platform = new Platform(cube);
-		platform->setElevator(0.1f, 0.0f, 0.1f, 3.0f, 0.0f, 3.0f);
+		platform->setShrinking(200, 1.002);
 		platform->Scale(1, 1, 5);
-		platform->Translate(2,-10,0);
+		platform->Translate(2,-10,-10);
 		platforms.push_back(platform);
-		elevatablePlatforms.push_back(platform);
+		shrinkingPlatforms.push_back(platform);
 
-		//platform->setShrinking(2, 1.0, 1.0, 0.9);
-		//shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
 		//platform->subdivide();
@@ -514,6 +513,18 @@ void Level::Johan()
 	Platform *platform;
 	std::string cube = "assets\\obj\\cube.obj";
 	
+	platform = new Platform(cube);
+	platform->setShrinking(2,0.98); 
+	platform->Scale(3, 1, 3);
+	platform->Translate(5, -10, -10);
+	platforms.push_back(platform);
+	shrinkingPlatforms.push_back(platform);
+	
+	platform = new Platform(cube);
+	platform->Scale(3, 1, 1);
+	platform->Translate(5, -10, -2);
+	platforms.push_back(platform);
+
 	//1st
 	platform = new Platform(cube);
 	platform->Scale(3,1,3);
@@ -534,7 +545,7 @@ void Level::Johan()
 	platform = new Platform(cube);
 	platform->setCollapsible();
 	platform->Scale(3, 1, 3);
-	platform->Translate(20, -17, -15);
+	platform->Translate(15, -17, -25);
 	platforms.push_back(platform);
 	collapsiblePlatforms.push_back(platform);
 	
@@ -542,24 +553,34 @@ void Level::Johan()
 	platform = new Platform(cube);
 	platform->setCollapsible();
 	platform->Scale(3, 1, 3);
-	platform->Translate(40, -19, -20);
+	platform->Translate(30, -20, -30);
 	platforms.push_back(platform);
 	collapsiblePlatforms.push_back(platform);
 
 	//5th
 	platform = new Platform(cube);
 	platform->setCollapsible();
-	platform->Scale(3, 1, -15);
-	platform->Translate(60, -21, -15);
+	platform->Scale(3, 1, 3);
+	platform->Translate(45, -23, -25);
 	platforms.push_back(platform);
 	collapsiblePlatforms.push_back(platform);
 
 	//6th
 	platform = new Platform(cube);
 	platform->Scale(3,1,3);
-	platform->Translate(65,-20,-15);
+	platform->Translate(55,-25,-25);
 	platforms.push_back(platform);
 
+	//Lightning between 5th and 6th --> why does this one look bad?!?
+	//lightningBolts.push_back(new Lightning(OpenMesh::Vec3f(40,-30,-25), OpenMesh::Vec3f(45,-20,-25)));
+
+	//Stairs
+	for (int i = 0; i < 10; i++) {
+		platform = new Platform(cube);
+		platform->Scale(3,2,1);
+		platform->Translate(55,-25+i,-28-i);
+		platforms.push_back(platform);
+	}
 
 	target = OpenMesh::Vec3f(0, 12, -25);
 }
@@ -751,7 +772,7 @@ void Level::Amit() {
 
 		platform->Scale(6, 1, 7);
 		platform->Translate(-8, -10, 2);
-		platform->setShrinking(2, 1.0, 1.0, 0.98); 
+		//platform->setShrinking(2, 1.0, 1.0, 0.98); 
 
 		platforms.push_back(platform);
 		shrinkingPlatforms.push_back(platform);
