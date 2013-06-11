@@ -73,11 +73,11 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		break;
 
 
-	case 1:
+	case 2:
 		Johan();
 	break;
 	
-	case 2: 
+	case 1: 
 		Amit(); 
 		break; 
 
@@ -133,7 +133,7 @@ void Level::generateBlocks(std::string shader, bitmap_image& space_image) {
 		platform->Scale(1, 1, 5);
 		platform->Translate(2,-10,0);
 		platforms.push_back(platform);
-		platform->setShrinking(1.0, 1.0, 0.985);
+		platform->setShrinking(10, 1.0, 1.0, 0.985);
 		shrinkingPlatforms.push_back(platform);
 
 		platform = new Platform(cube);
@@ -689,10 +689,10 @@ void Level::Amit() {
 
 	
 		platform = new Platform(cube);
-		platform->setShrinking(1.0, 1.0, 0.9); 
-
 		platform->Scale(6, 1, 4);
-		platform->Translate(-8, -14, -18);
+		platform->Translate(-8, -10, -5);
+		platform->setShrinking(10, 0.9, 1.0, 1.0); 
+
 		platforms.push_back(platform);
 		shrinkingPlatforms.push_back(platform);
 		
