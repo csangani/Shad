@@ -319,7 +319,7 @@ float Level::drawCharacterShadow(float characterX, float characterY, float chara
 		float shadowOffset = 0.01f;
 		r = 0.2f/(characterY - maxY);
 		int num_segments = 20;
-		glColor4f(0.f, 0.f, 0.f, 0.3f);
+		glColor4f(1.f, 1.f, 1.f, 1.0f);
 		glBegin(GL_POLYGON); 
 		for(int i = 0; i < num_segments; i++) 
 		{ 
@@ -392,16 +392,21 @@ void Level::move(uint64_t deltaPoint, bool onGround, float charX, float charY, f
 				if (platformFound) {
 					OpenMesh::Vec3f delta = movingPlatforms[i]->getDirection();
 					int beat = movingPlatforms[i]->getBeat();
-					if (deltaPoint < beat) {
+					if (deltaPoint < beat/2) {
 					}
 					else {
 						delta = -delta;
 					}
 					btTransform id;
 					id.setIdentity();
-					id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY, delta[2] + charZ));
+					id.setOrigin(BVEC3F(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
+	
 					id.setRotation(((Character *)Shad)->RigidBody->getGhostObject()->getWorldTransform().getRotation());
 					((Character *)Shad)->RigidBody->getGhostObject()->setWorldTransform(id);
+					btTransform armMovement;
+					armMovement.setIdentity();
+					armMovement.setOrigin(BVEC3F(delta[0], delta[1], delta[2]));
+					((Character *)Shad)->Arms->SetOrigin(OpenMesh::Vec3f(delta[0] + charX, delta[1] + charY + 1, delta[2] + charZ));
 
 				}
 			}
@@ -551,9 +556,9 @@ void Level::Gavin() {
 		platforms.push_back(platform);
 
 		platform = new Platform(cube);
-		platform->Scale(6, 2, 5);
-		platform->Translate(4, -14, -50);
-		platform->setMoving(4, 0, 1, 0);
+		platform->Scale(6, 1, 5);
+		platform->Translate(6, -17, 0);
+		platform->setMoving(4, 0, 0.5, 0);
 		platforms.push_back(platform);
 		movingPlatforms.push_back(platform);
 

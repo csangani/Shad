@@ -180,7 +180,7 @@ bool Lightning::CollidesWithPoint(OpenMesh::Vec3f point)
 	}
 }
 
-#define RADIUS (0.015f)
+#define RADIUS (0.03f)
 #define NUM_SUBDIVISIONS (32)
 #define BRANCH_DECREASE_COEF (3)
 
